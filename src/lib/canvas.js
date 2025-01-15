@@ -1,4 +1,4 @@
-<script>
+
 
 function drawCanvas(id) {
     const canvas = document.getElementById(id);
@@ -11,8 +11,4 @@ function drawCanvas(id) {
     ctx.stroke();
 }
 
-</script>
-
-<h1>Lifeforms</h1>
-<canvas id="myCanvas" width="300" height="300"></canvas> 
-{drawCanvas("myCanvas")}
+export default drawCanvas
