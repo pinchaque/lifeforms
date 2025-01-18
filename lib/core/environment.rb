@@ -5,8 +5,8 @@ class Environment
   attr_accessor :time
 
   def initialize(w, h)
-    @width = w
-    @height = h
+    @width = w.to_f
+    @height = h.to_f
     @lifeforms = []
     @time = 0
   end
