@@ -23,7 +23,7 @@ class Lifeform
   end
 
   def gen_name
-    sprintf("Name%04d", Random.rand(0...10000))
+    NameParts::DESCRIPTORS.sample.capitalize + " " + NameParts::GIVENS.sample.capitalize
   end
 
   def loc_str
