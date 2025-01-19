@@ -41,11 +41,11 @@ class NameParts
   devon
   drew
   easton
-  echo
   egypt
   ellis
   everest
   fallon
+  forest
   francis
   gale
   gray
@@ -55,7 +55,6 @@ class NameParts
   hart
   holland
   hollis
-  honor
   hunter
   indigo
   ira
@@ -87,11 +86,7 @@ class NameParts
   lindsey
   london
   lowen
-  loyal
-  lux
-  luxury
   lynn
-  lyric
   mackenzie
   marion
   marley
@@ -149,7 +144,6 @@ class NameParts
   sloan
   spencer
   stacy
-  story
   sutton
   tanner
   taran
@@ -159,13 +153,11 @@ class NameParts
   terry
   tommie
   tracy
-  true
   vesper
   waverly
   west
   wren
   xenith
-  zen
   zephyr
   zion
   zuri

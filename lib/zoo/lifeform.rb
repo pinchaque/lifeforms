@@ -8,9 +8,13 @@ class Lifeform
 
   # Location for this lifeform wihtin the environment
   attr_accessor :x, :y
+
+  # Energy level of this lifeform
+  attr_accessor :energy
   
   def initialize
     @name = gen_name
+    @energy = 0.0
   end
 
   def run_step
@@ -31,7 +35,11 @@ class Lifeform
     sprintf(fmt, @x) + ", " + sprintf(fmt, @y)
   end
 
+  def energy_str
+    sprintf("%.2f", @energy)
+  end
+
   def to_s
-    "#{@species} #{@name} [#{loc_str}]"
+    "#{@species} #{@name} [Energy: #{energy_str}] [Loc: #{loc_str}]"
   end
 end

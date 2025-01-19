@@ -13,7 +13,6 @@ class Environment
 
   def add_lifeform(l)
     l.env = self
-    l.x, l.y = rnd_loc
     @lifeforms << l
   end
 
