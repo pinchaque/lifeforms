@@ -1,23 +1,54 @@
-class Lifeform
+require 'random/formatter'
 
-  # Environment to which this lifeform belongs
-  attr_accessor :env
-  
+class Lifeform  
   # Individual name for this lifeform
   attr_accessor :name
 
-  # Location for this lifeform wihtin the environment
-  attr_accessor :x, :y
-
   # Energy level of this lifeform
   attr_accessor :energy
+
+  # Size of this lifeform
+  attr_accessor :size
   
   def initialize
     @name = gen_name
     @energy = 0.0
+    @size = 1.0
+    @uuid = Random.uuid
   end
 
-  def run_step
+  def id
+    @uuid.to_s
+  end
+
+  # 
+  def reproduce(num = 1)
+    # energy is divided evenly among parent and children
+    e_new = energy / (num + 1)
+    @energy = e_new # update parent energy
+
+    children = []
+    for i in 0...num do
+      child = create
+      child.copy_from(self)
+      child.energy = e_new
+      child.name = gen_name
+      yield child if block_given? 
+      children << child
+    end
+    children
+  end
+
+  def create
+    abort "Called create() on base class"
+  end
+
+  # Copies the attributes of another lifeform of the same species into this one
+  def copy_from(other)
+    abort "Species does not match (#{species} != #{other.species})" if species != other.species
+  end
+
+  def run_step(env)
     # nothing to do in base class
   end
 
@@ -30,16 +61,11 @@ class Lifeform
     NameParts::DESCRIPTORS.sample.capitalize + " " + NameParts::GIVENS.sample.capitalize
   end
 
-  def loc_str
-    fmt = "%.2f"
-    sprintf(fmt, @x) + ", " + sprintf(fmt, @y)
-  end
-
   def energy_str
     sprintf("%.2f", @energy)
   end
 
   def to_s
-    "#{@species} #{@name} [Energy: #{energy_str}] [Loc: #{loc_str}]"
+    "#{@species} #{@name} [Energy: #{energy_str}]"
   end
 end

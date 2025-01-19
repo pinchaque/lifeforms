@@ -3,9 +3,9 @@ class PlantFactory
   attr_accessor :growth_rate, :energy_split
 
   def initialize
-    @energy_min = 10
-    @energy_max = 20
-    @energy_split = 30
+    @energy_min = 10.0
+    @energy_max = 20.0
+    @energy_split = 30.0
     @growth_rate = 0.05
   end
   
