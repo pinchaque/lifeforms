@@ -10,3 +10,8 @@ for i in 0..5 do
 end
 
 puts(env.to_s)
+for t in 0..10 do
+  env.run_step
+  puts("-" * 72)
+  puts(env.to_s)
+end

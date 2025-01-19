@@ -16,17 +16,16 @@ class Environment
     @lifeform_locs[l.id] = Location.random(@width, @height)
   end
 
-  def add_lifeform_dist(l, dist)
-    Location.at_dist()
-
+  def add_lifeform_dist(parent, child, dist)
+    parent_loc = @lifeform_locs[parent.id]
+    @lifeforms[child.id] = child
+    @lifeform_locs[child.id] = Location.at_dist(@width, @height, parent_loc, dist)
   end
 
   def run_step
-    # TODO: randomize order
-    @lifeforms.each do |l|
+    @lifeforms.values.shuffle.each do |l|
       l.run_step(self)
     end
-
     @time += 1
   end
 
@@ -37,8 +36,12 @@ class Environment
     l.to_s + " [Loc: #{loc_str}]"
   end
 
+  def lifeforms_sorted
+    @lifeforms.values.sort{ |a, b| a.name <=> b.name }
+  end
+
   def to_s
-    str = "[#{@lifeforms.count} Lifeforms | Size #{@width}x#{@height} | Time #{@time}]\n"
-    str += @lifeforms.values.map{ |l| "  * #{lifeform_str(l)}" }.join("\n")
+    str = "[t=#{@time} | n=#{@lifeforms.count} | s=(#{@width}, #{@height})]\n"
+    str += lifeforms_sorted.map{ |l| "  * #{lifeform_str(l)}" }.join("\n")
   end
 end

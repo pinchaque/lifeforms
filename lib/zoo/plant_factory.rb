@@ -6,7 +6,7 @@ class PlantFactory
     @energy_min = 10.0
     @energy_max = 20.0
     @energy_split = 30.0
-    @growth_rate = 0.05
+    @growth_rate = 0.2
   end
   
   def gen

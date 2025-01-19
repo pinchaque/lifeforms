@@ -17,6 +17,6 @@ class Location
   # and in an environment that is widthxheight big.
   def self.at_dist(width, height, other, dist)
     # TODO: Implement
-    return x + dist, y
+    Location.new(other.x + dist, other.y)
   end
 end

@@ -29,7 +29,7 @@ class Plant < Lifeform
     if @energy > @energy_split
       logf("%s is reproducing (%.2f > %.2f)", to_s, @energy, @energy_split)
       reproduce.each do |child|
-        env.add_lifeform_dist(child, size)
+        env.add_lifeform_dist(self, child, size)
         logf("Added child %s", child.to_s)
       end
     else

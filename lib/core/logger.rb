@@ -1,3 +1,4 @@
+require 'date'
 
 def log(s)
     d = DateTime.now.strftime("%F %T")

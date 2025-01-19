@@ -58,7 +58,7 @@ class Lifeform
   end
 
   def gen_name
-    NameParts::DESCRIPTORS.sample.capitalize + " " + NameParts::GIVENS.sample.capitalize
+    (NameParts::DESCRIPTORS.sample.capitalize + " " + NameParts::GIVENS.sample.capitalize).strip
   end
 
   def energy_str
@@ -66,6 +66,6 @@ class Lifeform
   end
 
   def to_s
-    "#{@species} #{@name} [Energy: #{energy_str}]"
+    "#{species} #{@name} [Energy: #{energy_str}]"
   end
 end
