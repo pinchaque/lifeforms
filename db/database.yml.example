@@ -1,0 +1,6 @@
+adapter: postgres
+host: localhost
+port: 5432
+username: lifeforms
+password: __enter_password_here__
+database: lifeforms
