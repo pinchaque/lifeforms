@@ -11,11 +11,21 @@ Sequel.migration do
       );
     SQL
 
+    tbl = 'species'
+    run <<-SQL
+      create table #{tbl} (
+        id uuid default uuid_generate_v4() primary key,
+        name text not null
+      );
+    SQL
+
     tbl = 'lifeforms'
     run <<-SQL
       create table #{tbl} (
         id uuid default uuid_generate_v4() primary key,
         environment_id uuid not null references environments(id),
+        species_id uuid not null references species(id),
+        parent_id uuid references lifeforms(id),
         energy double precision not null,
         size double precision not null,
         name text not null
@@ -24,6 +34,8 @@ Sequel.migration do
 
     alter_table tbl do
       add_index :environment_id
+      add_index :parent_id
+      add_index :species_id
     end
 
 
@@ -45,6 +57,7 @@ Sequel.migration do
   down do
     drop_table :lifeform_locs
     drop_table :lifeforms
+    drop_table :species
     drop_table :environments
   end
 end

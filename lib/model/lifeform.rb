@@ -1,5 +1,3 @@
-require 'random/formatter'
-
 class Lifeform  < Sequel::Model
   # Individual name for this lifeform
   attr_accessor :name
@@ -61,11 +59,8 @@ class Lifeform  < Sequel::Model
     (NameParts::DESCRIPTORS.sample.capitalize + " " + NameParts::GIVENS.sample.capitalize).strip
   end
 
-  def energy_str
-    sprintf("%.2f", @energy)
-  end
-
   def to_s
+    energy_str = sprintf("%.2f", @energy)
     "#{species} #{@name} [Energy: #{energy_str}]"
   end
 end
