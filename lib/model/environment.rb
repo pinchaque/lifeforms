@@ -1,7 +1,4 @@
-class Environment
-
-  attr_reader :width, :height
-  attr_reader :time
+class Environment  < Sequel::Model
 
   def initialize(w, h)
     @width = w.to_f

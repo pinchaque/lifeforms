@@ -1,6 +1,6 @@
 require 'random/formatter'
 
-class Lifeform  
+class Lifeform  < Sequel::Model
   # Individual name for this lifeform
   attr_accessor :name
 
