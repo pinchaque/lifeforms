@@ -16,9 +16,22 @@ class Location
   # Returns a new Location object that is dist away from another location
   # and in an environment that is widthxheight big.
   def self.at_dist(width, height, other, dist)
-    ang = Random.rand(0.0..2.0*PI) # random angle in radians
-    dx = dist * cos(ang) # convert polar to cartesian
-    dy = dist * sin(ang)
-    Location.new(other.x + dx, other.y + dy)
+    # random angle in radians
+    ang = Random.rand(0.0..2.0*Math::PI)
+
+    # convert polar to cartesian
+    dx = dist * Math.cos(ang)
+    dy = dist * Math.sin(ang)
+
+    # limit to canvas bounds
+    x = other.x + dx
+    x = 0.0 if x < 0.0
+    x = width if x > width
+    
+    y = other.y + dy
+    y = 0.0 if y < 0.0
+    y = height if y > height
+
+    Location.new(x, y)
   end
 end
