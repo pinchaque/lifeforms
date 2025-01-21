@@ -1,6 +1,6 @@
 class Environment  < Sequel::Model
-  def initialize
-    time_step = 0
+  def before_save
+    time_step = 0 if time_step.nil?
     super
   end
 

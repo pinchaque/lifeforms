@@ -4,7 +4,7 @@ class Lifeform  < Sequel::Model
   def before_save
     # set the obj_data string to be JSON representation of this lifeform
     # object's data
-    obj_data = JSON.generate(marshal_to_h)
+    set(obj_data: JSON.generate(marshal_to_h))
     super
   end
 
