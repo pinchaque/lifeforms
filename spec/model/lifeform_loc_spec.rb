@@ -11,6 +11,20 @@ describe "LifeformLoc" do
   let(:width) { 100.0 }
   let(:height) { 1000.0 }
 
+  context ".to_s" do
+    [
+        [LifeformLoc.new(x: 10.000003, y: 98.15678), "(10.00, 98.16)"],
+        [LifeformLoc.new(x: 10.000003, y: 98.15478), "(10.00, 98.15)"],
+        [LifeformLoc.new(x: 0.0000004, y: -100001.9999), "(0.00, -100002.00)"],
+    ].each do |ex|
+      it "formats correctly" do
+        loc = ex.shift
+        exp = ex.shift
+        expect(loc.to_s).to eq(exp)
+      end
+    end
+  end
+
   (0...100).each do 
     context "constructor" do
       let(:x) { Random.rand(0.0..width) }

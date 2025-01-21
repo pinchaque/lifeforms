@@ -44,7 +44,13 @@ class Lifeform  < Sequel::Model
     Species.where(id: species_id).first
   end
 
+  def loc
+    LifeformLoc.where(environment_id: environment_id, lifeform_id: id).first
+  end
+
   def to_s
-    sprintf("%s %s energy:%.2f size:%.2f", species.name, name, energy, size)
+    l = loc
+    loc_str = l.nil? ? "(?, ?)" : l.to_s
+    sprintf("%s %s energy:%.2f size:%.2f loc:%s", species.name, name, energy, size, loc_str)
   end
 end

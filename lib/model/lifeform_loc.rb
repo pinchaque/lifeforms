@@ -27,4 +27,8 @@ class LifeformLoc < Sequel::Model
 
     LifeformLoc.new(x: xnew, y: ynew)
   end
+
+  def to_s
+    "(" + [x, y].map{ |a| sprintf("%.2f", a)}.join(", ") + ")"
+  end
 end

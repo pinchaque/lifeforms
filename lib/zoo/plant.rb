@@ -5,10 +5,6 @@ class Plant < Lifeform
 
   # Energy level at which the lifeform splits
   attr_accessor :energy_split
-  
-  def initialize
-    super
-  end
 
   def marshal_to_h
     h = super
