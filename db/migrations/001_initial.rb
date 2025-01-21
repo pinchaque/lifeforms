@@ -15,7 +15,8 @@ Sequel.migration do
     run <<-SQL
       create table #{tbl} (
         id uuid default uuid_generate_v4() primary key,
-        name text not null
+        name text not null,
+        class_name text not null
       );
     SQL
 
@@ -28,7 +29,8 @@ Sequel.migration do
         parent_id uuid references lifeforms(id),
         energy double precision not null,
         size double precision not null,
-        name text not null
+        name text not null,
+        obj_data text not null
       );
     SQL
 

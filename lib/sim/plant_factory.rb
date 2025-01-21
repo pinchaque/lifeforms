@@ -14,6 +14,13 @@ class PlantFactory
     p.energy = Random.rand(@energy_min..@energy_max)
     p.growth_rate = @growth_rate
     p.energy_split = @energy_split
+    p.name = PlantFactory.gen_name
     p
   end
+
+
+  def self.gen_name
+    (NameParts::DESCRIPTORS.sample.capitalize + " " + NameParts::GIVENS.sample.capitalize).strip
+  end
+
 end

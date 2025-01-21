@@ -1,66 +1,50 @@
+require 'json'
+
 class Lifeform  < Sequel::Model
-  # Individual name for this lifeform
-  attr_accessor :name
-
-  # Energy level of this lifeform
-  attr_accessor :energy
-
-  # Size of this lifeform
-  attr_accessor :size
-  
-  def initialize
-    @name = gen_name
-    @energy = 0.0
-    @size = 1.0
-    @uuid = Random.uuid
+  def before_save
+    # set the obj_data string to be JSON representation of this lifeform
+    # object's data
+    obj_data = JSON.generate(marshal_to_h)
+    super
   end
 
-  def id
-    @uuid.to_s
+  # Override object population to also call marshal_from_h to populate data
+  # in the subclasses
+  def call(values)
+    ret = super(values)
+    marshal_from_h(JSON.parse(obj_data))
+    ret
   end
 
-  # 
-  def reproduce(num = 1)
-    # energy is divided evenly among parent and children
-    e_new = energy / (num + 1)
-    @energy = e_new # update parent energy
-
-    children = []
-    for i in 0...num do
-      child = create
-      child.copy_from(self)
-      child.energy = e_new
-      child.name = gen_name
-      yield child if block_given? 
-      children << child
-    end
-    children
+  # Converts this lifeform object's extra data into a hash
+  def marshal_to_h
+    Hash.new
   end
 
-  def create
-    abort "Called create() on base class"
+  # Populates this lifeform object's extra data from a hash
+  def marshal_from_h(h)
+    # do nothing - only used in child classes
   end
 
-  # Copies the attributes of another lifeform of the same species into this one
-  def copy_from(other)
-    abort "Species does not match (#{species} != #{other.species})" if species != other.species
+  # Copies the attributes of another lifeform into this one
+  def copy_from(other)      
+    set(environment_id: other.environment_id,
+      species_id: other.species_id,
+      energy: other.energy,
+      size: other.size,
+      name: other.name
+    )
   end
 
   def run_step(env)
     # nothing to do in base class
   end
 
-  # Species name of this lifeform
   def species
-    abort "Species name undefined"
-  end
-
-  def gen_name
-    (NameParts::DESCRIPTORS.sample.capitalize + " " + NameParts::GIVENS.sample.capitalize).strip
+    Species.where(id: species_id).first
   end
 
   def to_s
-    energy_str = sprintf("%.2f", @energy)
-    "#{species} #{@name} [Energy: #{energy_str}]"
+    sprintf("%s %s energy:%.2f size:%.2f", species.name, name, energy, size)
   end
 end

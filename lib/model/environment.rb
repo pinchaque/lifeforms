@@ -1,5 +1,4 @@
 class Environment  < Sequel::Model
-
   def initialize
     time_step = 0
     super

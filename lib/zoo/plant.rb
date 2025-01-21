@@ -10,12 +10,17 @@ class Plant < Lifeform
     super
   end
 
-  def species
-    "Plant"
+  def marshal_to_h
+    h = super
+    h[:growth_rate] = growth_rate
+    h[:energy_split] = energy_split
+    h
   end
 
-  def create
-    Plant.new
+  def marshal_from_h(h)
+    @growth_rate = h[:growth_rate]
+    @energy_split = h[:energy_split]
+    super(h)
   end
 
   def copy_from(other)
