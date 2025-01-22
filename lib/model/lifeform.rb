@@ -5,6 +5,7 @@ class Lifeform < Sequel::Model
   plugin :after_initialize
 
   def after_initialize
+    # marshal this objects data from obj_data if it exists
     unless obj_data.nil?
       h = JSON.parse(obj_data, {symbolize_names: true})
       marshal_from_h(h)
@@ -37,6 +38,7 @@ class Lifeform < Sequel::Model
       size: other.size,
       name: other.name
     )
+    marshal_from_h(other.marshal_to_h)
   end
 
   def run_step(env)

@@ -10,10 +10,10 @@ class TestLF < Lifeform
   attr_accessor :val1, :val2
 
   def marshal_to_h
-    h = super
-    h[:val1] = val1
-    h[:val2] = val2
-    h
+    super.merge({
+      val1: val1,
+      val2: val2
+    })
   end
 
   def marshal_from_h(h)
@@ -139,6 +139,40 @@ describe "Lifeform" do
       # check TestLF (child class) data
       expect(lf_act.val1).to eq("foo")
       expect(lf_act.val2).to eq(42)
-      end
+    end
+  end
+
+  context ".copy_from" do
+    it "copies all attributes" do
+      tlf.save
+      loc.save
+
+      # create new object copying from existing
+      lf_act = TestLF.new
+      lf_act.copy_from(tlf)
+
+      expect(lf_act.environment_id).to eq(tlf.environment_id)
+      expect(lf_act.species_id).to eq(tlf.species_id)
+      expect(lf_act.parent_id).to be_nil
+      expect(lf_act.energy).to be_within(tol).of(tlf.energy)
+      expect(lf_act.size).to be_within(tol).of(tlf.size)
+      expect(lf_act.name).to eq(tlf.name)
+
+      # check TestLF (child class) data
+      expect(lf_act.val1).to eq("foo")
+      expect(lf_act.val2).to eq(42)
+
+      # some data isn't set because it isn't saved yet
+      expect(lf_act.id).to be_nil
+      expect(lf_act.class_name).to be_nil
+      expect(lf_act.obj_data).to be_nil
+
+      # save the new object
+      lf_act.save
+
+      # now we should have these set
+      expect(lf_act.class_name).to eq("TestLF")
+      expect(lf_act.obj_data).to eq("{\"val1\":\"foo\",\"val2\":42}")
+    end
   end
 end
