@@ -13,7 +13,7 @@ class Reproduce
       child = @parent.class.new
       child.copy_from(@parent)
       child.energy = e_new
-      child.name = gen_name
+      child.set_random_name
       child.parent_id = @parent.id
       yield child if block_given? 
       children << child

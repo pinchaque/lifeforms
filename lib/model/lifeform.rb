@@ -43,6 +43,7 @@ class Lifeform < Sequel::Model
 
   def run_step(env)
     # nothing to do in base class
+    self
   end
 
   def species
@@ -57,5 +58,9 @@ class Lifeform < Sequel::Model
     l = loc
     loc_str = l.nil? ? "(?, ?)" : l.to_s
     sprintf("%s %s energy:%.2f size:%.2f loc:%s", species.name, name, energy, size, loc_str)
+  end
+
+  def set_random_name
+    self.name = (NameParts::DESCRIPTORS.sample.capitalize + " " + NameParts::GIVENS.sample.capitalize).strip
   end
 end
