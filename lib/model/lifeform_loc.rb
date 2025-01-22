@@ -1,16 +1,9 @@
-class Location
-  attr_accessor :x, :y
-
-  def initialize(x, y)
-    @x = x
-    @y = y
-  end
-
+class LifeformLoc < Sequel::Model
   # Returns a new Location object at a random place in an environment
   # that is width x height big.
   def self.random(width, height)
     r = Random.new
-    Location.new(r.rand(0.0..width.to_f), r.rand(0.0..height.to_f))
+    LifeformLoc.new(x: r.rand(0.0..width.to_f), y: r.rand(0.0..height.to_f))
   end
 
   # Returns a new Location object that is dist away from another location
@@ -24,14 +17,18 @@ class Location
     dy = dist * Math.sin(ang)
 
     # limit to canvas bounds
-    x = other.x + dx
-    x = 0.0 if x < 0.0
-    x = width if x > width
+    xnew = other.x + dx
+    xnew = 0.0 if xnew < 0.0
+    xnew = width if xnew > width
     
-    y = other.y + dy
-    y = 0.0 if y < 0.0
-    y = height if y > height
+    ynew = other.y + dy
+    ynew = 0.0 if ynew < 0.0
+    ynew = height if ynew > height
 
-    Location.new(x, y)
+    LifeformLoc.new(x: xnew, y: ynew)
+  end
+
+  def to_s
+    "(" + [x, y].map{ |a| sprintf("%.2f", a)}.join(", ") + ")"
   end
 end

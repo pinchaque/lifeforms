@@ -2,15 +2,26 @@
 
 require '../lib/config'
 
-env = Environment.new(100, 100)
-pf = PlantFactory.new
+log("Removing existing data...")
 
-for i in 0..5 do 
+n = LifeformLoc.where(true).delete
+log("Deleted #{n} rows from lifeform_locs")
+
+n = Lifeform.where(true).delete
+log("Deleted #{n} rows from lifeforms")
+
+n = Environment.where(true).delete
+log("Deleted #{n} rows from environments")
+
+log("Running Simulation...")
+env = Environment.new(width: 100, height: 100).save
+pf = PlantFactory.new
+(0..5).each do 
   env.add_lifeform_rnd(pf.gen)
 end
 
 puts(env.to_s)
-for t in 0..10 do
+(0..10).each do
   env.run_step
   puts("-" * 72)
   puts(env.to_s)

@@ -1,15 +1,35 @@
 require '../lib/config'
 
-describe "Location" do
+RSpec.configure do |config|
+  config.around(:each) do |example|
+      DB.transaction(rollback: :always, auto_savepoint: true) { example.run }
+  end
+end
+
+describe "LifeformLoc" do
   let(:tol) { 0.00001 }
   let(:width) { 100.0 }
   let(:height) { 1000.0 }
+
+  context ".to_s" do
+    [
+        [LifeformLoc.new(x: 10.000003, y: 98.15678), "(10.00, 98.16)"],
+        [LifeformLoc.new(x: 10.000003, y: 98.15478), "(10.00, 98.15)"],
+        [LifeformLoc.new(x: 0.0000004, y: -100001.9999), "(0.00, -100002.00)"],
+    ].each do |ex|
+      it "formats correctly" do
+        loc = ex.shift
+        exp = ex.shift
+        expect(loc.to_s).to eq(exp)
+      end
+    end
+  end
 
   (0...100).each do 
     context "constructor" do
       let(:x) { Random.rand(0.0..width) }
       let(:y) { Random.rand(0.0..height) }
-      let(:loc) { Location.new(x, y) }
+      let(:loc) { LifeformLoc.new(x: x, y: y) }
       it "#new" do
         expect(loc.x).to be_within(tol).of(x)
         expect(loc.y).to be_within(tol).of(y)
@@ -19,7 +39,7 @@ describe "Location" do
 
   (0...100).each do 
     context "#random" do
-      let(:loc) { Location.random(width, height) }
+      let(:loc) { LifeformLoc.random(width, height) }
       it "generates random coordinates within specified width and height" do
         expect(loc.x).to be_between(0.0, width).inclusive
         expect(loc.y).to be_between(0.0, height).inclusive
@@ -28,11 +48,11 @@ describe "Location" do
   end
 
   context "#at_dist" do
-    let(:loc) { Location.at_dist(width, height, other, dist) }
+    let(:loc) { LifeformLoc.at_dist(width, height, other, dist) }
 
     (0...100).each do 
       context "other in center of canvas" do
-        let(:other) { Location.new(width / 2.0, height / 2.0) }
+        let(:other) { LifeformLoc.new(x: width / 2.0, y: height / 2.0) }
         let(:dist) { [width / 2.0, height / 2.0].min }
         it "generates random coordinates within specified distance" do
 
@@ -50,7 +70,7 @@ describe "Location" do
 
     (0...1000).each do 
       context "other anywhere on canvas" do
-        let(:other) { Location.random(width, height) }
+        let(:other) { LifeformLoc.random(width, height) }
         let(:dist) { [width / 1.5, height / 1.5].min }
         it "generates random coordinates within specified distance" do
 
