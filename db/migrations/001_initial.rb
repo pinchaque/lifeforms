@@ -18,6 +18,7 @@ Sequel.migration do
         name text not null
       );
     SQL
+    run("insert into species (name) values ('Plant');")
 
     tbl = 'lifeforms'
     run <<-SQL

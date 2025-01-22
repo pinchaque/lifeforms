@@ -19,8 +19,8 @@ class Plant < Lifeform
     super(h)
   end
 
-  def run_step(env)
-    super(env)
+  def run_step
+    super
     if energy > @energy_split
       logf("%s is reproducing (%.2f > %.2f)", to_s, energy, @energy_split)
 
@@ -30,7 +30,7 @@ class Plant < Lifeform
         logf("Added child %s", child.to_s)
       end
     else
-      energy *= (1.0 + @growth_rate)
+      self.energy *= (1.0 + @growth_rate)
     end
     self
   end

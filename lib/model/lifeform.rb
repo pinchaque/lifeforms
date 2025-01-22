@@ -41,7 +41,7 @@ class Lifeform < Sequel::Model
     marshal_from_h(other.marshal_to_h)
   end
 
-  def run_step(env)
+  def run_step
     # nothing to do in base class
     self
   end
@@ -52,6 +52,10 @@ class Lifeform < Sequel::Model
 
   def loc
     LifeformLoc.where(environment_id: environment_id, lifeform_id: id).first
+  end
+
+  def env
+    Environment.where(id: environment_id).first
   end
 
   def to_s
