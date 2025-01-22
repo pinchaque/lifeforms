@@ -108,6 +108,7 @@ describe "Lifeform" do
       expect(row[:energy]).to be_within(tol).of(tlf.energy)
       expect(row[:size]).to be_within(tol).of(tlf.size)
       expect(row[:name]).to eq(tlf.name)
+      expect(row[:generation]).to eq(0)
       expect(row[:obj_data]).to eq("{\"val1\":\"foo\",\"val2\":42}")
     end
 
@@ -135,6 +136,7 @@ describe "Lifeform" do
       expect(lf_act.energy).to be_within(tol).of(tlf.energy)
       expect(lf_act.size).to be_within(tol).of(tlf.size)
       expect(lf_act.name).to eq(tlf.name)
+      expect(lf_act.generation).to eq(tlf.generation)
       expect(lf_act.obj_data).to eq("{\"val1\":\"foo\",\"val2\":42}")
 
       # check TestLF (child class) data

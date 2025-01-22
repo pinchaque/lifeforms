@@ -15,6 +15,7 @@ class Reproduce
       child.energy = e_new
       child.set_random_name
       child.parent_id = @parent.id
+      child.generation = @parent.generation + 1
       yield child if block_given? 
       children << child
     end
