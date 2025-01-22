@@ -38,6 +38,7 @@ describe "Reproduce" do
     l.size = 1.0
     l.name = "Incredible Juniper"
     l.id = '12345'
+    l.generation = 3
     l
   }
 
@@ -54,6 +55,7 @@ describe "Reproduce" do
       expect(c.energy).to be_within(tol).of(energy_exp)
       expect(c.size).to be_within(tol).of(tlf.size)
       expect(c.name).not_to eq(tlf.name)
+      expect(c.generation).to eq(tlf.generation + 1)
       expect(c.name).not_to be_nil
       expect(c.id).to be_nil # not saved
       expect(c.parent_id).to eq(tlf.id)

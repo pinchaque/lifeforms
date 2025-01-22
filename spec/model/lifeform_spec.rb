@@ -97,7 +97,7 @@ describe "Lifeform" do
       loc.save
 
       # test the raw db contents
-      ds = DB["select * from lifeforms"]
+      ds = DB["select * from lifeforms where id = ?", tlf.id]
       expect(ds.count).to eq(1)
       row = ds.first
       expect(row[:id]).to eq(tlf.id)
@@ -108,6 +108,7 @@ describe "Lifeform" do
       expect(row[:energy]).to be_within(tol).of(tlf.energy)
       expect(row[:size]).to be_within(tol).of(tlf.size)
       expect(row[:name]).to eq(tlf.name)
+      expect(row[:generation]).to eq(0)
       expect(row[:obj_data]).to eq("{\"val1\":\"foo\",\"val2\":42}")
     end
 
@@ -117,10 +118,11 @@ describe "Lifeform" do
       loc.save
 
       # should have only 1 record
-      expect(Lifeform.count).to eq(1)
+      ds = Lifeform.where(id: tlf.id)
+      expect(ds.count).to eq(1)
       
       # retrieve it
-      lf_act = Lifeform.first
+      lf_act = ds.first
 
       # should have returned the subclass
       expect(lf_act.class.name).to eq("TestLF")
@@ -134,6 +136,7 @@ describe "Lifeform" do
       expect(lf_act.energy).to be_within(tol).of(tlf.energy)
       expect(lf_act.size).to be_within(tol).of(tlf.size)
       expect(lf_act.name).to eq(tlf.name)
+      expect(lf_act.generation).to eq(tlf.generation)
       expect(lf_act.obj_data).to eq("{\"val1\":\"foo\",\"val2\":42}")
 
       # check TestLF (child class) data
