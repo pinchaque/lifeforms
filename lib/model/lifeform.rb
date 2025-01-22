@@ -1,19 +1,22 @@
 require 'json'
 
-class Lifeform  < Sequel::Model
+class Lifeform < Sequel::Model
+  plugin :single_table_inheritance, :class_name
+  plugin :after_initialize
+
+  def after_initialize
+    unless obj_data.nil?
+      h = JSON.parse(obj_data, {symbolize_names: true})
+      marshal_from_h(h)
+    end
+    super
+  end
+
   def before_save
     # set the obj_data string to be JSON representation of this lifeform
     # object's data
     set(obj_data: JSON.generate(marshal_to_h))
     super
-  end
-
-  # Override object population to also call marshal_from_h to populate data
-  # in the subclasses
-  def call(values)
-    ret = super(values)
-    marshal_from_h(JSON.parse(obj_data))
-    ret
   end
 
   # Converts this lifeform object's extra data into a hash
