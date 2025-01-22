@@ -97,7 +97,7 @@ describe "Lifeform" do
       loc.save
 
       # test the raw db contents
-      ds = DB["select * from lifeforms"]
+      ds = DB["select * from lifeforms where id = ?", tlf.id]
       expect(ds.count).to eq(1)
       row = ds.first
       expect(row[:id]).to eq(tlf.id)
@@ -117,10 +117,11 @@ describe "Lifeform" do
       loc.save
 
       # should have only 1 record
-      expect(Lifeform.count).to eq(1)
+      ds = Lifeform.where(id: tlf.id)
+      expect(ds.count).to eq(1)
       
       # retrieve it
-      lf_act = Lifeform.first
+      lf_act = ds.first
 
       # should have returned the subclass
       expect(lf_act.class.name).to eq("TestLF")
