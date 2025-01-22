@@ -6,3 +6,12 @@ Dir["#{LIBDIR}/core/*.rb"].each {|file| require file }
 Dir["#{LIBDIR}/models/*.rb"].each {|file| require file }
 Dir["#{LIBDIR}/zoo/*.rb"].each {|file| require file }
 Dir["#{LIBDIR}/sim/*.rb"].each {|file| require file }
+
+
+# require 'bundler'
+# Bundler.require
+# ActiveRecord::Base.establish_connection(
+#   :adapter => 'sqlite3',
+#   :database => 'db/development.sqlite'
+# )
+# require_all 'app'
