@@ -1,4 +1,4 @@
-require '../lib/config'
+require '../app/config'
 
 RSpec.configure do |config|
   config.around(:each) do |example|
