@@ -1,6 +1,6 @@
 #!/usr/bin/env ruby
 
-require '../lib/config'
+require '../app/config'
 
 log("Removing existing data...")
 

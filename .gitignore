@@ -61,4 +61,3 @@ database.yml
 /bin/*.log
 /tmp
 .DS_Store
-Gemfile.lock
