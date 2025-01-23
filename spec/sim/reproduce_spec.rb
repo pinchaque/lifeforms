@@ -1,12 +1,10 @@
-require '../lib/config'
-
 RSpec.configure do |config|
   config.around(:each) do |example|
       DB.transaction(rollback: :always, auto_savepoint: true) { example.run }
   end
 end
 
-class TestLF < Lifeform
+class TestReproduceLF < Lifeform
   attr_accessor :val1, :val2
 
   def marshal_to_h
@@ -31,7 +29,7 @@ describe "Reproduce" do
   let(:tol) { 0.0001 }
   let(:energy_tot) { 100.0 }
   let(:tlf) {
-    l = TestLF.new
+    l = TestReproduceLF.new
     l.val1 = "foo"
     l.val2 = 42
     l.energy = energy_tot

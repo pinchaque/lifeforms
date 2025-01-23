@@ -1,9 +1,6 @@
-require '../lib/config'
-
 RSpec.configure do |config|
-  config.around(:each) do |example|
-      DB.transaction(rollback: :always, auto_savepoint: true) { example.run }
-  end
+  # too verbose otherwise
+  config.default_formatter = "progress"
 end
 
 describe "LifeformLoc" do
