@@ -8,11 +8,10 @@ class AppController < Sinatra::Base
   end
 
   get '/' do 
-    "Hello, World!"
+    erb :"index"
   end
 
   get "/status" do
-    # Render posts index view 
     @str = "active"
     erb :"status"
   end
