@@ -5,13 +5,13 @@ gem "sequel"
 gem "pg"
 gem "sinatra"
 gem "rake"
-#gem "thin"
 gem "shotgun"
 gem "pry"
 gem "bcrypt"
 gem "tux"
 gem "rackup", "~> 2.2"
 gem "puma", "~> 6.5"
+gem "yaml"
 
 group :test do
   gem 'rspec'
