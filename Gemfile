@@ -12,6 +12,8 @@ gem "tux"
 gem "rackup", "~> 2.2"
 gem "puma", "~> 6.5"
 gem "yaml"
+gem "guard-rack"
+
 
 group :test do
   gem 'rspec'
