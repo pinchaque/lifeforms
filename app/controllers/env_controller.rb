@@ -6,10 +6,10 @@ class EnvController < AppController
   end
 
   get '/env/:id' do |id|
-    @env = Environment.where(id: id).first
+    env = Environment.where(id: id).first
 
-    # XXX TODO Need to figure out why this doesn't owrk to pass the variable through to ERB
-    @lifeforms = @env.lifeforms.order(:name).all
-    erb :"env/id"
+    erb :"env/id", :locals => {
+      env: env, lifeforms: env.lifeforms.order(:name).all
+    }
   end
 end

@@ -10,7 +10,7 @@
     <dd><%= sprintf("%s x %s", env.width, env.height) %></dd>
 </dl>
 <ul>
-    <% env.lifeforms.each do |lf| %>
+    <% lifeforms.each do |lf| %>
         <li>
             <b><%= lf.name %></b> <%= lf.to_s %>
         </li>
