@@ -1,0 +1,10 @@
+<h1>Environments</h1>
+<ul>
+    <% @envs.each do |env| %>
+        <li>
+            <b><a href="/env/<%= env.id %>"><%= env.id %></a></b> / 
+            Size: <%= sprintf("%dx%d", env.width, env.height) %> /
+            Time: <%= sprintf("%d", env.time_step) %>
+        </li>
+    <% end %>
+</ul>
