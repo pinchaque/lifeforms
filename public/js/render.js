@@ -19,24 +19,20 @@ class Render {
   }
 
   addLifeforms(lfs) {
-    lfs.forEach(addLifeform);
+    let n = lfs.length;
+    for (let i = 0; i < n; i++) {
+      this.addLifeform(lfs[i]);
+    }
   }
 
   addLifeform(lf) {
-    /* 
-      add json of lifeforms
-      - location
-      - color
-      - shape
-      - mouseover details
-    */
     var circle = new Konva.Circle({
-      x: stage.width() / 2,
-      y: stage.height() / 2,
+      x: this.stage.width() / 2,
+      y: this.stage.height() / 2,
       radius: 70,
-      fill: 'red',
-      stroke: 'black',
-      strokeWidth: 4
+      fill: 'green',
+      stroke: 'green',
+      strokeWidth: 1
     });
 
     this.layer.add(circle);

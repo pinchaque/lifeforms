@@ -73,9 +73,25 @@ describe "Lifeform" do
     end
   end
 
+  context ".render_data" do
+    it "renders correct hash" do
+      tlf.save
+      loc.save
+      h = tlf.render_data
+      expect(h[:id]).to eq(tlf.id)
+      expect(h[:species]).to eq(species.name)
+      expect(h[:energy]).to be_within(tol).of(tlf.energy)
+      expect(h[:size]).to be_within(tol).of(tlf.size)
+      expect(h[:name]).to eq(tlf.name)
+      expect(h[:generation]).to eq(0)
+      expect(h[:x]).to be_within(tol).of(loc.x)
+      expect(h[:y]).to be_within(tol).of(loc.y)
+    end
+  end
+
   def print_db
     puts("\n--- environments ---")
-    DB.fetch("select * from environments") do |row|
+    DB.fetch("select * from environments") do |h|
       puts row
     end
     puts("\n--- lifeforms ---")

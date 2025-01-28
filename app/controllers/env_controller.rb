@@ -1,3 +1,4 @@
+require 'json'
 class EnvController < AppController
 
   get '/env' do
@@ -11,6 +12,7 @@ class EnvController < AppController
     erb :"env/id", :locals => {
       env: env, 
       lifeforms: env.lifeforms.order(:name).all,
+      lfs_json: JSON.generate(env.render_data),
       scale: 3.0
     }
   end

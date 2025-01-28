@@ -2,6 +2,13 @@
 <div id="kontainer"></div>
 <script src="https://unpkg.com/konva@9/konva.min.js"></script>
 <script src="/js/render.js"></script>
+<script>
+    let env_width = <%= env.width %>;
+    let env_height = <%= env.height %>;
+    let r = new Render("kontainer", 500, 500, env_width, env_height);
+    r.addLifeforms(<%= lfs_json %>);
+    r.render();
+</script>
 <hr/>
 <dl>
     <dt>Time Step</dt>
