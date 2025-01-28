@@ -8,6 +8,7 @@ class Render {
     */
     this.env2c_width = width / env_width
     this.env2c_height = height / env_height
+    this.env2c_size = (this.env2c_width + this.env2c_height) / 2.0
 
     this.stage = new Konva.Stage({
       container: id,
@@ -27,11 +28,12 @@ class Render {
 
   addLifeform(lf) {
     var circle = new Konva.Circle({
-      x: this.stage.width() / 2,
-      y: this.stage.height() / 2,
-      radius: 70,
+      x: lf.x * this.env2c_width,
+      y: lf.y * this.env2c_height,
+      radius: lf.size * this.env2c_size,
       fill: 'green',
-      stroke: 'green',
+      stroke: 'black',
+      opacity: 0.5,
       strokeWidth: 1
     });
 

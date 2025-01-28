@@ -1,29 +1,13 @@
-<h1>Environment <%= env.id %></h1>
 <div id="kontainer"></div>
 <script src="https://unpkg.com/konva@9/konva.min.js"></script>
 <script src="/js/render.js"></script>
 <script>
+    var width = window.innerWidth;
+    //var height = window.innerHeight;
+
     let env_width = <%= env.width %>;
     let env_height = <%= env.height %>;
-    let r = new Render("kontainer", 500, 500, env_width, env_height);
+    let r = new Render("kontainer", width, width, env_width, env_height);
     r.addLifeforms(<%= lfs_json %>);
     r.render();
 </script>
-<hr/>
-<dl>
-    <dt>Time Step</dt>
-    <dd><%= env.time_step %></dd>
-
-    <dt>Lifeform Count</dt>
-    <dd><%= env.lifeforms.count %></dd>
-
-    <dt>Size</dt>
-    <dd><%= sprintf("%s x %s", env.width, env.height) %></dd>
-</dl>
-<ul>
-    <% lifeforms.each do |lf| %>
-        <li>
-            <b><%= lf.name %></b> <%= lf.to_s %>
-        </li>
-    <% end %>
-</ul>
