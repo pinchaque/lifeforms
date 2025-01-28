@@ -1,4 +1,11 @@
 body {
     font-family: Genos, Verdana, Arial, Helvetica, sans-serif;
     font-size: 22px;
+    background-color: #bbb;
+    color: #222;
+}
+
+div#kontainer {
+    background-color: #fff;
+    color: #000;
 }

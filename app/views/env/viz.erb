@@ -1,0 +1,13 @@
+<div id="kontainer"></div>
+<script src="https://unpkg.com/konva@9/konva.min.js"></script>
+<script src="/js/render.js"></script>
+<script>
+    var width = window.innerWidth;
+    //var height = window.innerHeight;
+
+    let env_width = <%= env.width %>;
+    let env_height = <%= env.height %>;
+    let r = new Render("kontainer", width, width, env_width, env_height);
+    r.addLifeforms(<%= lfs_json %>);
+    r.render();
+</script>

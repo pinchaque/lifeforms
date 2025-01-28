@@ -67,4 +67,19 @@ class Lifeform < Sequel::Model
   def set_random_name
     self.name = (NameParts::DESCRIPTORS.sample.capitalize + " " + NameParts::GIVENS.sample.capitalize).strip
   end
+
+  # Returns a hash of data for this lifeform that is used to render it visually
+  def render_data
+    l = loc
+    {
+      id: self.id,
+      x: l.x,
+      y: l.y,
+      species: species.name,
+      name: self.name,
+      size: self.size,
+      energy: self.energy,
+      generation: self.generation
+    }
+  end
 end

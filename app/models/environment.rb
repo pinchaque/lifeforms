@@ -47,4 +47,8 @@ class Environment  < Sequel::Model
     str = "[t=#{time_step} | n=#{lifeforms.count} | s=(#{width}, #{height})]\n"
     str += lifeforms.order(:name).map{ |l| "  * #{l.to_s}" }.join("\n")
   end
+
+  def render_data
+    lifeforms.map { |l| l.render_data }
+  end
 end
