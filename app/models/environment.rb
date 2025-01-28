@@ -35,6 +35,10 @@ class Environment  < Sequel::Model
     add_lifeform(lf_new, LifeformLoc.at_dist(width, height, loc, dist))
   end
 
+  def run_steps(n)
+    (0...n).each { |i| run_step }
+  end
+
   def run_step
     lifeforms.all.shuffle.each do |l|
       l.run_step.save

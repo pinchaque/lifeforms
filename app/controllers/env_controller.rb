@@ -10,10 +10,21 @@ class EnvController < AppController
     env = Environment.where(id: id).first
 
     erb :"env/viz", :locals => {
-      env: env, 
-      lifeforms: env.lifeforms.order(:name).all,
-      lfs_json: JSON.generate(env.render_data),
-      scale: 3.0
+      env: env,
+      steps: 10,
+      lfs_json: JSON.generate(env.render_data)
+    }
+  end
+
+  post '/env/:id' do |id|
+    env = Environment.where(id: id).first
+    steps = params['steps'].to_i
+    env.run_steps(steps) if steps > 0
+
+    erb :"env/viz", :locals => {
+      env: env,
+      steps: steps,
+      lfs_json: JSON.generate(env.render_data)
     }
   end
 end
