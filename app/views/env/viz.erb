@@ -11,3 +11,8 @@
     r.addLifeforms(<%= lfs_json %>);
     r.render();
 </script>
+<form action="/env/<%= env.id %>" method="post">
+  <label for="steps">Steps:</label><br>
+  <input type="text" id="steps" name="steps" value="<%= steps %>">
+  <input type="submit" value="Run">
+</form> 
