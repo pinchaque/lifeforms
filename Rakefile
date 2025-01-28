@@ -5,21 +5,6 @@ task :console do
     Pry.start
 end
 
-desc "Clears existing data from the database"
-task :cleardata do
-    DB.transaction do
-        log("Removing existing data...")
-
-        n = LifeformLoc.where(true).delete
-        log("Deleted #{n} rows from lifeform_locs")
-
-        n = Lifeform.where(true).delete
-        log("Deleted #{n} rows from lifeforms")
-
-        n = Environment.where(true).delete
-        log("Deleted #{n} rows from environments")
-    end
-end
 
 namespace "sim" do
     desc "Creates a simulation"
@@ -55,5 +40,21 @@ namespace "sim" do
             puts("-" * 72)
         end
         puts(env.to_s)
+    end
+
+    desc "Deletes all existing simulations from the database"
+    task :deleteall do
+        DB.transaction do
+            log("Removing existing data...")
+    
+            n = LifeformLoc.where(true).delete
+            log("Deleted #{n} rows from lifeform_locs")
+    
+            n = Lifeform.where(true).delete
+            log("Deleted #{n} rows from lifeforms")
+    
+            n = Environment.where(true).delete
+            log("Deleted #{n} rows from environments")
+        end
     end
 end
