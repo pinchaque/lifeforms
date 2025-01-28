@@ -21,20 +21,39 @@ task :cleardata do
     end
 end
 
+namespace "sim" do
+    desc "Creates a simulation"
+    task :create do
+        log("Creating simulation...")
+        env = Environment.new(width: 100, height: 100).save
+        pf = PlantFactory.new
+        (0..5).each do 
+        env.add_lifeform_rnd(pf.gen)
+        end
 
-desc "Runs a basic simulation to populate the db with sampel data"
-task runsim: [:cleardata] do
-    log("Running Simulation...")
-    env = Environment.new(width: 100, height: 100).save
-    pf = PlantFactory.new
-    (0..5).each do 
-    env.add_lifeform_rnd(pf.gen)
+        puts(env.to_s)
     end
 
-    puts(env.to_s)
-    (0..10).each do
-        env.run_step
-        puts("-" * 72)
+    desc "Lists all existing simulations"
+    task :list do
+        log("Available simulation environments:")
+        Environment.all.each do |env|
+            puts("  * #{env.id}")
+        end
+    end
+
+    desc "Runs a simulation for the specified number of generations"
+    task :run, [:id, :n] do |t, args|
+        id = args[:id]
+        num_gen = args[:n]
+        env = Environment.where(id: id).first
+        abort("Unable to find environment '#{id}'") if env.nil?
+        puts("Running #{num_gen} generations of simulation #{id}...")
+    
+        (0..num_gen.to_i).each do
+            env.run_step
+            puts("-" * 72)
+        end
         puts(env.to_s)
     end
 end
