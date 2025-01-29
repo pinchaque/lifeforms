@@ -4,7 +4,7 @@ Sequel.migration do
   up do
     tables.each do |table|
       cols.each do |col|
-        run "alter table #{table} add column #{col} timestamp with time zone not null;"
+        run "alter table #{table} add column #{col} timestamp with time zone not null default now();"
       end
     end
   end
