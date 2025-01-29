@@ -1,10 +1,24 @@
 <h1>Environments</h1>
 <ul>
-    <% @envs.each do |env| %>
+    <% envs.each do |env| %>
         <li>
-            <b><a href="/env/<%= env.id %>"><%= env.id %></a></b> / 
+            <b><a href="/env/<%= env.id %>"><%= env.name %></a></b> / 
+            Created:  <%= env.created_at %> /
+            Lifeforms:  <%= env.lifeforms.count %> /
             Size: <%= sprintf("%dx%d", env.width, env.height) %> /
-            Time: <%= sprintf("%d", env.time_step) %>
+            Time: <%= env.time_step %>
         </li>
     <% end %>
 </ul>
+<form action="/env" method="post">
+  <label for="lifeforms">Lifeforms:</label><br>
+  <input type="text" id="lifeforms" name="lifeforms" value="<%= lifeforms %>">
+  <br/>
+  <label for="lifeforms">Width:</label><br>
+  <input type="text" id="width" name="width" value="<%= width %>">
+  <br/>
+  <label for="c">Height:</label><br>
+  <input type="text" id="height" name="height" value="<%= height %>">
+  <br/>
+  <input type="submit" value="Create">
+</form> 

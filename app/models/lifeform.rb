@@ -3,6 +3,7 @@ require 'json'
 class Lifeform < Sequel::Model
   plugin :single_table_inheritance, :class_name
   plugin :after_initialize
+  plugin :timestamps, :force => true, :update_on_create => true
 
   def after_initialize
     # marshal this objects data from obj_data if it exists
@@ -18,6 +19,11 @@ class Lifeform < Sequel::Model
     # object's data
     set(obj_data: JSON.generate(marshal_to_h))
     super
+  end
+
+  # Set to true to enable additional logging
+  def debug
+    false
   end
 
   # Converts this lifeform object's extra data into a hash
@@ -65,7 +71,7 @@ class Lifeform < Sequel::Model
   end
 
   def set_random_name
-    self.name = (NameParts::DESCRIPTORS.sample.capitalize + " " + NameParts::GIVENS.sample.capitalize).strip
+    self.name = (NameParts::LF_DESCRIPTORS.sample.capitalize + " " + NameParts::LF_GIVENS.sample.capitalize).strip
   end
 
   # Returns a hash of data for this lifeform that is used to render it visually

@@ -1,6 +1,9 @@
 class Environment  < Sequel::Model
+  plugin :timestamps, :force => true, :update_on_create => true
+
   def before_validation
     self.time_step = 0 if self.time_step.nil?
+    set_random_name if self.name.nil?
     super
   end
 
@@ -40,19 +43,29 @@ class Environment  < Sequel::Model
   end
 
   def run_step
-    lifeforms.all.shuffle.each do |l|
-      l.run_step.save
+    DB.transaction do
+      lifeforms.all.shuffle.each do |l|
+        l.run_step.save
+      end
+      self.time_step += 1
+      save
     end
-    self.time_step += 1
-    save
+  end
+
+  def to_s_detailed
+    to_s + "\n" + lifeforms.order(:name).map{ |l| "  * #{l.to_s}" }.join("\n")
   end
 
   def to_s
-    str = "[t=#{time_step} | n=#{lifeforms.count} | s=(#{width}, #{height})]\n"
-    str += lifeforms.order(:name).map{ |l| "  * #{l.to_s}" }.join("\n")
+    sprintf("id:%s name:%s created:%s timestep:%d lifeforms:%d size:(%d,%d)",
+      id, name, created_at, time_step, lifeforms.count, width, height)
   end
 
   def render_data
     lifeforms.map { |l| l.render_data }
+  end
+
+  def set_random_name
+    self.name = (NameParts::ENV_ADJ.sample.capitalize + " " + NameParts::ENV_TYPE.sample.capitalize).strip
   end
 end

@@ -10,11 +10,17 @@ class PlantFactory
     @energy_split = 30.0
     @growth_rate = 0.2
     @size = 1.0
-    @species = Species.where(name: SPECIES_NAME).first
-    abort("Unable to find species with name '#{SPECIES_NAME}'") if @species.nil?
+    @species = get_species
   end
 
-  
+  def get_species
+    s = Species.where(name: SPECIES_NAME).first
+    if s.nil?
+      s = Species.new(name: SPECIES_NAME).save
+    end
+    s
+  end
+
   def gen
     p = Plant.new
     p.energy = Random.rand(@energy_min..@energy_max)
