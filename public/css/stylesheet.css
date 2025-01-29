@@ -1,3 +1,15 @@
+
+/* 
+    This was taken from Google Fonts so we can run offline.
+    <link href='https://fonts.googleapis.com/css?family=Genos' rel='stylesheet'> 
+*/
+@font-face {
+    font-family: 'Genos';
+    font-style: normal;
+    font-weight: 400;
+    src: url(/fonts/genos-v12.ttf) format('truetype');
+}
+
 body {
     font-family: Genos, Verdana, Arial, Helvetica, sans-serif;
     font-size: 22px;
