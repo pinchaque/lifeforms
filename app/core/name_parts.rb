@@ -354,41 +354,89 @@ class NameParts
   )
 
   ENV_TYPE = %w(
+    archipelago
+    arroyo
     badlands
+    basin
+    bay
+    bayou
     beach
+    bluff
     bog
+    butte
+    canal
+    canyon
+    cape
+    cave
+    channel
+    cliff
     coast
+    cove
+    delta
     desert
-    dunes
+    dune
+    estuary
+    escarpment
     field
+    fjord
+    floodplain
     forest
     glacier
-    hellscape
+    glen
+    gorge
+    grassland
+    gulf
+    gully
+    harbor
+    headland
+    highland
     hill
+    hoodoo
+    iceberg
+    inlet
     island
+    islet
     isthmus
+    lake
     landscape
-    lowcountry
+    lowland
+    marsh
     mesa
     mountain
+    oasis
     ocean
     peninsula
-    plains
+    plain
     plateau
+    pond
+    prairie
     rainforest
+    ravine
+    reef
+    reservoir
+    river
+    sandbar
+    savanna
+    sea
     shore
+    sinkhole
+    sound
     swamp
+    terrace
     tundra
     valley
-    village
+    volcano
   )
 
   ENV_ADJ = %w(
     arid
     bustling
     chilly
+    drizzly
     dry
+    foggy
     frigid
+    frosty
     hot
     icy
     loud
@@ -399,7 +447,7 @@ class NameParts
     sunny
     teeming
     temperate
-    treacherous
+    thunderous
     wet
     windy
   )
