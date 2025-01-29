@@ -2,8 +2,26 @@ require 'json'
 class EnvController < AppController
 
   get '/env' do
-    @envs = Environment.all
-    erb :"env/index"
+    erb :"env/index", :locals => {
+      envs: Environment.order(:created_at).reverse.all,
+      lifeforms: 6,
+      width: 100,
+      height: 100
+    }
+  end
+
+  post '/env' do
+    lifeforms = params['lifeforms'].to_i
+    width = params['width'].to_i
+    height = params['height'].to_i
+    DB.transaction do
+      env = Environment.new(width: width, height: height).save
+      pf = PlantFactory.new
+      (0...lifeforms).each do
+          env.add_lifeform_rnd(pf.gen)
+      end
+      redirect to("/env/#{env.id}")
+    end
   end
 
   get '/env/:id' do |id|
