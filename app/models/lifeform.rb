@@ -71,7 +71,7 @@ class Lifeform < Sequel::Model
   end
 
   def set_random_name
-    self.name = (NameParts::DESCRIPTORS.sample.capitalize + " " + NameParts::GIVENS.sample.capitalize).strip
+    self.name = (NameParts::LF_DESCRIPTORS.sample.capitalize + " " + NameParts::LF_GIVENS.sample.capitalize).strip
   end
 
   # Returns a hash of data for this lifeform that is used to render it visually

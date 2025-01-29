@@ -1,5 +1,5 @@
 class NameParts
-  GIVENS = %w(
+  LF_GIVENS = %w(
   adrian
   alva
   amari
@@ -163,7 +163,7 @@ class NameParts
   zuri
   )
 
-  DESCRIPTORS = %w(
+  LF_DESCRIPTORS = %w(
   academic
   adaptable
   adventurous
@@ -351,5 +351,56 @@ class NameParts
   whimsical
   witty
   youthful
+  )
+
+  ENV_TYPE = %w(
+    badlands
+    beach
+    bog
+    coast
+    desert
+    dunes
+    field
+    forest
+    glacier
+    hellscape
+    hill
+    island
+    isthmus
+    landscape
+    lowcountry
+    mesa
+    mountain
+    ocean
+    peninsula
+    plains
+    plateau
+    rainforest
+    shore
+    swamp
+    tundra
+    valley
+    village
+  )
+
+  ENV_ADJ = %w(
+    arid
+    bustling
+    chilly
+    dry
+    frigid
+    hot
+    icy
+    loud
+    rainy
+    serene
+    snowy
+    stormy
+    sunny
+    teeming
+    temperate
+    treacherous
+    wet
+    windy
   )
 end

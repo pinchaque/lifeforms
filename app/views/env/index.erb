@@ -2,7 +2,7 @@
 <ul>
     <% envs.each do |env| %>
         <li>
-            <b><a href="/env/<%= env.id %>"><%= env.id %></a></b> / 
+            <b><a href="/env/<%= env.id %>"><%= env.name %></a></b> / 
             Created:  <%= env.created_at %> /
             Lifeforms:  <%= env.lifeforms.count %> /
             Size: <%= sprintf("%dx%d", env.width, env.height) %> /

@@ -3,6 +3,7 @@ class Environment  < Sequel::Model
 
   def before_validation
     self.time_step = 0 if self.time_step.nil?
+    set_random_name if self.name.nil?
     super
   end
 
@@ -56,11 +57,15 @@ class Environment  < Sequel::Model
   end
 
   def to_s
-    sprintf("id:%s created:%s timestep:%d lifeforms:%d size:(%d,%d)",
-      id, created_at, time_step, lifeforms.count, width, height)
+    sprintf("id:%s name:%s created:%s timestep:%d lifeforms:%d size:(%d,%d)",
+      id, name, created_at, time_step, lifeforms.count, width, height)
   end
 
   def render_data
     lifeforms.map { |l| l.render_data }
+  end
+
+  def set_random_name
+    self.name = (NameParts::ENV_ADJ.sample.capitalize + " " + NameParts::ENV_TYPE.sample.capitalize).strip
   end
 end
