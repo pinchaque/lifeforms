@@ -143,6 +143,14 @@ namespace "db" do
         log("Ending schema version: #{schema_ver}")
     end
 
+    # NOTE: There's an issue that if you do a schema reset then you won't be
+    # able to subsequently run migrations up. This is because the schema reset
+    # will delete database tables (e.g. environment) that are relied upon by
+    # the Sequel ORM classes (e.g. Environment) and the lib/model/ files will
+    # cause an error when loading. We can't trivially exclude these files
+    # because they are needed for the sim namespace above. Future work could
+    # be to split the Rakefile or look at how to dynamically load the models
+    # when needed.
     desc "Resets schema to version 0; run with argument [y] if you want to skip confirmation prompt"
     task :reset, [:confirm] do |t, args|
         c = args[:confirm]
