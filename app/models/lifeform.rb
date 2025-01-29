@@ -3,6 +3,7 @@ require 'json'
 class Lifeform < Sequel::Model
   plugin :single_table_inheritance, :class_name
   plugin :after_initialize
+  plugin :timestamps, :force => true, :update_on_create => true
 
   def after_initialize
     # marshal this objects data from obj_data if it exists

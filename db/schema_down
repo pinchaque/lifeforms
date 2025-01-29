@@ -6,4 +6,4 @@ LASTVER="$(($VER-1))"
 
 echo "Migrating down from $VER to $LASTVER"
 
-sequel -m migrations -M $LASTVER ./database.yml
+sequel -m migrations -M $LASTVER ../config/database.yml

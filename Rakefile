@@ -10,13 +10,14 @@ namespace "sim" do
     desc "Creates a simulation"
     task :create do
         log("Creating simulation...")
-        env = Environment.new(width: 100, height: 100).save
-        pf = PlantFactory.new
-        (0..5).each do 
-        env.add_lifeform_rnd(pf.gen)
+        DB.transaction do
+            env = Environment.new(width: 100, height: 100).save
+            pf = PlantFactory.new
+            (0..5).each do
+                env.add_lifeform_rnd(pf.gen)
+            end
+            puts(env.to_s)
         end
-
-        puts(env.to_s)
     end
 
     desc "Lists all existing simulations"
@@ -46,15 +47,10 @@ namespace "sim" do
     task :deleteall do
         DB.transaction do
             log("Removing existing data...")
-    
-            n = LifeformLoc.where(true).delete
-            log("Deleted #{n} rows from lifeform_locs")
-    
-            n = Lifeform.where(true).delete
-            log("Deleted #{n} rows from lifeforms")
-    
-            n = Environment.where(true).delete
-            log("Deleted #{n} rows from environments")
+            [LifeformLoc, Lifeform, Environment, Species].each do |klass|
+                n = klass.where(true).delete
+                log("Deleted #{n} rows from #{klass.to_s}")
+            end
         end
     end
 end

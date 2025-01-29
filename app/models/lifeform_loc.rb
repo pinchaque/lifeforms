@@ -1,4 +1,6 @@
 class LifeformLoc < Sequel::Model
+  plugin :timestamps, :force => true, :update_on_create => true
+
   # Returns a new Location object at a random place in an environment
   # that is width x height big.
   def self.random(width, height)

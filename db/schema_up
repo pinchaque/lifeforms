@@ -5,4 +5,4 @@ VER=`psql lifeforms lifeforms -c 'select version from schema_info' -Aqt`
 
 echo "Migrating up starting at version $VER"
 
-sequel -m migrations ./database.yml
+sequel -m migrations ../config/database.yml

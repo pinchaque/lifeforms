@@ -1,4 +1,6 @@
 class Environment  < Sequel::Model
+  plugin :timestamps, :force => true, :update_on_create => true
+
   def before_validation
     self.time_step = 0 if self.time_step.nil?
     super
