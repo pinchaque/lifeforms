@@ -1,9 +1,0 @@
-#!/bin/zsh
-set -e
-
-VER=`psql lifeforms lifeforms -c 'select version from schema_info' -Aqt`
-LASTVER="$(($VER-1))"
-
-echo "Migrating down from $VER to $LASTVER"
-
-sequel -m migrations -M $LASTVER ../config/database.yml

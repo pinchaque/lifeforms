@@ -1,10 +1,28 @@
 require_relative './config/environment'
 
+######################################################################
+# Helper functions
+#######################################################################
+def debug
+    true
+end
+
+def runcmd(cmd)      
+    log(cmd) if debug
+    system(cmd)
+end
+
+######################################################################
+# General targets
+#######################################################################
 desc "Starts Pry debugging console"
 task :console do
     Pry.start
 end
 
+######################################################################
+# sim - managing simulation environments
+#######################################################################
 namespace "sim" do
     desc "Creates a simulation"
     task :create do
@@ -70,6 +88,78 @@ namespace "sim" do
                 n = klass.where(true).delete
                 log("Deleted #{n} rows from #{klass.to_s}")
             end
+        end
+    end
+end
+
+######################################################################
+# db - for managing database schema
+#######################################################################
+namespace "db" do
+    def schema_ver
+        r = DB["select version from schema_info"].first
+        abort "Unable to read schema_info" if r.nil?
+        r[:version].to_i
+    end
+
+    def mig_dir
+        DBDIR + "/migrations"
+    end
+
+    def db_cfg
+        CFGDIR + "/database.yml"
+    end
+
+    def migrate_to(ver)
+        runcmd("sequel -m #{mig_dir} -M #{ver} #{db_cfg}")
+    end
+
+    desc "Prints current schema version"
+    task :ver do
+        log("Current schema version: #{schema_ver}")
+    end
+
+    desc "Migrates schema down one version"
+    task :down do
+        ver = schema_ver
+        last_ver = ver - 1
+        log("Migrating down from #{ver} to #{last_ver}")
+        migrate_to(last_ver)
+    end
+
+    desc "Migrates schema up one version"
+    task :up do
+        ver = schema_ver
+        next_ver = ver + 1
+        log("Migrating up from #{ver} to #{next_ver}")
+        migrate_to(next_ver)
+    end
+
+    desc "Runs all migrations starting at current schema version"
+    task :all do
+        ver = schema_ver
+        log("Migrating up from starting version: #{ver}")
+        runcmd("sequel -m #{mig_dir} #{db_cfg}")
+        log("Ending schema version: #{schema_ver}")
+    end
+
+    # NOTE: There's an issue that if you do a schema reset then you won't be
+    # able to subsequently run migrations up. This is because the schema reset
+    # will delete database tables (e.g. environment) that are relied upon by
+    # the Sequel ORM classes (e.g. Environment) and the lib/model/ files will
+    # cause an error when loading. We can't trivially exclude these files
+    # because they are needed for the sim namespace above. Future work could
+    # be to split the Rakefile or look at how to dynamically load the models
+    # when needed.
+    desc "Resets schema to version 0; run with argument [y] if you want to skip confirmation prompt"
+    task :reset, [:confirm] do |t, args|
+        c = args[:confirm]
+        if c == 'y'
+            log("Resetting to schema version 0")
+            migrate_to(0)
+        else
+            log("*** WARNING *** Resets your database to original state (schema 0)")
+            log("If you really want to do this rerun this target with argument [y]")
         end
     end
 end

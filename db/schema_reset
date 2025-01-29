@@ -1,8 +1,0 @@
-#!/bin/zsh
-if [[ $1 = 'go' ]]; then
-    sequel -m migrations ../config/database.yml -M 0
-else
-    echo "*** WARNING *** Resets your database to original state (schema 0)"
-    echo "If you want to do this run this command again with 'go' as the only argument"
-    echo "$0 go"
-fi
