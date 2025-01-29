@@ -21,6 +21,11 @@ class Lifeform < Sequel::Model
     super
   end
 
+  # Set to true to enable additional logging
+  def debug
+    false
+  end
+
   # Converts this lifeform object's extra data into a hash
   def marshal_to_h
     Hash.new

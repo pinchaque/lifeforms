@@ -22,12 +22,12 @@ class Plant < Lifeform
   def run_step
     super
     if energy > @energy_split
-      logf("%s is reproducing (%.2f > %.2f)", to_s, energy, @energy_split)
+      logf("%s is reproducing (%.2f > %.2f)", to_s, energy, @energy_split) if debug
 
       r = Reproduce.new(self)
       r.generate(1) do |child|
         env.add_lifeform_dist(self, child, size)
-        logf("Added child %s", child.to_s)
+        logf("Added child %s", child.to_s) if debug
       end
     else
       self.energy *= (1.0 + @growth_rate)
