@@ -127,8 +127,16 @@ namespace "db" do
         migrate_to(last_ver)
     end
 
-    desc "Runs all migrations starting at current schema version"
+    desc "Migrates schema up one version"
     task :up do
+        ver = schema_ver
+        next_ver = ver + 1
+        log("Migrating up from #{ver} to #{next_ver}")
+        migrate_to(next_ver)
+    end
+
+    desc "Runs all migrations starting at current schema version"
+    task :all do
         ver = schema_ver
         log("Migrating up from starting version: #{ver}")
         runcmd("sequel -m #{mig_dir} #{db_cfg}")
