@@ -9,6 +9,11 @@ class Environment  < Sequel::Model
 
   # Returns all lifeforms in this environment.
   def lifeforms
+    lifeforms_ds.all
+  end
+  
+  # Returns Sequel Dataset for all lifeforms in this environment.
+  def lifeforms_ds
     Lifeform.where(environment_id: id)
   end
 
