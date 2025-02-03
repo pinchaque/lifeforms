@@ -1,9 +1,3 @@
-RSpec.configure do |config|
-  config.around(:each) do |example|
-      DB.transaction(rollback: :always, auto_savepoint: true) { example.run }
-  end
-end
-
 class TestReproduceLF < Lifeform
   attr_accessor :val1, :val2
 
