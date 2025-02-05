@@ -3,9 +3,9 @@
 class Plant < Lifeform
   MIN_SIZE = 1.0
 
-  # Rate at which this lifeform absorbs the environmental energy that is
-  # available to it.
-  attr_accessor :energy_absorb_rate
+  # Percentage of the environmental energy availale to this lifeform that it
+  # actually absorbs
+  attr_accessor :energy_absorb_perc
 
   # Energy usage per time step per unit area (aka basal metabolic rate)
   attr_accessor :energy_metabolic_rate
@@ -30,19 +30,29 @@ class Plant < Lifeform
 
   # Returns area of the plan assuming circle of diameter "size"
   def area
-    Math::PI * ((size / 2.0) ^ 2.0)
+    Math::PI * ((size / 2.0) ** 2.0)
   end
   
   def marshal_to_h
     super.merge({
-      growth_rate: growth_rate,
-      energy_split: energy_split
+      energy_absorb_perc: energy_absorb_perc,
+      energy_metabolic_rate: energy_metabolic_rate,
+      energy_size_ratio: energy_size_ratio,
+      growth_invest_perc: growth_invest_perc,
+      repro_threshold: repro_threshold,
+      repro_num_offspring: repro_num_offspring,
+      repro_energy_inherit_perc: repro_energy_inherit_perc
     })
   end
 
   def marshal_from_h(h)
-    @growth_rate = h[:growth_rate]
-    @energy_split = h[:energy_split]
+    @energy_absorb_perc = h[:energy_absorb_perc]
+    @energy_metabolic_rate = h[:energy_metabolic_rate]
+    @energy_size_ratio = h[:energy_size_ratio]
+    @growth_invest_perc = h[:growth_invest_perc]
+    @repro_threshold = h[:repro_threshold]
+    @repro_num_offspring = h[:repro_num_offspring]
+    @repro_energy_inherit_perc = h[:repro_energy_inherit_perc]
     super(h)
   end
 
@@ -56,7 +66,7 @@ class Plant < Lifeform
   # Returns the total metabolic energy needed for a timestep based on the 
   # current lifeform size.
   def metabolic_energy
-    area() * perc(self.energy_metabolic_rate)
+    area() * self.energy_metabolic_rate
   end
 
   # Resizes this lifeform up or down based on the specified energy delta and
@@ -69,7 +79,7 @@ class Plant < Lifeform
   end
 
   # At each time step the Plant first absorbs energy from the environment
-  # based on its area and energy_absorb_rate. Note that if this plant overlaps
+  # based on its area and energy_absorb_perc. Note that if this plant overlaps
   # other plants then that reduces the new energy available on this turn.
   # 
   # Then we subtract 
@@ -77,7 +87,7 @@ class Plant < Lifeform
     super
 
     # Calc out how much energy we can absorb from the environment
-    new_env_energy = env_energy() * self.energy_absorb_rate
+    new_env_energy = env_energy() * perc(self.energy_absorb_perc)
 
     # Subtract off our basal metabolic rate to get the energy delta for this
     # time step
