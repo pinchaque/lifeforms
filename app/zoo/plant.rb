@@ -61,6 +61,7 @@ class Plant < Lifeform
   # reducing it based on overlaps between this and other Plants.
   def env_energy
     0.0
+    # TODO implement
   end
 
   # Returns the total metabolic energy needed for a timestep based on the 
@@ -70,12 +71,26 @@ class Plant < Lifeform
   end
 
   # Resizes this lifeform up or down based on the specified energy delta and
-  # using the energy_size_ratio. This will update both self.size and
-  # self.energy after the resize.
+  # using the energy_size_ratio. Specifying a positive energy means we are 
+  # growing by using up that amount. Negative means shrinking and gaining
+  # that amount. This will update both self.size and self.energy after the 
+  # resize.
   def resize_for_energy(egy)
-    self.energy = 1.0
-    self.size = 1.0
-    # TODO implement this
+    if egy > self.energy
+      # cannot use more energy than we have
+      raise sprintf("resize_for_energy(%f) failed because lifeform only has energy %f", egy, self.energy) 
+    end
+
+    # size delta is computed using the energy_size_ratio
+    delta = egy / self.energy_size_ratio
+
+    if self.size + delta < 0.0
+      # cannot shrink below ero
+      raise sprintf("resize_for_energy(%f) failed because size (%f) + delta (%f) < 0.0", egy, self.size, delta)
+    end
+
+    self.size += delta
+    self.energy -= egy
   end
 
   # At each time step the Plant first absorbs energy from the environment
