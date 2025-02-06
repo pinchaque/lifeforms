@@ -67,10 +67,6 @@ describe "Plant" do
     end
   end
 
-  context ".env_energy" do
-    
-  end
-
   context ".metabolic_energy" do
     it "computes metabolic energy" do
       lf.energy_metabolic_rate = 2.0
@@ -127,16 +123,76 @@ describe "Plant" do
     end 
   end
 
-  context ".offspring_energy_tot" do
-    
+  context ".offspring_energy_*" do
+    it "inherits all" do
+      lf.repro_energy_inherit_perc = 1.0
+      lf.energy = 100.0
+      lf.repro_num_offspring = 1
+      expect(lf.offspring_energy_tot).to be_within(tol).of(100.0)
+      lf.repro_num_offspring = 4
+      expect(lf.offspring_energy_each).to be_within(tol).of(25.0)
+    end
+
+    it "inherits none" do
+      lf.repro_energy_inherit_perc = 0.0
+      lf.energy = 100.0
+      lf.repro_num_offspring = 1
+      expect(lf.offspring_energy_tot).to be_within(tol).of(0.0)
+      lf.repro_num_offspring = 4
+      expect(lf.offspring_energy_each).to be_within(tol).of(0.0)
+    end
+  
+    it "inherits half" do
+      lf.repro_energy_inherit_perc = 0.5
+      lf.energy = 100.0
+      lf.repro_num_offspring = 1
+      expect(lf.offspring_energy_tot).to be_within(tol).of(50.0)
+      lf.repro_num_offspring = 4
+      expect(lf.offspring_energy_each).to be_within(tol).of(12.5)
+    end
   end
 
-  context ".offspring_energy_each" do
+
+  context ".env_energy" do
     
   end
 
   context ".reproduce" do
-    
+    # we have separate tests for Reproduce so here we just need to test that
+    # the resultant energy is correct
+  
+    [1, 4].each do |num_offspring|
+      it "inherits all" do
+        lf.repro_energy_inherit_perc = 1.0
+        lf.energy = 100.0
+        lf.repro_num_offspring = num_offspring
+        loc.save
+        lf.reproduce
+        expect(lf.energy).to be_within(tol).of(0.0)
+      end
+    end
+
+    [1, 4].each do |num_offspring|
+      it "inherits none" do
+        lf.repro_energy_inherit_perc = 0.0
+        lf.energy = 100.0
+        lf.repro_num_offspring = num_offspring
+        loc.save
+        lf.reproduce
+        expect(lf.energy).to be_within(tol).of(100.0)
+      end
+    end
+
+    [1, 4].each do |num_offspring|
+      it "inherits half" do
+        lf.repro_energy_inherit_perc = 0.5
+        lf.energy = 100.0
+        lf.repro_num_offspring = num_offspring
+        loc.save
+        lf.reproduce
+        expect(lf.energy).to be_within(tol).of(50.0)
+      end
+    end
   end
 
   context ".run_step" do
