@@ -28,6 +28,11 @@ class Plant < Lifeform
   # offspring upon reproduction.
   attr_accessor :repro_energy_inherit_perc
 
+  # Returns the Environment of which this lifeform is a part
+  def env
+    Environment.where(id: environment_id).first  
+  end
+  
   # Returns area of the plan assuming circle of diameter "size"
   def area
     Math::PI * ((size / 2.0) ** 2.0)
@@ -56,12 +61,23 @@ class Plant < Lifeform
     super(h)
   end
 
+  # The gross amount of energy supplied to this lifeform based on its area
+  # alone, not taking into account overlaps with other lifeforms.
+  def env_energy_gross
+    env.energy_rate * area
+  end
+
+  # The amount of energy lost due to overlaps with other organisms. This is
+  # returned as a non-negative number.
+  def energy_overlap_loss
+    0.0
+  end
+
   # Returns the max amount of environmental energy available to this lifeform
   # on this step. This is calculated by taking the env.energy_rate and then
   # reducing it based on overlaps between this and other Plants.
   def env_energy
-    0.0
-    # TODO implement
+    env_energy_gross - energy_overlap_loss
   end
 
   # Returns the total metabolic energy needed for a timestep based on the 
@@ -114,6 +130,8 @@ class Plant < Lifeform
       # in growth
       growth_energy = delta_energy * perc(growth_invest_perc)
       resize_for_energy(growth_energy)
+
+      raise("THIS IS WRONG because resize_for_energy is also deducting energy")
 
       # remainnig energy goes into our stores
       self.energy += (delta_energy - growth_energy)

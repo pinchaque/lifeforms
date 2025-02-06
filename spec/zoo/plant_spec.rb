@@ -152,11 +152,6 @@ describe "Plant" do
     end
   end
 
-
-  context ".env_energy" do
-    
-  end
-
   context ".reproduce" do
     # we have separate tests for Reproduce so here we just need to test that
     # the resultant energy is correct
@@ -192,6 +187,44 @@ describe "Plant" do
         lf.reproduce
         expect(lf.energy).to be_within(tol).of(50.0)
       end
+    end
+  end
+
+  context ".env_energy_gross" do
+    
+  end
+
+  context ".env_energy" do
+    # env_energy_gross
+    # energy_overlap_loss
+    
+    def add_lf(x, y, size, energy)
+      lf = Plant.new
+      lf.environment_id = env.id
+      lf.species_id = species.id
+      lf.energy = energy
+      lf.size = size
+      lf.name = sprintf("add_lf(%f, %f, %f, %f)", x, y, size, energy)
+      lf.energy_absorb_perc = marshal_data[:energy_absorb_perc]
+      lf.energy_metabolic_rate = marshal_data[:energy_metabolic_rate]
+      lf.energy_size_ratio = marshal_data[:energy_size_ratio]
+      lf.growth_invest_perc = marshal_data[:growth_invest_perc]
+      lf.repro_threshold = marshal_data[:repro_threshold]
+      lf.repro_num_offspring = marshal_data[:repro_num_offspring]
+      lf.repro_energy_inherit_perc = marshal_data[:repro_energy_inherit_perc]
+      lf.save
+  
+      LifeformLoc.new(x: x, y: y, lifeform_id: lf.id, environment_id: env.id).save
+      lf
+    end
+
+    it "single lifeform" do
+      lf = add_lf(10.0, 10.0, 1.0, 20.0)
+      exp_egy = 7.853981633974483
+      exp_loss = 0.0
+      expect(lf.env_energy_gross).to be_within(tol).of(exp_egy)
+      expect(lf.energy_overlap_loss).to be_within(tol).of(exp_loss)
+      expect(lf.env_energy).to be_within(tol).of(exp_egy - exp_loss)
     end
   end
 
