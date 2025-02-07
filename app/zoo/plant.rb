@@ -32,6 +32,19 @@ class Plant < Lifeform
   def env
     Environment.where(id: environment_id).first  
   end
+
+  # Returns the LifeformLoc object for this lifeform
+  def loc
+    LifeformLoc.where(environment_id: environment_id, lifeform_id: id).first
+  end
+
+  def x
+    loc.x
+  end
+
+  def y
+    loc.y
+  end
   
   # Returns area of the plan assuming circle of diameter "size"
   def area
@@ -70,7 +83,7 @@ class Plant < Lifeform
   # The amount of energy lost due to overlaps with other organisms. This is
   # returned as a non-negative number.
   def energy_overlap_loss
-    0.0
+    0.0 # TODO implement this
   end
 
   # Returns the max amount of environmental energy available to this lifeform
@@ -175,5 +188,45 @@ class Plant < Lifeform
     r.generate(offspring_energy_each, repro_num_offspring) do |child|
       env.add_lifeform_dist(self, child, size)
     end
+  end
+
+  # Returns the bounding box (square) around this lifeform
+  def bounding_box
+    r = size / 2.0
+    return x - r, y - r, x + r, y + r
+  end
+
+  # Returns all other lifeforms in this environment that are potentially
+  # overlapping with this one. We are guaranteed that there are no ovelraps
+  # that aren't in the return value. However, some of the returned Lifeforms
+  # might not be actual overlaps. This function uses heuristics within a 
+  # DB query to get the list, which should then be compared in more detail.
+  def find_potential_overlaps
+    # we identify potential overlaps by seeing if the bounding boxes of the
+    # lifeforms are overlapping
+    x0, y0, x1, y1 = bounding_box
+
+    sql = <<-SQL
+    select l.* from lifeforms l
+    inner join lifeform_locs loc 
+      on loc.lifeform_id = l.id 
+      and loc.environment_id = l.environment_id
+    where 
+      l.environment_id = ?
+      and l.id != ?
+      and (loc.x - (l.size / 2.0)) <= ?
+      and (loc.x + (l.size / 2.0)) >= ?
+      and (loc.y - (l.size / 2.0)) <= ?
+      and (loc.y + (l.size / 2.0)) >= ?
+SQL
+    ds = DB[sql, environment_id, id, x1, x0, y1, y0]
+
+    puts(ds.sql)
+    ds.all
+  end
+
+  # Returns all other lifeforms in this environment that overlap this one.
+  def find_overlaps
+    []
   end
 end

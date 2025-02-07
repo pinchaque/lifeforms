@@ -33,6 +33,26 @@ describe "Plant" do
     LifeformLoc.new(x: 9.9, y: 7.7, lifeform_id: lf.id, environment_id: env.id).save
   }
 
+  def add_lf(x, y, size, energy)
+    lf = Plant.new
+    lf.environment_id = env.id
+    lf.species_id = species.id
+    lf.energy = energy
+    lf.size = size
+    lf.name = sprintf("add_lf(%f, %f, %f, %f)", x, y, size, energy)
+    lf.energy_absorb_perc = marshal_data[:energy_absorb_perc]
+    lf.energy_metabolic_rate = marshal_data[:energy_metabolic_rate]
+    lf.energy_size_ratio = marshal_data[:energy_size_ratio]
+    lf.growth_invest_perc = marshal_data[:growth_invest_perc]
+    lf.repro_threshold = marshal_data[:repro_threshold]
+    lf.repro_num_offspring = marshal_data[:repro_num_offspring]
+    lf.repro_energy_inherit_perc = marshal_data[:repro_energy_inherit_perc]
+    lf.save
+
+    LifeformLoc.new(x: x, y: y, lifeform_id: lf.id, environment_id: env.id).save
+    lf
+  end
+
   context ".marshal_to_h" do
     it "marshals to hash" do
       expect(lf.marshal_to_h).to eq(marshal_data)
@@ -190,30 +210,89 @@ describe "Plant" do
     end
   end
 
+  context ".bounding_box" do
+    def test_bb(x, y, size, exp_x0, exp_y0, exp_x1, exp_y1)
+      lf = add_lf(x, y, size, 1.0)
+      act_x0, act_y0, act_x1, act_y1 = lf.bounding_box
+      expect(act_x0).to be_within(tol).of(exp_x0)
+      expect(act_y0).to be_within(tol).of(exp_y0)
+      expect(act_x1).to be_within(tol).of(exp_x1)
+      expect(act_y1).to be_within(tol).of(exp_y1)
+    end
+
+    it "correct bounding box" do
+      test_bb(1.0, 1.0, 1.0, 0.5, 0.5, 1.5, 1.5)
+      test_bb(6.0, 4.0, 10.0, 1.0, -1.0, 11.0, 9.0)
+    end
+  end
+
+  context ".find_potential_overlaps/.find_overlaps" do
+    it "single lifeform" do
+      lf0 = add_lf(10.0, 10.0, 1.0, 20.0)
+      po = lf0.find_potential_overlaps
+      expect(po.count).to eq(0)
+      o = lf0.find_overlaps
+      expect(o.count).to eq(0)
+    end
+
+    it "two lifeforms, no overlap" do
+      lf0 = add_lf(0.0, 0.0, 1.0, 20.0)
+      lf1 = add_lf(1.01, 1.01, 1.0, 20.0)
+
+      po = lf0.find_potential_overlaps
+      expect(po.count).to eq(0)
+      o = lf0.find_overlaps
+      expect(o.count).to eq(0)
+
+      po = lf1.find_potential_overlaps
+      expect(po.count).to eq(0)
+      o = lf1.find_overlaps
+      expect(o.count).to eq(0)
+    end
+
+    it "two lifeforms, potential overlap only" do
+      lf0 = add_lf(0.0, 0.0, 1.0, 20.0)
+      lf1 = add_lf(0.99, 0.99, 1.0, 20.0)
+
+      po = lf0.find_potential_overlaps
+      expect(po.count).to eq(1)
+      expect(po[0].id).to eq(lf1.id)
+      o = lf0.find_overlaps
+      expect(o.count).to eq(0)
+
+      po = lf1.find_potential_overlaps
+      expect(po.count).to eq(1)
+      expect(po[0].id).to eq(lf0.id)
+      o = lf1.find_overlaps
+      expect(o.count).to eq(0)
+    end
+
+    it "two lifeforms, real overlap" do
+      lf0 = add_lf(0.0, 0.0, 1.0, 20.0)
+      lf1 = add_lf(0.99, 0.0, 1.0, 20.0)
+
+      po = lf0.find_potential_overlaps
+      expect(po.count).to eq(1)
+      expect(po[0].id).to eq(lf1.id)
+      o = lf0.find_overlaps
+      expect(o.count).to eq(1)
+      expect(o[0].id).to eq(lf1.id)
+
+      po = lf1.find_potential_overlaps
+      expect(po.count).to eq(1)
+      expect(po[0].id).to eq(lf0.id)
+      o = lf1.find_overlaps
+      expect(o.count).to eq(1)
+      expect(o[0].id).to eq(lf0.id)
+    end
+
+    # TODO add tests for different types of overlaps and containment
+  end
+
   context ".env_energy" do
     # env_energy_gross
     # energy_overlap_loss
     
-    def add_lf(x, y, size, energy)
-      lf = Plant.new
-      lf.environment_id = env.id
-      lf.species_id = species.id
-      lf.energy = energy
-      lf.size = size
-      lf.name = sprintf("add_lf(%f, %f, %f, %f)", x, y, size, energy)
-      lf.energy_absorb_perc = marshal_data[:energy_absorb_perc]
-      lf.energy_metabolic_rate = marshal_data[:energy_metabolic_rate]
-      lf.energy_size_ratio = marshal_data[:energy_size_ratio]
-      lf.growth_invest_perc = marshal_data[:growth_invest_perc]
-      lf.repro_threshold = marshal_data[:repro_threshold]
-      lf.repro_num_offspring = marshal_data[:repro_num_offspring]
-      lf.repro_energy_inherit_perc = marshal_data[:repro_energy_inherit_perc]
-      lf.save
-  
-      LifeformLoc.new(x: x, y: y, lifeform_id: lf.id, environment_id: env.id).save
-      lf
-    end
-
     it "single lifeform" do
       lf = add_lf(10.0, 10.0, 1.0, 20.0)
       exp_egy = 7.853981633974483
@@ -245,7 +324,7 @@ describe "Plant" do
       
       overlap_area = circle_area_intersect(0, 0, 1, 1, 0, 1)
 
-      exp_egy = Math::PI * env_energy
+        exp_egy = Math::PI * env_energy
       exp_loss = env_energy * overlap_area / 2.0
 
       expect(lf0.env_energy_gross).to be_within(tol).of(exp_egy)
