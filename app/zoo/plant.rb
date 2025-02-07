@@ -219,9 +219,18 @@ class Plant < Lifeform
       and (loc.y - (l.size / 2.0)) <= ?
       and (loc.y + (l.size / 2.0)) >= ?
 SQL
-    ds = DB[sql, environment_id, id, x1, x0, y1, y0]
+    #ds = DB[sql, environment_id, id, x1, x0, y1, y0]
+
+    ds = Plant.join(:lifeform_locs, lifeform_id: :id).
+      where(Sequel.lit('lifeforms.environment_id = ?', [environment_id])).
+      where(Sequel.lit('lifeforms.id != ?', [id])).
+      where(Sequel.lit('(lifeform_locs.x - (lifeforms.size / 2.0)) <= ?', [x1])).
+      where(Sequel.lit('(lifeform_locs.x + (lifeforms.size / 2.0)) >= ?', [x0])).
+      where(Sequel.lit('(lifeform_locs.y - (lifeforms.size / 2.0)) <= ?', [y1])).
+      where(Sequel.lit('(lifeform_locs.y + (lifeforms.size / 2.0)) >= ?', [y0]))
 
     puts(ds.sql)
+    puts(ds.all)
     ds.all
   end
 
