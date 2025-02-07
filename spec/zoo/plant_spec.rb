@@ -190,10 +190,6 @@ describe "Plant" do
     end
   end
 
-  context ".env_energy_gross" do
-    
-  end
-
   context ".env_energy" do
     # env_energy_gross
     # energy_overlap_loss
@@ -225,6 +221,40 @@ describe "Plant" do
       expect(lf.env_energy_gross).to be_within(tol).of(exp_egy)
       expect(lf.energy_overlap_loss).to be_within(tol).of(exp_loss)
       expect(lf.env_energy).to be_within(tol).of(exp_egy - exp_loss)
+    end
+
+    it "two lifeforms, no overlap" do
+      lf0 = add_lf(10.0, 10.0, 1.0, 20.0)
+      lf1 = add_lf(20.0, 10.0, 1.0, 20.0)
+
+      exp_egy = 7.853981633974483
+      exp_loss = 0.0
+
+      expect(lf0.env_energy_gross).to be_within(tol).of(exp_egy)
+      expect(lf0.energy_overlap_loss).to be_within(tol).of(exp_loss)
+      expect(lf0.env_energy).to be_within(tol).of(exp_egy - exp_loss)      
+
+      expect(lf1.env_energy_gross).to be_within(tol).of(exp_egy)
+      expect(lf1.energy_overlap_loss).to be_within(tol).of(exp_loss)
+      expect(lf1.env_energy).to be_within(tol).of(exp_egy - exp_loss)      
+    end
+
+    it "two lifeforms, overlap" do
+      lf0 = add_lf(0.0, 0.0, 2.0, 20.0)
+      lf1 = add_lf(1.0, 0.0, 2.0, 20.0)
+      
+      overlap_area = circle_area_intersect(0, 0, 1, 1, 0, 1)
+
+      exp_egy = Math::PI * env_energy
+      exp_loss = env_energy * overlap_area / 2.0
+
+      expect(lf0.env_energy_gross).to be_within(tol).of(exp_egy)
+      expect(lf0.energy_overlap_loss).to be_within(tol).of(exp_loss)
+      expect(lf0.env_energy).to be_within(tol).of(exp_egy - exp_loss)      
+
+      expect(lf1.env_energy_gross).to be_within(tol).of(exp_egy)
+      expect(lf1.energy_overlap_loss).to be_within(tol).of(exp_loss)
+      expect(lf1.env_energy).to be_within(tol).of(exp_egy - exp_loss)      
     end
   end
 

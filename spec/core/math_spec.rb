@@ -37,9 +37,12 @@ describe "Helpers" do
     it "half overlap" do
       act = circle_area_intersect(0, 0, 1, 1, 0, 1)
       expect(act).to be_within(tol).of(1.2283696986087564)
+
+      act = circle_area_intersect(0, 0, 1, 0, 1, 1)
+      expect(act).to be_within(tol).of(1.2283696986087564)
     end
 
-    it "some overlap" do
+    it "slivers of overlap/nonoverlap" do
       act = circle_area_intersect(0, 0, 1, 1.9, 0, 1)
       expect(act).to be_within(tol).of(0.04184604873519482)
 
