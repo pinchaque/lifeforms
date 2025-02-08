@@ -70,7 +70,17 @@ class Plant < Lifeform
   # The amount of energy lost due to overlaps with other organisms. This is
   # returned as a non-negative number.
   def energy_overlap_loss
-    0.0 # TODO implement this
+    # To calculate the loss we add up the areas of all the overlapping 
+    # lifeforms of this species. Then we divide that by two because 
+    # the lifeforms are splitting the energy. Then we multiply by the
+    # environmental energy rate to get actual energy.
+    # 
+    # NOTE: This does not take into account the case where there are more than
+    # 2 lifeforms overlapping and splitting the same area. The actual loss 
+    # would be less if we calculated that precisely. So this is an heuristic
+    # that will over-estimate the energy loss.
+    env.energy_rate * 0.5 * find_overlaps.map{ |lf| 
+      circle_area_intersect(x, y, size / 2.0, lf.x, lf.y, lf.size / 2.0) }.sum
   end
 
   # Returns the max amount of environmental energy available to this lifeform
@@ -195,37 +205,26 @@ class Plant < Lifeform
     # we identify potential overlaps by seeing if the bounding boxes of the
     # lifeforms are overlapping
     x0, y0, x1, y1 = bounding_box
-
-    sql = <<-SQL
-    select l.* from lifeforms l
-    inner join lifeform_locs loc 
-      on loc.lifeform_id = l.id 
-      and loc.environment_id = l.environment_id
-    where 
-      l.environment_id = ?
-      and l.id != ?
-      and (loc.x - (l.size / 2.0)) <= ?
-      and (loc.x + (l.size / 2.0)) >= ?
-      and (loc.y - (l.size / 2.0)) <= ?
-      and (loc.y + (l.size / 2.0)) >= ?
-SQL
-    #ds = DB[sql, environment_id, id, x1, x0, y1, y0]
-
     ds = Plant.
       where(Sequel.lit('lifeforms.environment_id = ?', [environment_id])).
+      where(Sequel.lit('lifeforms.species_id = ?', [species_id])).
       where(Sequel.lit('lifeforms.id != ?', [id])).
       where(Sequel.lit('(lifeforms.x - (lifeforms.size / 2.0)) <= ?', [x1])).
       where(Sequel.lit('(lifeforms.x + (lifeforms.size / 2.0)) >= ?', [x0])).
       where(Sequel.lit('(lifeforms.y - (lifeforms.size / 2.0)) <= ?', [y1])).
       where(Sequel.lit('(lifeforms.y + (lifeforms.size / 2.0)) >= ?', [y0]))
-
-    puts(ds.sql)
-    puts(ds.all)
     ds.all
   end
 
   # Returns all other lifeforms in this environment that overlap this one.
   def find_overlaps
-    []
+    find_potential_overlaps.select do |o|
+      # we have a real overlap if the actual distance between the centers
+      # is <= the sum of the radii of the two lifeforms
+      dx = o.x - self.x
+      dy = o.y - self.y
+      dist = Math.sqrt(dx * dx + dy * dy)
+      dist <= (self.size + o.size) / 2.0
+    end
   end
 end
