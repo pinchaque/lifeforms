@@ -1,5 +1,9 @@
 
 describe "Plant" do
+  def debug
+    true
+  end
+
   def add_lf(x, y, size, energy)
     lf = Plant.new
     lf.environment_id = env.id
@@ -17,6 +21,8 @@ describe "Plant" do
     lf.repro_num_offspring = marshal_data[:repro_num_offspring]
     lf.repro_energy_inherit_perc = marshal_data[:repro_energy_inherit_perc]
     lf.save
+    puts("Added lifeform #{lf}") if debug
+    lf
   end
 
 
@@ -208,67 +214,162 @@ describe "Plant" do
     end
   end
 
-  context ".find_potential_overlaps/.find_overlaps" do
+  context ".find_potential_overlaps" do
+    def test_pot_overlaps(lf, exp)
+      po = lf.find_potential_overlaps
+      expect(po.count).to eq(exp.count)
+
+      ids_exp = exp.map{ |x| x.id }.sort
+      ids_act = po.map{ |x| x.id }.sort
+      expect(ids_act).to eq(ids_exp)
+    end
+
     it "single lifeform" do
       lf0 = add_lf(10.0, 10.0, 1.0, 20.0)
-      po = lf0.find_potential_overlaps
-      expect(po.count).to eq(0)
-      o = lf0.find_overlaps
-      expect(o.count).to eq(0)
+      test_pot_overlaps(lf0, [])
     end
 
     it "two lifeforms, no overlap" do
       lf0 = add_lf(0.0, 0.0, 1.0, 20.0)
       lf1 = add_lf(1.01, 1.01, 1.0, 20.0)
-
-      po = lf0.find_potential_overlaps
-      expect(po.count).to eq(0)
-      o = lf0.find_overlaps
-      expect(o.count).to eq(0)
-
-      po = lf1.find_potential_overlaps
-      expect(po.count).to eq(0)
-      o = lf1.find_overlaps
-      expect(o.count).to eq(0)
+      test_pot_overlaps(lf0, [])
+      test_pot_overlaps(lf1, [])
     end
 
     it "two lifeforms, potential overlap only" do
       lf0 = add_lf(0.0, 0.0, 1.0, 20.0)
       lf1 = add_lf(0.99, 0.99, 1.0, 20.0)
-
-      po = lf0.find_potential_overlaps
-      expect(po.count).to eq(1)
-      expect(po[0].id).to eq(lf1.id)
-      o = lf0.find_overlaps
-      expect(o.count).to eq(0)
-
-      po = lf1.find_potential_overlaps
-      expect(po.count).to eq(1)
-      expect(po[0].id).to eq(lf0.id)
-      o = lf1.find_overlaps
-      expect(o.count).to eq(0)
+      test_pot_overlaps(lf0, [lf1])
+      test_pot_overlaps(lf1, [lf0])
     end
 
-    it "two lifeforms, real overlap" do
+    it "two lifeforms, partial horizontal overlap" do
       lf0 = add_lf(0.0, 0.0, 1.0, 20.0)
       lf1 = add_lf(0.99, 0.0, 1.0, 20.0)
-
-      po = lf0.find_potential_overlaps
-      expect(po.count).to eq(1)
-      expect(po[0].id).to eq(lf1.id)
-      o = lf0.find_overlaps
-      expect(o.count).to eq(1)
-      expect(o[0].id).to eq(lf1.id)
-
-      po = lf1.find_potential_overlaps
-      expect(po.count).to eq(1)
-      expect(po[0].id).to eq(lf0.id)
-      o = lf1.find_overlaps
-      expect(o.count).to eq(1)
-      expect(o[0].id).to eq(lf0.id)
+      test_pot_overlaps(lf0, [lf1])
+      test_pot_overlaps(lf1, [lf0])
     end
 
-    # TODO add tests for different types of overlaps and containment
+    it "two lifeforms, partial vertical overlap" do
+      lf0 = add_lf(0.0, 0.0, 1.0, 20.0)
+      lf1 = add_lf(0.0, 0.99, 1.0, 20.0)
+      test_pot_overlaps(lf0, [lf1])
+      test_pot_overlaps(lf1, [lf0])
+    end
+
+    it "two lifeforms, partial diagonal overlap" do
+      lf0 = add_lf(0.0, 0.0, 1.0, 20.0)
+      lf1 = add_lf(0.7, 0.7, 1.0, 20.0)
+      test_pot_overlaps(lf0, [lf1])
+      test_pot_overlaps(lf1, [lf0])
+    end
+
+    it "two lifeforms, full overlap (identical)" do
+      lf0 = add_lf(0.7, 0.7, 1.0, 20.0)
+      lf1 = add_lf(0.7, 0.7, 1.0, 20.0)
+      test_pot_overlaps(lf0, [lf1])
+      test_pot_overlaps(lf1, [lf0])
+    end
+
+    it "two lifeforms, containment" do
+      lf0 = add_lf(0.7, 0.7, 1.0, 20.0)
+      lf1 = add_lf(1.0, 1.0, 10.0, 20.0)
+      test_pot_overlaps(lf0, [lf1])
+      test_pot_overlaps(lf1, [lf0])
+    end
+
+    # Visualiation:
+    # 0     1
+    # 2  3
+    # 4  5  6
+    # This includes a mix of potential and actual overlaps. The given size
+    # means the diagonal matches are potential and horiz/vert are actual.
+    # Size would need to be >=1.415 to be actual for the diagonals.
+    it "multiple lifeforms, potential overlap only" do
+      size = 1.05
+      lf0 = add_lf(0.0, 0.0, size, 20.0)
+      lf1 = add_lf(2.0, 0.0, size, 20.0)
+      lf2 = add_lf(0.0, 1.0, size, 20.0)
+      lf3 = add_lf(1.0, 1.0, size, 20.0)
+      lf4 = add_lf(0.0, 2.0, size, 20.0)
+      lf5 = add_lf(1.0, 2.0, size, 20.0)
+      lf6 = add_lf(2.0, 2.0, size, 20.0)
+      test_pot_overlaps(lf0, [lf2, lf3])
+      test_pot_overlaps(lf1, [lf3])
+      test_pot_overlaps(lf2, [lf0, lf3, lf4, lf5])
+      test_pot_overlaps(lf3, [lf0, lf1, lf2, lf4, lf5, lf6])
+      test_pot_overlaps(lf4, [lf2, lf3, lf5])
+      test_pot_overlaps(lf5, [lf4, lf2, lf3, lf6])
+      test_pot_overlaps(lf6, [lf3, lf5])
+    end
+
+    # TODO Use the above test for actual overlap testing
+    # Then also increase size ot 1.415 to get all overlaps
+  end
+
+  context ".find_overlaps" do
+    def test_overlaps(lf, exp)
+      o = lf.find_overlaps
+      expect(o.count).to eq(exp.count)
+
+      ids_exp = exp.map{ |x| x.id }.sort
+      ids_act = o.map{ |x| x.id }.sort
+      expect(ids_act).to eq(ids_exp)
+    end
+
+    it "single lifeform" do
+      lf0 = add_lf(10.0, 10.0, 1.0, 20.0)
+      test_overlaps(lf0, [])
+    end
+
+    it "two lifeforms, no overlap" do
+      lf0 = add_lf(0.0, 0.0, 1.0, 20.0)
+      lf1 = add_lf(1.01, 1.01, 1.0, 20.0)
+      test_overlaps(lf0, [])
+      test_overlaps(lf1, [])
+    end
+
+    it "two lifeforms, potential overlap only" do
+      lf0 = add_lf(0.0, 0.0, 1.0, 20.0)
+      lf1 = add_lf(0.99, 0.99, 1.0, 20.0)
+      test_overlaps(lf0, [])
+      test_overlaps(lf1, [])
+    end
+
+    it "two lifeforms, partial horizontal overlap" do
+      lf0 = add_lf(0.0, 0.0, 1.0, 20.0)
+      lf1 = add_lf(0.99, 0.0, 1.0, 20.0)
+      test_overlaps(lf0, [lf1])
+      test_overlaps(lf1, [lf0])
+    end
+
+    it "two lifeforms, partial vertical overlap" do
+      lf0 = add_lf(0.0, 0.0, 1.0, 20.0)
+      lf1 = add_lf(0.0, 0.99, 1.0, 20.0)
+      test_overlaps(lf0, [lf1])
+      test_overlaps(lf1, [lf0])
+    end
+
+    it "two lifeforms, partial diagonal overlap" do
+      lf0 = add_lf(0.0, 0.0, 1.0, 20.0)
+      lf1 = add_lf(0.7, 0.7, 1.0, 20.0)
+      test_overlaps(lf0, [lf1])
+      test_overlaps(lf1, [lf0])
+    end
+
+    it "two lifeforms, full overlap (identical)" do
+      lf0 = add_lf(0.7, 0.7, 1.0, 20.0)
+      lf1 = add_lf(0.7, 0.7, 1.0, 20.0)
+      test_overlaps(lf0, [lf1])
+      test_overlaps(lf1, [lf0])
+    end
+
+    it "two lifeforms, containment" do
+      lf0 = add_lf(0.7, 0.7, 1.0, 20.0)
+      lf1 = add_lf(1.0, 1.0, 10.0, 20.0)
+      test_overlaps(lf0, [lf1])
+      test_overlaps(lf1, [lf0])
+    end
   end
 
   context ".env_energy" do
@@ -320,6 +421,6 @@ describe "Plant" do
   end
 
   context ".run_step" do
-    
+    # TODO implement
   end
 end

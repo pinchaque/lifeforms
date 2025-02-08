@@ -64,7 +64,7 @@ class Lifeform < Sequel::Model
 
   def to_s
     loc_str = "(" + [x, y].map{ |a| sprintf("%.2f", a)}.join(", ") + ")"
-    sprintf("%s %s energy:%.2f size:%.2f loc:%s", species.name, name, energy, size, loc_str)
+    sprintf("%s %s %s energy:%.2f size:%.2f loc:%s", id, species.name, name, energy, size, loc_str)
   end
 
   # Selects a random name for this lifeform.
