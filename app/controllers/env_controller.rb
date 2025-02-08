@@ -11,14 +11,14 @@ class EnvController < AppController
   end
 
   post '/env' do
-    lifeforms = params['lifeforms'].to_i
+    num_lf = params['lifeforms'].to_i
     width = params['width'].to_i
     height = params['height'].to_i
     DB.transaction do
       env = Environment.new(width: width, height: height).save
-      pf = PlantFactory.new
-      (0...lifeforms).each do
-          env.add_lifeform_rnd(pf.gen)
+      pf = PlantFactory.new(env)
+      (0...num_lf).each do
+        pf.gen.save
       end
       redirect to("/env/#{env.id}")
     end

@@ -21,7 +21,7 @@ describe "Reproduce" do
       it "generates offspring" do
         r = Reproduce.new(tlf)
         children = r.generate(energy_offspring, num_offspring)
-        expect(children.size).to eq(num_offspring)
+        expect(children.count).to eq(num_offspring)
 
         children.each do |c|
           expect(c.val1).to eq("foo")
@@ -31,6 +31,8 @@ describe "Reproduce" do
           expect(c.name).not_to eq(tlf.name)
           expect(c.generation).to eq(tlf.generation + 1)
           expect(c.name).not_to be_nil
+          #expect(c.x).to be_between(0.0, width).inclusive
+          #expect(c.y).to be_between(0.0, height).inclusive  
           expect(c.id).to be_nil # not saved
           expect(c.parent_id).to eq(tlf.id)
         end

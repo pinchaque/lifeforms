@@ -32,19 +32,6 @@ class Plant < Lifeform
   def env
     Environment.where(id: environment_id).first  
   end
-
-  # Returns the LifeformLoc object for this lifeform
-  def loc
-    LifeformLoc.where(environment_id: environment_id, lifeform_id: id).first
-  end
-
-  def x
-    loc.x
-  end
-
-  def y
-    loc.y
-  end
   
   # Returns area of the plan assuming circle of diameter "size"
   def area
@@ -183,10 +170,13 @@ class Plant < Lifeform
   def reproduce
     # Subtract the energy we're giving to the offspring
     self.energy -= offspring_energy_tot
+    save
 
     r = Reproduce.new(self)
     r.generate(offspring_energy_each, repro_num_offspring) do |child|
-      env.add_lifeform_dist(self, child, size)
+      child.set_loc_dist(self.x, self.y, 1.0)
+      # TODO should use some kind of "initial size" to set size and distance
+      child.save
     end
   end
 
@@ -221,13 +211,13 @@ class Plant < Lifeform
 SQL
     #ds = DB[sql, environment_id, id, x1, x0, y1, y0]
 
-    ds = Plant.join(:lifeform_locs, lifeform_id: :id).
+    ds = Plant.
       where(Sequel.lit('lifeforms.environment_id = ?', [environment_id])).
       where(Sequel.lit('lifeforms.id != ?', [id])).
-      where(Sequel.lit('(lifeform_locs.x - (lifeforms.size / 2.0)) <= ?', [x1])).
-      where(Sequel.lit('(lifeform_locs.x + (lifeforms.size / 2.0)) >= ?', [x0])).
-      where(Sequel.lit('(lifeform_locs.y - (lifeforms.size / 2.0)) <= ?', [y1])).
-      where(Sequel.lit('(lifeform_locs.y + (lifeforms.size / 2.0)) >= ?', [y0]))
+      where(Sequel.lit('(lifeforms.x - (lifeforms.size / 2.0)) <= ?', [x1])).
+      where(Sequel.lit('(lifeforms.x + (lifeforms.size / 2.0)) >= ?', [x0])).
+      where(Sequel.lit('(lifeforms.y - (lifeforms.size / 2.0)) <= ?', [y1])).
+      where(Sequel.lit('(lifeforms.y + (lifeforms.size / 2.0)) >= ?', [y0]))
 
     puts(ds.sql)
     puts(ds.all)

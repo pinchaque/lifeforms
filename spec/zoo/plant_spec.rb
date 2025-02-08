@@ -1,5 +1,27 @@
 
 describe "Plant" do
+  def add_lf(x, y, size, energy)
+    lf = Plant.new
+    lf.environment_id = env.id
+    lf.species_id = species.id
+    lf.energy = energy
+    lf.size = size
+    lf.x = x
+    lf.y = y
+    lf.name = sprintf("add_lf(%f, %f, %f, %f)", x, y, size, energy)
+    lf.energy_absorb_perc = marshal_data[:energy_absorb_perc]
+    lf.energy_metabolic_rate = marshal_data[:energy_metabolic_rate]
+    lf.energy_size_ratio = marshal_data[:energy_size_ratio]
+    lf.growth_invest_perc = marshal_data[:growth_invest_perc]
+    lf.repro_threshold = marshal_data[:repro_threshold]
+    lf.repro_num_offspring = marshal_data[:repro_num_offspring]
+    lf.repro_energy_inherit_perc = marshal_data[:repro_energy_inherit_perc]
+    lf.save
+    puts("Lifeform saved #{lf.id}")
+    lf
+  end
+
+
   let(:tol) { 0.0001 }
   let(:species) { Species.new(name: "Test Lifeform").save }
   let(:env_energy) { 10.0 }
@@ -14,47 +36,9 @@ describe "Plant" do
     :repro_threshold => 20.0
   }}
   let(:lf) {
-    lf = Plant.new
-    lf.environment_id = env.id
-    lf.species_id = species.id
-    lf.energy = 10.0
-    lf.size = 1.0
-    lf.name = "Incredible Juniper"
-    lf.energy_absorb_perc = marshal_data[:energy_absorb_perc]
-    lf.energy_metabolic_rate = marshal_data[:energy_metabolic_rate]
-    lf.energy_size_ratio = marshal_data[:energy_size_ratio]
-    lf.growth_invest_perc = marshal_data[:growth_invest_perc]
-    lf.repro_threshold = marshal_data[:repro_threshold]
-    lf.repro_num_offspring = marshal_data[:repro_num_offspring]
-    lf.repro_energy_inherit_perc = marshal_data[:repro_energy_inherit_perc]
-    lf.save
-  }
-  let(:loc) {
-    LifeformLoc.new(x: 9.9, y: 7.7, lifeform_id: lf.id, environment_id: env.id).save
+    add_lf(9.9, 7.7, 1.0, 10.0).save
   }
 
-  def add_lf(x, y, size, energy)
-    lf = Plant.new
-    lf.environment_id = env.id
-    lf.species_id = species.id
-    lf.energy = energy
-    lf.size = size
-    lf.name = sprintf("add_lf(%f, %f, %f, %f)", x, y, size, energy)
-    lf.energy_absorb_perc = marshal_data[:energy_absorb_perc]
-    lf.energy_metabolic_rate = marshal_data[:energy_metabolic_rate]
-    lf.energy_size_ratio = marshal_data[:energy_size_ratio]
-    lf.growth_invest_perc = marshal_data[:growth_invest_perc]
-    lf.repro_threshold = marshal_data[:repro_threshold]
-    lf.repro_num_offspring = marshal_data[:repro_num_offspring]
-    lf.repro_energy_inherit_perc = marshal_data[:repro_energy_inherit_perc]
-    lf.save
-    puts("Lifeform saved #{lf.id}")
-
-    loc = LifeformLoc.new(x: x, y: y, lifeform_id: lf.id, environment_id: env.id).save
-    puts("LifeformLoc saved #{loc.id}")
-
-    lf
-  end
 
   context ".marshal_to_h" do
     it "marshals to hash" do
@@ -184,7 +168,6 @@ describe "Plant" do
         lf.repro_energy_inherit_perc = 1.0
         lf.energy = 100.0
         lf.repro_num_offspring = num_offspring
-        loc.save
         lf.reproduce
         expect(lf.energy).to be_within(tol).of(0.0)
       end
@@ -195,7 +178,6 @@ describe "Plant" do
         lf.repro_energy_inherit_perc = 0.0
         lf.energy = 100.0
         lf.repro_num_offspring = num_offspring
-        loc.save
         lf.reproduce
         expect(lf.energy).to be_within(tol).of(100.0)
       end
@@ -206,7 +188,6 @@ describe "Plant" do
         lf.repro_energy_inherit_perc = 0.5
         lf.energy = 100.0
         lf.repro_num_offspring = num_offspring
-        loc.save
         lf.reproduce
         expect(lf.energy).to be_within(tol).of(50.0)
       end

@@ -12,20 +12,8 @@ describe "Environment" do
     l.energy = 10.0
     l.size = 1.0
     l.name = "Incredible Juniper"
+    l.x = 0.0
+    l.y = 0.0
     l.save
   }
-  let(:loc) {
-    LifeformLoc.new(x: 9.9, y: 7.7, lifeform_id: tlf.id, environment_id: env.id).save
-  }
-
-  context ".add_lifeform_rnd" do
-
-    it "adds lifeform" do
-      env.add_lifeform_rnd(tlf)
-      lfs = env.lifeforms
-      expect(lfs.count).to eq(1)
-      lf_act = lfs[0]
-      expect(lf_act.id).to eq(tlf.id)
-    end
-  end
 end
