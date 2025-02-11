@@ -1,7 +1,6 @@
-
 describe "Plant" do
   def debug
-    true
+    false
   end
 
   def add_lf(x, y, size, energy)

@@ -209,10 +209,10 @@ class Plant < Lifeform
       where(Sequel.lit('lifeforms.environment_id = ?', [environment_id])).
       where(Sequel.lit('lifeforms.species_id = ?', [species_id])).
       where(Sequel.lit('lifeforms.id != ?', [id])).
-      where(Sequel.lit('(lifeforms.x - (lifeforms.size / 2.0)) <= ?', [x1])).
-      where(Sequel.lit('(lifeforms.x + (lifeforms.size / 2.0)) >= ?', [x0])).
-      where(Sequel.lit('(lifeforms.y - (lifeforms.size / 2.0)) <= ?', [y1])).
-      where(Sequel.lit('(lifeforms.y + (lifeforms.size / 2.0)) >= ?', [y0]))
+      where(Sequel.lit('lifeforms.x <= ? + (lifeforms.size / 2.0)', [x1])).
+      where(Sequel.lit('lifeforms.x >= ? - (lifeforms.size / 2.0)', [x0])).
+      where(Sequel.lit('lifeforms.y <= ? + (lifeforms.size / 2.0)', [y1])).
+      where(Sequel.lit('lifeforms.y >= ? - (lifeforms.size / 2.0)', [y0]))
     ds.all
   end
 
