@@ -119,11 +119,9 @@ class Plant < Lifeform
     self.energy -= egy
   end
 
-  # At each time step the Plant first absorbs energy from the environment
-  # based on its area and energy_absorb_perc. Note that if this plant overlaps
-  # other plants then that reduces the new energy available on this turn.
-  # 
-  # Then we subtract 
+  # Runs a time step for this lifeform. Figures out environmental energy, 
+  # subtracta metabolic energy rate, then splits the energy between growth
+  # and storage. If enough energy is stored, then it reproduces.
   def run_step
     super
 
@@ -136,21 +134,18 @@ class Plant < Lifeform
 
     # If we have an energy surplus then we are in growth mode
     if delta_energy > 0.0
-      # first figure out how much of this surplus energy we are investing
-      # in growth
+      # add to our energy stores
+      self.energy += delta_energy
+
+      # invest some of this surplus into growth
       growth_energy = delta_energy * perc(growth_invest_perc)
       resize_for_energy(growth_energy)
-
-      raise("THIS IS WRONG because resize_for_energy is also deducting energy")
-
-      # remainnig energy goes into our stores
-      self.energy += (delta_energy - growth_energy)
 
       # now check if we have enough energy to reproduce
       reproduce if self.energy >= repro_threshold
     # Else if we have an energy deficit then we are in reduce mode
     elsif delta_energy < 0.0
-      # Reduce current energy by this delta
+      # Reduce current energy by this delta; this may push energy negative
       self.energy += delta_energy
 
       # If we've gone negative then we need to downsize the lifeform
