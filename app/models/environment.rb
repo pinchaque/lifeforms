@@ -23,7 +23,7 @@ class Environment  < Sequel::Model
 
   def run_step
     DB.transaction do
-      lifeforms.all.shuffle.each do |l|
+      lifeforms_ds.all.shuffle.each do |l|
         l.run_step.save
       end
       self.time_step += 1
@@ -32,7 +32,7 @@ class Environment  < Sequel::Model
   end
 
   def to_s_detailed
-    to_s + "\n" + lifeforms.order(:name).map{ |l| "  * #{l.to_s}" }.join("\n")
+    to_s + "\n" + lifeforms_ds.order(:name).map{ |l| "  * #{l.to_s}" }.join("\n")
   end
 
   def to_s

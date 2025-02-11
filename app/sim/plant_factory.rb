@@ -28,11 +28,16 @@ class PlantFactory
     p.environment_id = @env.id
     p.energy = Random.rand(@energy_min..@energy_max)
     p.size = @size
-    p.growth_rate = @growth_rate
-    p.energy_split = @energy_split
     p.species_id = @species.id
     p.set_random_name
     p.set_loc_random
+    p.energy_absorb_perc = 0.5
+    p.energy_metabolic_rate = 1.2
+    p.energy_size_ratio = 2.0
+    p.growth_invest_perc = 0.4
+    p.repro_threshold = 20.0
+    p.repro_num_offspring = 3
+    p.repro_energy_inherit_perc = 0.8
     p
   end
 end
