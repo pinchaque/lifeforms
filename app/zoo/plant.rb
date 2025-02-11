@@ -64,6 +64,7 @@ class Plant < Lifeform
   # The gross amount of energy supplied to this lifeform based on its area
   # alone, not taking into account overlaps with other lifeforms.
   def env_energy_gross
+    logf("energy_rate:%f area:%f", env.energy_rate, area)
     env.energy_rate * area
   end
 
@@ -87,7 +88,8 @@ class Plant < Lifeform
   # on this step. This is calculated by taking the env.energy_rate and then
   # reducing it based on overlaps between this and other Plants.
   def env_energy
-    env_energy_gross - energy_overlap_loss
+    logf("energy_gross:%f energy_overlap_loss:%f", env_energy_gross, energy_overlap_loss)
+    [0.0, env_energy_gross - energy_overlap_loss].max
   end
 
   # Returns the total metabolic energy needed for a timestep based on the 
@@ -125,12 +127,18 @@ class Plant < Lifeform
   def run_step
     super
 
+    logf("[%s] run_step start", to_s)
+
     # Calc out how much energy we can absorb from the environment
     new_env_energy = env_energy() * perc(self.energy_absorb_perc)
 
     # Subtract off our basal metabolic rate to get the energy delta for this
     # time step
-    delta_energy = new_env_energy - metabolic_energy()
+    meta = metabolic_energy()
+    delta_energy = new_env_energy - meta
+    
+    logf("env_energy:%f - metabolic:%f = delta:%f", new_env_energy, meta, delta_energy)
+
 
     # If we have an energy surplus then we are in growth mode
     if delta_energy > 0.0
@@ -140,21 +148,28 @@ class Plant < Lifeform
       # invest some of this surplus into growth
       growth_energy = delta_energy * perc(growth_invest_perc)
       resize_for_energy(growth_energy)
+      logf("Growing with growth_energy:%f; new size:%f energy:%f", growth_energy, size, energy)
 
       # now check if we have enough energy to reproduce
-      reproduce if self.energy >= repro_threshold
+      if self.energy >= repro_threshold
+        logf("Reproducing since energy:%f > repro_thresh:%f", self.energy, repro_threshold)
+        reproduce
+      end
     # Else if we have an energy deficit then we are in reduce mode
     elsif delta_energy < 0.0
       # Reduce current energy by this delta; this may push energy negative
       self.energy += delta_energy
 
       # If we've gone negative then we need to downsize the lifeform
-      if self.energy < 0.0
-        resize_for_energy(self.energy)
+      growth_energy = self.energy
+      if growth_energy < 0.0
+        resize_for_energy(growth_energy)
+        logf("Shrinking with growth_energy:%f; new size:%f energy:%f", growth_energy, size, energy)
 
         # TODO: if the organism is too small then we kill it
       end
     end
+    logf("[%s] run_step end", to_s)
     self
   end
 
@@ -177,12 +192,16 @@ class Plant < Lifeform
     self.energy -= offspring_energy_tot
     save
 
+    logf("Creating %d children...", repro_num_offspring)
+
     r = Reproduce.new(self)
     r.generate(offspring_energy_each, repro_num_offspring) do |child|
       child.set_loc_dist(self.x, self.y, 1.0)
       # TODO should use some kind of "initial size" to set size and distance
       child.save
+      logf("  - %s", child.to_s)
     end
+    logf("After reproducing energy:%f", energy)
   end
 
   # Returns the bounding box (square) around this lifeform

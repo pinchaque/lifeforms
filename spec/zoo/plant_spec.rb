@@ -403,11 +403,33 @@ describe "Plant" do
 
       expect(lf0.env_energy_gross).to be_within(tol).of(exp_egy)
       expect(lf0.energy_overlap_loss).to be_within(tol).of(exp_loss)
-      expect(lf0.env_energy).to be_within(tol).of(exp_egy - exp_loss)      
+      expect(lf0.env_energy).to be_within(tol).of(exp_egy - exp_loss)    
+      expect(lf0.env_energy_gross).to be >= 0.0  
+      expect(lf0.energy_overlap_loss).to be >= 0.0  
+      expect(lf0.env_energy).to be >= 0.0  
 
       expect(lf1.env_energy_gross).to be_within(tol).of(exp_egy)
       expect(lf1.energy_overlap_loss).to be_within(tol).of(exp_loss)
       expect(lf1.env_energy).to be_within(tol).of(exp_egy - exp_loss)      
+      expect(lf1.env_energy_gross).to be >= 0.0  
+      expect(lf1.energy_overlap_loss).to be >= 0.0  
+      expect(lf1.env_energy).to be >= 0.0  
+    end
+  end
+
+  it "many lifeforms with overlap" do
+    lf0 = add_lf(0.0, 0.0, 2.0, 20.0)
+    lf1 = add_lf(1.0, 0.0, 2.0, 20.0)
+    lf2 = add_lf(0.5, 0.5, 2.0, 20.0)
+    lf3 = add_lf(0.6, 0.6, 2.0, 20.0)
+    lf4 = add_lf(0.4, 0.4, 2.0, 20.0)
+    
+    exp_egy = Math::PI * env_energy
+
+    [lf0, lf1, lf2, lf3, lf4].each do |lf|
+      expect(lf.env_energy_gross).to be_within(tol).of(exp_egy)
+      expect(lf.energy_overlap_loss).to be >= 0.0  
+      expect(lf.env_energy).to be_within(tol).of(0.0)
     end
   end
 

@@ -30,7 +30,7 @@ class Render {
     var circle = new Konva.Circle({
       x: lf.x * this.env2c_width,
       y: lf.y * this.env2c_height,
-      radius: lf.size * this.env2c_size,
+      radius: lf.size / 2.0 * this.env2c_size,
       fill: 'green',
       stroke: 'black',
       opacity: 0.5,

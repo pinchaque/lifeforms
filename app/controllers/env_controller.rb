@@ -6,7 +6,8 @@ class EnvController < AppController
       envs: Environment.order(:created_at).reverse.all,
       lifeforms: 6,
       width: 100,
-      height: 100
+      height: 100,
+      energy_rate: 10
     }
   end
 
@@ -14,8 +15,9 @@ class EnvController < AppController
     num_lf = params['lifeforms'].to_i
     width = params['width'].to_i
     height = params['height'].to_i
+    energy_rate = params['energy_rate'].to_f
     DB.transaction do
-      env = Environment.new(width: width, height: height).save
+      env = Environment.new(width: width, height: height, energy_rate: energy_rate).save
       pf = PlantFactory.new(env)
       (0...num_lf).each do
         pf.gen.save
@@ -29,7 +31,7 @@ class EnvController < AppController
 
     erb :"env/viz", :locals => {
       env: env,
-      steps: 10,
+      steps: 1,
       lfs_json: JSON.generate(env.render_data)
     }
   end
