@@ -103,22 +103,39 @@ class Plant < Lifeform
   # growing by using up that amount. Negative means shrinking and gaining
   # that amount. This will update both self.size and self.energy after the 
   # resize.
+  # If the requested resize cannot be performed (due to size or energy 
+  # limitations) then the function will do what it can, reducing size or
+  # energy to 0.0 as appropriate. Then it will return false.  
   def resize_for_energy(egy)
-    if egy > self.energy
-      # cannot use more energy than we have
-      raise sprintf("resize_for_energy(%f) failed because lifeform only has energy %f", egy, self.energy) 
+    # growing
+    if egy > 0.0
+      if egy > self.energy
+        # cannot use more energy than we have
+        self.size += self.energy / self.energy_size_ratio
+        self.energy = 0.0
+        false
+      else
+        self.size += egy / self.energy_size_ratio
+        self.energy -= egy
+        true
+      end
+    # shrinking
+    elsif egy < 0.0
+      delta_size = egy / self.energy_size_ratio
+      if self.size + delta_size < 0.0
+        # cannot shrink more than our size
+        self.energy += self.size * self.energy_size_ratio
+        self.size = 0.0
+        false
+      else
+        self.size += egy / self.energy_size_ratio
+        self.energy -= egy
+        true
+      end
+    # no-op
+    else
+      true
     end
-
-    # size delta is computed using the energy_size_ratio
-    delta = egy / self.energy_size_ratio
-
-    if self.size + delta < 0.0
-      # cannot shrink below ero
-      raise sprintf("resize_for_energy(%f) failed because size (%f) + delta (%f) < 0.0", egy, self.size, delta)
-    end
-
-    self.size += delta
-    self.energy -= egy
   end
 
   # Runs a time step for this lifeform. Figures out environmental energy, 
