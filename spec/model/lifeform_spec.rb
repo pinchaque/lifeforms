@@ -43,7 +43,7 @@ describe "Lifeform" do
 
   context ".to_s" do
     it "with location" do
-      expect(tlf.to_s).to eq("Test Lifeform Incredible Juniper energy:10.00 size:1.00 loc:(2.22, 3.33) val1:foo val2:42")
+      expect(tlf.to_s).to eq("#{tlf.id} Test Lifeform Incredible Juniper energy:10.00 size:1.00 loc:(2.22, 3.33) val1:foo val2:42")
     end
   end
 

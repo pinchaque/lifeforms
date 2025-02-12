@@ -91,18 +91,18 @@ describe "Plant" do
       lf.energy_size_ratio = 2.0
       lf.size = 1.0
       lf.energy = 50.0
-      expect(lf.resize_for_energy(5.0)).to be true
-      expect(lf.energy).to be_within(tol).of(45.0)
-      expect(lf.size).to be_within(tol).of(3.5)
+      expect(lf.resize_for_energy(18.0)).to be true
+      expect(lf.energy).to be_within(tol).of(32.0)
+      expect(lf.size).to be_within(tol).of(4.0)
     end
 
     it "resizes smaller" do
       lf.energy_size_ratio = 2.0
-      lf.size = 1.0
+      lf.size = 10.0
       lf.energy = 50.0
-      expect(lf.resize_for_energy(-2.0)).to be true
-      expect(lf.energy).to be_within(tol).of(52.0)
-      expect(lf.size).to be_within(tol).of(0.0)
+      expect(lf.resize_for_energy(-32.0)).to be true
+      expect(lf.energy).to be_within(tol).of(82.0)
+      expect(lf.size).to be_within(tol).of(6.0)
     end
 
     it "resizes no change" do
@@ -117,20 +117,18 @@ describe "Plant" do
     it "tries to grow using more energy than available" do
       lf.energy_size_ratio = 2.0
       lf.size = 1.0
-      lf.energy = 5.0
-      expect(lf.resize_for_energy(10.0)).to be false
+      lf.energy = 18.0
+      expect(lf.resize_for_energy(50.0)).to be false
       expect(lf.energy).to be_within(tol).of(0.0) # uses all remaining energy
-      expect(lf.size).to be_within(tol).of(3.5) # 1 + 5/2
+      expect(lf.size).to be_within(tol).of(4.0)
     end
 
     it "tries to shrink more than size available" do
       lf.energy_size_ratio = 2.0
-      lf.size = 1.0
-      lf.energy = 5.0
-      # 2 energy for 1 unit of size
-      # we are downsizing by 1 size => 2 energy we get out
-      expect(lf.resize_for_energy(-10.0)).to be false
-      expect(lf.energy).to be_within(tol).of(7.0) # 5 + 2*1
+      lf.size = 4.0
+      lf.energy = 1.0
+      expect(lf.resize_for_energy(-100.0)).to be false
+      expect(lf.energy).to be_within(tol).of(33.0)
       expect(lf.size).to be_within(tol).of(0.0) # shrinks to 0
     end 
   end

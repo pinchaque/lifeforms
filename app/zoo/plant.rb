@@ -111,24 +111,24 @@ class Plant < Lifeform
     if egy > 0.0
       if egy > self.energy
         # cannot use more energy than we have
-        self.size += self.energy / self.energy_size_ratio
+        self.size += Math.sqrt(self.energy / self.energy_size_ratio)
         self.energy = 0.0
         false
       else
-        self.size += egy / self.energy_size_ratio
+        self.size += Math.sqrt(egy / self.energy_size_ratio)
         self.energy -= egy
         true
       end
     # shrinking
     elsif egy < 0.0
-      delta_size = egy / self.energy_size_ratio
+      delta_size = -1.0 * Math.sqrt(-1.0 * egy / self.energy_size_ratio)
       if self.size + delta_size < 0.0
         # cannot shrink more than our size
-        self.energy += self.size * self.energy_size_ratio
+        self.energy += self.size * self.size * self.energy_size_ratio
         self.size = 0.0
         false
       else
-        self.size += egy / self.energy_size_ratio
+        self.size += delta_size
         self.energy -= egy
         true
       end
