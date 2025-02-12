@@ -2,23 +2,28 @@ require 'json'
 class EnvController < AppController
 
   get '/env' do
+    # use defaults from EnvironmentFactory
+    ef = EnvironmentFactory.new
+
     erb :"env/index", :locals => {
       envs: Environment.order(:created_at).reverse.all,
       lifeforms: 6,
-      width: 100,
-      height: 100
+      width: ef.width,
+      height: ef.height,
+      energy_rate: ef.energy_rate
     }
   end
 
   post '/env' do
-    lifeforms = params['lifeforms'].to_i
+    num_lf = params['lifeforms'].to_i
     width = params['width'].to_i
     height = params['height'].to_i
+    energy_rate = params['energy_rate'].to_f
     DB.transaction do
-      env = Environment.new(width: width, height: height).save
-      pf = PlantFactory.new
-      (0...lifeforms).each do
-          env.add_lifeform_rnd(pf.gen)
+      env = Environment.new(width: width, height: height, energy_rate: energy_rate).save
+      pf = PlantFactory.new(env)
+      (0...num_lf).each do
+        pf.gen.save
       end
       redirect to("/env/#{env.id}")
     end
@@ -29,7 +34,7 @@ class EnvController < AppController
 
     erb :"env/viz", :locals => {
       env: env,
-      steps: 10,
+      steps: 1,
       lfs_json: JSON.generate(env.render_data)
     }
   end

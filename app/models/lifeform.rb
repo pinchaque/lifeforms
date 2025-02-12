@@ -42,7 +42,9 @@ class Lifeform < Sequel::Model
       species_id: other.species_id,
       energy: other.energy,
       size: other.size,
-      name: other.name
+      name: other.name,
+      x: other.x,
+      y: other.y
     )
     marshal_from_h(other.marshal_to_h)
   end
@@ -56,31 +58,58 @@ class Lifeform < Sequel::Model
     Species.where(id: species_id).first
   end
 
-  def loc
-    LifeformLoc.where(environment_id: environment_id, lifeform_id: id).first
-  end
-
   def env
     Environment.where(id: environment_id).first
   end
 
   def to_s
-    l = loc
-    loc_str = l.nil? ? "(?, ?)" : l.to_s
-    sprintf("%s %s energy:%.2f size:%.2f loc:%s", species.name, name, energy, size, loc_str)
+    loc_str = "(" + [x, y].map{ |a| sprintf("%.2f", a)}.join(", ") + ")"
+    sprintf("%s %s %s energy:%.2f size:%.2f loc:%s", id, species.name, name, energy, size, loc_str)
   end
 
+  # Selects a random name for this lifeform.
   def set_random_name
     self.name = (NameParts::LF_DESCRIPTORS.sample.capitalize + " " + NameParts::LF_GIVENS.sample.capitalize).strip
   end
 
+  # Sets this lifeform's x, y coordinates to be a random value within the
+  # associated environment.
+  def set_loc_random
+    self.x = Random.rand(0.0..(env.width).to_f)
+    self.y = Random.rand(0.0..(env.height).to_f)
+  end
+
+  # Sets this lifeform's x, y coordinates to be a random location that is dist
+  # away from the specified coordinates. If the selected location is outside
+  # the bounds of the environment then it is placed on the environment
+  # boundary.
+  def set_loc_dist(x, y, dist)
+    # random angle in radians
+    ang = Random.rand(0.0..2.0*Math::PI)
+
+    # convert polar to cartesian
+    dx = dist * Math.cos(ang)
+    dy = dist * Math.sin(ang)
+
+    # limit to canvas bounds
+    xnew = x + dx
+    xnew = 0.0 if xnew < 0.0
+    xnew = env.width if xnew > env.width
+    
+    ynew = y + dy
+    ynew = 0.0 if ynew < 0.0
+    ynew = env.height if ynew > env.height
+
+    self.x = xnew
+    self.y = ynew
+  end
+
   # Returns a hash of data for this lifeform that is used to render it visually
   def render_data
-    l = loc
     {
       id: self.id,
-      x: l.x,
-      y: l.y,
+      x: self.x,
+      y: self.y,
       species: species.name,
       name: self.name,
       size: self.size,

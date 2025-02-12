@@ -2,9 +2,11 @@ class PlantFactory
   attr_accessor :energy_min, :energy_max
   attr_accessor :growth_rate, :energy_split
   attr_accessor :size
+  attr_accessor :env
   SPECIES_NAME = "Plant"
 
-  def initialize
+  def initialize(env)
+    @env = env
     @energy_min = 10.0
     @energy_max = 20.0
     @energy_split = 30.0
@@ -23,12 +25,19 @@ class PlantFactory
 
   def gen
     p = Plant.new
+    p.environment_id = @env.id
     p.energy = Random.rand(@energy_min..@energy_max)
     p.size = @size
-    p.growth_rate = @growth_rate
-    p.energy_split = @energy_split
     p.species_id = @species.id
     p.set_random_name
+    p.set_loc_random
+    p.energy_absorb_perc = 0.5
+    p.energy_metabolic_rate = 5.0
+    p.energy_size_ratio = 2.0
+    p.growth_invest_perc = 0.2
+    p.repro_threshold = 50.0
+    p.repro_num_offspring = 3
+    p.repro_energy_inherit_perc = 0.95
     p
   end
 end

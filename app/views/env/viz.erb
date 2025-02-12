@@ -2,12 +2,14 @@
 <script src="/js/konva.js"></script>
 <script src="/js/render.js"></script>
 <script>
-    var width = window.innerWidth;
-    //var height = window.innerHeight;
-
     let env_width = <%= env.width %>;
     let env_height = <%= env.height %>;
-    let r = new Render("kontainer", width, width, env_width, env_height);
+    var width = window.innerWidth < window.innerHeight ? window.innerWidth : window.innerHeight;
+    width -= 75;
+    // number of pixels per unit distance in environment
+    var zf = 1.0 * width / env_width
+    var height = env_height * zf
+    let r = new Render("kontainer", width, height, zf);
     r.addLifeforms(<%= lfs_json %>);
     r.render();
 </script>

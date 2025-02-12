@@ -101,3 +101,7 @@ RSpec.configure do |config|
 
 =end
 end
+
+# include all the helpers for running tests
+HELPERSDIR = File.expand_path('./helpers', File.dirname(__FILE__))
+Dir["#{HELPERSDIR}/*.rb"].each {|file| require file }

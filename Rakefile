@@ -27,10 +27,10 @@ namespace "sim" do
     desc "Creates a simulation"
     task :create do
         DB.transaction do
-            env = Environment.new(width: 100, height: 100).save
-            pf = PlantFactory.new
+            env = EnvironmentFactory.new.gen.save
+            pf = PlantFactory.new(env)
             (0..5).each do
-                env.add_lifeform_rnd(pf.gen)
+                pf.gen.save
             end
             log("Created simulation: #{env.to_s}")
         end
@@ -71,7 +71,7 @@ namespace "sim" do
         id = args[:id]
         DB.transaction do
             log("Removing data associated with simulation #{id}...")
-            [LifeformLoc, Lifeform].each do |klass|
+            [Lifeform].each do |klass|
                 n = klass.where(environment_id: id).delete
                 log("Deleted #{n} rows from #{klass.to_s}")
             end
@@ -84,7 +84,7 @@ namespace "sim" do
     task :deleteall do
         DB.transaction do
             log("Removing existing data...")
-            [LifeformLoc, Lifeform, Environment, Species].each do |klass|
+            [Lifeform, Environment, Species].each do |klass|
                 n = klass.where(true).delete
                 log("Deleted #{n} rows from #{klass.to_s}")
             end
