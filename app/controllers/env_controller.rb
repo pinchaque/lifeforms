@@ -2,12 +2,15 @@ require 'json'
 class EnvController < AppController
 
   get '/env' do
+    # use defaults from EnvironmentFactory
+    ef = EnvironmentFactory.new
+
     erb :"env/index", :locals => {
       envs: Environment.order(:created_at).reverse.all,
       lifeforms: 6,
-      width: 100,
-      height: 100,
-      energy_rate: 10
+      width: ef.width,
+      height: ef.height,
+      energy_rate: ef.energy_rate
     }
   end
 

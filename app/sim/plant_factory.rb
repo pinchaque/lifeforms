@@ -32,12 +32,12 @@ class PlantFactory
     p.set_random_name
     p.set_loc_random
     p.energy_absorb_perc = 0.5
-    p.energy_metabolic_rate = 1.2
+    p.energy_metabolic_rate = 5.0
     p.energy_size_ratio = 2.0
-    p.growth_invest_perc = 0.4
-    p.repro_threshold = 20.0
+    p.growth_invest_perc = 0.2
+    p.repro_threshold = 50.0
     p.repro_num_offspring = 3
-    p.repro_energy_inherit_perc = 0.8
+    p.repro_energy_inherit_perc = 0.95
     p
   end
 end

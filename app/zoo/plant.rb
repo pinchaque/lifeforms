@@ -32,10 +32,15 @@ class Plant < Lifeform
   def env
     Environment.where(id: environment_id).first  
   end
+
+  # Returns radius of the circle for this lifeform
+  def radius
+    self.size / 2.0
+  end
   
-  # Returns area of the plan assuming circle of diameter "size"
+  # Returns area of the lifeform assuming circle of diameter "size"
   def area
-    Math::PI * ((size / 2.0) ** 2.0)
+    Math::PI * (radius ** 2.0)
   end
   
   def marshal_to_h
@@ -64,7 +69,6 @@ class Plant < Lifeform
   # The gross amount of energy supplied to this lifeform based on its area
   # alone, not taking into account overlaps with other lifeforms.
   def env_energy_gross
-    logf("energy_rate:%f area:%f", env.energy_rate, area)
     env.energy_rate * area
   end
 
@@ -81,14 +85,13 @@ class Plant < Lifeform
     # would be less if we calculated that precisely. So this is an heuristic
     # that will over-estimate the energy loss.
     env.energy_rate * 0.5 * find_overlaps.map{ |lf| 
-      circle_area_intersect(x, y, size / 2.0, lf.x, lf.y, lf.size / 2.0) }.sum
+      circle_area_intersect(x, y, radius, lf.x, lf.y, lf.radius) }.sum
   end
 
   # Returns the max amount of environmental energy available to this lifeform
   # on this step. This is calculated by taking the env.energy_rate and then
   # reducing it based on overlaps between this and other Plants.
   def env_energy
-    logf("energy_gross:%f energy_overlap_loss:%f", env_energy_gross, energy_overlap_loss)
     [0.0, env_energy_gross - energy_overlap_loss].max
   end
 
@@ -217,7 +220,7 @@ class Plant < Lifeform
 
     r = Reproduce.new(self)
     r.generate(offspring_energy_each, repro_num_offspring) do |child|
-      child.set_loc_dist(self.x, self.y, 1.0)
+      child.set_loc_dist(self.x, self.y, self.radius)
       child.save
       logf("  - %s", child.to_s)
     end
@@ -226,7 +229,7 @@ class Plant < Lifeform
 
   # Returns the bounding box (square) around this lifeform
   def bounding_box
-    r = size / 2.0
+    r = self.radius
     return x - r, y - r, x + r, y + r
   end
 

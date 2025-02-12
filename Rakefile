@@ -27,7 +27,7 @@ namespace "sim" do
     desc "Creates a simulation"
     task :create do
         DB.transaction do
-            env = Environment.new(width: 100, height: 100, energy_rate: 10).save
+            env = EnvironmentFactory.new.gen.save
             pf = PlantFactory.new(env)
             (0..5).each do
                 pf.gen.save
