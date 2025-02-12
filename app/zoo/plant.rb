@@ -183,7 +183,11 @@ class Plant < Lifeform
         resize_for_energy(growth_energy)
         logf("Shrinking with growth_energy:%f; new size:%f energy:%f", growth_energy, size, energy)
 
-        # TODO: if the organism is too small then we kill it
+        if size < 0.0 || energy < 0.0
+          # TODO: if the organism is too small then we kill it
+          self.size = 0.0
+          self.energy = 0.0
+        end
       end
     end
     logf("[%s] run_step end", to_s)
@@ -214,7 +218,6 @@ class Plant < Lifeform
     r = Reproduce.new(self)
     r.generate(offspring_energy_each, repro_num_offspring) do |child|
       child.set_loc_dist(self.x, self.y, 1.0)
-      # TODO should use some kind of "initial size" to set size and distance
       child.save
       logf("  - %s", child.to_s)
     end
