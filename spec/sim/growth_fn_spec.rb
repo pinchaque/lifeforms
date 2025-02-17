@@ -1,11 +1,13 @@
 describe "GrowthFn" do
   let(:tol) { 0.0001 }
-  let(:gf) { GrowthFn.new(scale) }
-  let(:scale) { 1.0 }
+  let(:gf) { GrowthFn.new(exp, e_base) }
+  let(:exp) { 1.0 }
+  let(:e_base) { 1.0 }
 
   context "Linear" do
-    let(:scale) { 1.0 }
-
+    let(:exp) { 1.0 }
+    let(:e_base) { 1.0 }
+  
     it "stasis" do
       [0, 1, 10, 100].each do |v|
         expect(gf.size_delta(v, v)).to be_within(tol).of(0.0)
@@ -27,9 +29,10 @@ describe "GrowthFn" do
     end
   end
 
-  context "Quadratic" do
-    let(:scale) { 2.0 }
-    
+  context "Quadratic / base 1" do
+    let(:exp) { 2.0 }
+    let(:e_base) { 1.0 }
+      
     it "stasis" do
       [0, 1, 10, 100].each do |v|
         expect(gf.size_delta(v, v)).to be_within(tol).of(0.0)
@@ -51,9 +54,42 @@ describe "GrowthFn" do
     end
   end
 
+  context "Quadratic / base 16" do
+    let(:exp) { 2.0 }
+    let(:e_base) { 16.0 }
+      
+    it "stasis" do
+      [0, 1, 10, 100].each do |v|
+        expect(gf.size_delta(v, v)).to be_within(tol).of(0.0)
+      end
+    end
+
+    it "grows" do
+      expect(gf.size_delta(0.0, 1.0)).to be_within(tol).of(0.25)
+      expect(gf.size_delta(0.0, 4.0)).to be_within(tol).of(0.5)
+      expect(gf.size_delta(9.0, 25.0)).to be_within(tol).of(0.5)
+      expect(gf.size_delta(100.0, 225.0)).to be_within(tol).of(1.25)
+    end
+
+    it "shrinks" do
+      expect(gf.size_delta(1.0, 0.0)).to be_within(tol).of(-0.25)
+      expect(gf.size_delta(4.0, 0.0)).to be_within(tol).of(-0.5)
+      expect(gf.size_delta(25.0, 9.0)).to be_within(tol).of(-0.5)
+      expect(gf.size_delta(225.0, 100.0)).to be_within(tol).of(-1.25)
+    end
+  end
+
   context "Exceptions" do
-    it "scale factor 0" do
-      expect{ GrowthFn.new(0.0) }.to raise_error("scale_factor cannot be 0")
+    it "exponent 0" do
+      expect{ GrowthFn.new(0.0, 1.0) }.to raise_error("exp (0.0) cannot be <= 0")
+    end
+
+    it "exponent < 0" do
+      expect{ GrowthFn.new(-1.0, 1.0) }.to raise_error("exp (-1.0) cannot be <= 0")
+    end
+
+    it "base_energy < 0" do
+      expect{ GrowthFn.new(1.0, -1.0) }.to raise_error("e_base (-1.0) cannot be < 0")
     end
 
     it "negative energy_start" do
