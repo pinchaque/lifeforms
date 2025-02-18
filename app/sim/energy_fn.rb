@@ -1,17 +1,16 @@
-# Class that calculates the size changes a lifeform will make as it uses energy
-# for growth or shrinks to create more energy. The formula encoded here is:
-# s = (e / c) ^ (1 / f)
+# Class that calculates the energy a lifeform uses at a given size. The 
+# polynomial formula used is:
+# s = (e / e_base) ^ (1 / exp)
 #   or
-# e = c * (s ^ f)
+# e = e_base * (s ^ exp)
 # where:
 #   s: Size
 #   e: Energy
-#   c: Energy it takes to grow from 0 to 1 unit of size (e_base)
-#   f: Polynomial growth exponent (exp)
-class GrowthFn
-  # Exponent to use when calculating the energy needed to scale up by one. 
-  # Must be > 0. Typically this would be >1 so that as the lifeform grows it 
-  # will require more and more energy to keep growing.
+#   e_base: Energy it takes to grow from 0 to 1 unit of size
+#   exp: Polynomial energy usage exponent
+class EnergyFn
+  # Exponent to use when calculating the energy needed. Must be > 0. Typically
+  # this would be >1 to damper growth as the lifeform gets larger.
   attr_accessor :exp
 
   # Base energy it takes to grow from size 0 to 1 
@@ -24,21 +23,17 @@ class GrowthFn
     @e_base = e_base
   end
 
-  # Exponent to use when taking the n'th-root of the energy to derive the 
-  # size delta.
-  def root
-    1.0 / @exp
-  end
-
   # Returns energy for given size
   def energy(size)
     raise "size (#{size}) cannot be < 0" if size < 0.0
+    return 0.0 if size == 0.0
     @e_base * (size ** @exp)
   end
 
   # Returns size for given energy
   def size(energy)
     raise "energy (#{energy}) cannot be < 0" if energy < 0.0
+    return 0.0 if energy == 0.0
     (energy / @e_base) ** (1.0 / @exp)
   end
 
