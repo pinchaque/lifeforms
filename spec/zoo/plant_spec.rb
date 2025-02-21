@@ -13,9 +13,8 @@ describe "Plant" do
     lf.y = y
     lf.name = sprintf("add_lf(%f, %f, %f, %f)", x, y, size, energy)
     lf.energy_absorb_perc = marshal_data[:energy_absorb_perc]
-    lf.energy_metabolic_rate = marshal_data[:energy_metabolic_rate]
-    lf.energy_size_ratio = marshal_data[:energy_size_ratio]
-    lf.growth_invest_perc = marshal_data[:growth_invest_perc]
+    lf.energy_base = marshal_data[:energy_base]
+    lf.energy_reserve_perc = marshal_data[:energy_reserve_perc]
     lf.repro_threshold = marshal_data[:repro_threshold]
     lf.repro_num_offspring = marshal_data[:repro_num_offspring]
     lf.repro_energy_inherit_perc = marshal_data[:repro_energy_inherit_perc]
@@ -31,9 +30,8 @@ describe "Plant" do
   let(:env) { Environment.new(width: 100, height: 100, time_step: 0, energy_rate: env_energy).save }
   let(:marshal_data) {{
     :energy_absorb_perc => 0.5, 
-    :energy_metabolic_rate => 1.2, 
-    :energy_size_ratio => 2.0, 
-    :growth_invest_perc => 0.4, 
+    :energy_base => 1.2, 
+    :energy_reserve_perc => 0.6, 
     :repro_energy_inherit_perc => 0.8, 
     :repro_num_offspring => 3, 
     :repro_threshold => 20.0
@@ -54,9 +52,8 @@ describe "Plant" do
       lfnew = Plant.new
       lfnew.marshal_from_h(marshal_data)
       expect(lf.energy_absorb_perc).to eq(marshal_data[:energy_absorb_perc])
-      expect(lf.energy_metabolic_rate).to eq(marshal_data[:energy_metabolic_rate])
-      expect(lf.energy_size_ratio).to eq(marshal_data[:energy_size_ratio])
-      expect(lf.growth_invest_perc).to eq(marshal_data[:growth_invest_perc])
+      expect(lf.energy_base).to eq(marshal_data[:energy_base])
+      expect(lf.energy_reserve_perc).to eq(marshal_data[:energy_reserve_perc])
       expect(lf.repro_threshold).to eq(marshal_data[:repro_threshold])
       expect(lf.repro_num_offspring).to eq(marshal_data[:repro_num_offspring])
       expect(lf.repro_energy_inherit_perc).to eq(marshal_data[:repro_energy_inherit_perc])
@@ -79,58 +76,12 @@ describe "Plant" do
 
   context ".metabolic_energy" do
     it "computes metabolic energy" do
-      lf.energy_metabolic_rate = 2.0
-      lf.size = 10.0
-      exp = 78.53981633974483 * 2.0 # area * rate
+      lf.energy_base = 5.0
+      lf.size = 2.0
+      # e_base * (size ** @exp)
+      exp = 5.0 * (2.0 ** 3.0)
       expect(lf.metabolic_energy).to be_within(tol).of(exp)
     end    
-  end
-
-  context ".resize_for_energy" do
-    it "resizes larger" do
-      lf.energy_size_ratio = 2.0
-      lf.size = 1.0
-      lf.energy = 50.0
-      expect(lf.resize_for_energy(18.0)).to be true
-      expect(lf.energy).to be_within(tol).of(32.0)
-      expect(lf.size).to be_within(tol).of(4.0)
-    end
-
-    it "resizes smaller" do
-      lf.energy_size_ratio = 2.0
-      lf.size = 10.0
-      lf.energy = 50.0
-      expect(lf.resize_for_energy(-32.0)).to be true
-      expect(lf.energy).to be_within(tol).of(82.0)
-      expect(lf.size).to be_within(tol).of(6.0)
-    end
-
-    it "resizes no change" do
-      lf.energy_size_ratio = 2.0
-      lf.size = 1.0
-      lf.energy = 50.0
-      expect(lf.resize_for_energy(0.0)).to be true
-      expect(lf.energy).to be_within(tol).of(50.0)
-      expect(lf.size).to be_within(tol).of(1.0)
-    end
-
-    it "tries to grow using more energy than available" do
-      lf.energy_size_ratio = 2.0
-      lf.size = 1.0
-      lf.energy = 18.0
-      expect(lf.resize_for_energy(50.0)).to be false
-      expect(lf.energy).to be_within(tol).of(0.0) # uses all remaining energy
-      expect(lf.size).to be_within(tol).of(4.0)
-    end
-
-    it "tries to shrink more than size available" do
-      lf.energy_size_ratio = 2.0
-      lf.size = 4.0
-      lf.energy = 1.0
-      expect(lf.resize_for_energy(-100.0)).to be false
-      expect(lf.energy).to be_within(tol).of(33.0)
-      expect(lf.size).to be_within(tol).of(0.0) # shrinks to 0
-    end 
   end
 
   context ".offspring_energy_*" do
