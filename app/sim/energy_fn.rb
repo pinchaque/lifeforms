@@ -36,15 +36,4 @@ class EnergyFn
     return 0.0 if energy == 0.0
     (energy / @e_base) ** (1.0 / @exp)
   end
-
-  # Returns the size by which the lifeform will grow/shrink when moving from 
-  # energy_start to energy_end. If energy_end > energy_start then this is 
-  # growth and the function will return a positive number. 
-  # energy_end < energy_start means shrinkage and return will be negative.
-  # Only non-negative energy values are allowed.
-  def size_delta(energy_start, energy_end)
-    raise "energy_start (#{energy_start}) cannot be < 0" if energy_start < 0.0
-    raise "energy_end (#{energy_end}) cannot be < 0" if energy_end < 0.0
-    size(energy_end) - size(energy_start)
-  end
 end
