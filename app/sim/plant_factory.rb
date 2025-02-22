@@ -23,6 +23,7 @@ class PlantFactory
   def gen
     p = Plant.new
     p.environment_id = @env.id
+    p.created_step = @env.time_step
     p.energy = Random.rand(@energy_min..@energy_max)
     p.size = @size
     p.species_id = @species.id
@@ -30,9 +31,9 @@ class PlantFactory
     p.set_loc_random
     p.energy_absorb_perc = 0.9
     p.energy_base = 5.0
-    p.energy_reserve_perc = 0.7
+    p.energy_reserve_perc = 0.4
     p.repro_threshold = 50.0
-    p.repro_num_offspring = 3
+    p.repro_num_offspring = 2
     p.repro_energy_inherit_perc = 0.95
     p
   end

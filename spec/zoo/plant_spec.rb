@@ -6,6 +6,7 @@ describe "Plant" do
   def add_lf(x, y, size, energy)
     lf = Plant.new
     lf.environment_id = env.id
+    lf.created_step = 1
     lf.species_id = species.id
     lf.energy = energy
     lf.size = size
@@ -27,7 +28,7 @@ describe "Plant" do
   let(:tol) { 0.0001 }
   let(:species) { Species.new(name: "Test Lifeform").save }
   let(:env_energy) { 10.0 }
-  let(:env) { Environment.new(width: 100, height: 100, time_step: 0, energy_rate: env_energy).save }
+  let(:env) { Environment.new(width: 100, height: 100, time_step: 2, energy_rate: env_energy).save }
   let(:marshal_data) {{
     :energy_absorb_perc => 0.5, 
     :energy_base => 1.2, 
