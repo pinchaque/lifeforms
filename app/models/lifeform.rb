@@ -52,11 +52,13 @@ class Lifeform < Sequel::Model
   # Mark that this lifeform has been born, adjusting data members as needed
   def mark_born
     self.created_step = env.time_step
+    self
   end
 
   # Mark that this lifeform has died, adjusting data members as needed
   def mark_dead
     self.died_step = env.time_step
+    self
   end
 
   # True if this lifeform is alive
