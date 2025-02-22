@@ -219,10 +219,14 @@ describe "Lifeform" do
       expect(l.id).to be_nil
       expect(l.created_step).to be_nil
       expect(l.died_step).to be_nil
+      expect(l.is_alive?).to be_truthy
+      expect(l.is_dead?).to be_falsey
       l.mark_born
       expect(l.id).to be_nil
       expect(l.created_step).to eq(3)
       expect(l.died_step).to be_nil  
+      expect(l.is_alive?).to be_truthy
+      expect(l.is_dead?).to be_falsey
     end
   end
 
@@ -230,11 +234,15 @@ describe "Lifeform" do
     it "sets died_step" do
       expect(tlf.created_step).to eq(3)
       expect(tlf.died_step).to be_nil
+      expect(tlf.is_alive?).to be_truthy
+      expect(tlf.is_dead?).to be_falsey
       env.time_step = 5
       env.save
       tlf.mark_dead
       expect(tlf.created_step).to eq(3)
       expect(tlf.died_step).to eq(5)
+      expect(tlf.is_alive?).to be_falsey
+      expect(tlf.is_dead?).to be_truthy
     end
   end
 end

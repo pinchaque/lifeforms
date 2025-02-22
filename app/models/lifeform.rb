@@ -59,6 +59,16 @@ class Lifeform < Sequel::Model
     self.died_step = env.time_step
   end
 
+  # True if this lifeform is alive
+  def is_alive?
+    self.died_step.nil?
+  end
+
+  # True if this lifeform is dead
+  def is_dead?
+    !is_alive?
+  end
+
   def run_step
     # nothing to do in base class
     self

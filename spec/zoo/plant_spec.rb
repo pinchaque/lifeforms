@@ -149,6 +149,30 @@ describe "Plant" do
     end
   end
 
+  context ".cull" do
+    it "kills low size lifeforms" do
+      expect(lf.died_step).to be_nil
+      lf.size = 5.0
+      lf.save
+      lf.cull.save
+      expect(lf.is_alive?).to be_truthy # not dead yet
+      lf.size = 0.9 # < 1.0
+      lf.cull.save
+      expect(lf.died_step).to eq(env.time_step)
+    end
+
+    it "kills low energy lifeforms" do
+      expect(lf.died_step).to be_nil
+      lf.energy = 0.1
+      lf.save
+      lf.cull.save
+      expect(lf.is_alive?).to be_truthy # not dead yet
+      lf.energy = 0.0
+      lf.cull.save
+      expect(lf.is_dead?).to be_truthy
+    end
+  end
+
   context ".bounding_box" do
     def test_bb(x, y, size, exp_x0, exp_y0, exp_x1, exp_y1)
       lf = add_lf(x, y, size, 1.0)

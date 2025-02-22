@@ -128,12 +128,12 @@ class Plant < Lifeform
     # update our current energy level
     self.energy = [0.0, self.energy + e_env - e_meta].max
 
-    # TODO I'm working on this function
     # SURVIVAL MODE - we aren't generating enough energy to sustain ourselves
     if e_env < e_meta
       
       # downsize
       self.size /= 2.0
+      self.energy = 0.1 # so we don't kill it right away
 
       logf("SURVIVAL: energy:%f size:%f", self.energy, self.size)
     else
@@ -152,6 +152,10 @@ class Plant < Lifeform
         reproduce
       end      
     end
+    
+    # kill the lifeform off if needed
+    cull
+    logf("KILLED: energy:%f size:%f", self.energy, self.size) if is_dead?
     logf("[%s] run_step end", to_s)
     self
   end
@@ -184,6 +188,13 @@ class Plant < Lifeform
       logf("  - %s", child.to_s)
     end
     logf("After reproducing energy:%f", energy)
+    self
+  end
+
+  # Marks this organism as dead if it is too small or out of energy
+  def cull
+    mark_dead if self.size < MIN_SIZE || self.energy <= 0.0
+    self
   end
 
   # Returns the bounding box (square) around this lifeform
