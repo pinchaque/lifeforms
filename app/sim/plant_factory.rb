@@ -23,7 +23,7 @@ class PlantFactory
   def gen
     p = Plant.new
     p.environment_id = @env.id
-    p.created_step = @env.time_step
+    p.mark_born
     p.energy = Random.rand(@energy_min..@energy_max)
     p.size = @size
     p.species_id = @species.id

@@ -49,6 +49,16 @@ class Lifeform < Sequel::Model
     marshal_from_h(other.marshal_to_h)
   end
 
+  # Mark that this lifeform has been born, adjusting data members as needed
+  def mark_born
+    self.created_step = env.time_step
+  end
+
+  # Mark that this lifeform has died, adjusting data members as needed
+  def mark_dead
+    self.died_step = env.time_step
+  end
+
   def run_step
     # nothing to do in base class
     self

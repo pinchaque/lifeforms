@@ -211,4 +211,30 @@ describe "Lifeform" do
       end
     end
   end
+
+  context ".mark_born" do
+    it "sets created_step" do
+      l = TestLF.new
+      l.environment_id = env.id
+      expect(l.id).to be_nil
+      expect(l.created_step).to be_nil
+      expect(l.died_step).to be_nil
+      l.mark_born
+      expect(l.id).to be_nil
+      expect(l.created_step).to eq(3)
+      expect(l.died_step).to be_nil  
+    end
+  end
+
+  context ".mark_dead" do
+    it "sets died_step" do
+      expect(tlf.created_step).to eq(3)
+      expect(tlf.died_step).to be_nil
+      env.time_step = 5
+      env.save
+      tlf.mark_dead
+      expect(tlf.created_step).to eq(3)
+      expect(tlf.died_step).to eq(5)
+    end
+  end
 end
