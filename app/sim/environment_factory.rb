@@ -4,7 +4,7 @@ class EnvironmentFactory
   def initialize
     @width = 100.0
     @height = 100.0
-    @energy_rate = 5.0
+    @energy_rate = 10.0
   end
 
   def gen

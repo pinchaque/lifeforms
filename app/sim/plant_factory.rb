@@ -7,7 +7,7 @@ class PlantFactory
   def initialize(env)
     @env = env
     @energy_min = 10.0
-    @energy_max = 20.0
+    @energy_max = 10.0
     @size = 1.0
     @species = get_species
   end
@@ -29,12 +29,12 @@ class PlantFactory
     p.species_id = @species.id
     p.set_random_name
     p.set_loc_random
-    p.energy_absorb_perc = 0.9
-    p.energy_base = 5.0
-    p.energy_reserve_perc = 0.4
-    p.repro_threshold = 50.0
-    p.repro_num_offspring = 2
-    p.repro_energy_inherit_perc = 0.95
+    p.energy_absorb_perc = 1.0
+    p.energy_base = 1.0
+    p.energy_reserve_perc = 0.1
+    p.repro_threshold = 60.0
+    p.repro_num_offspring = 4
+    p.repro_energy_inherit_perc = 0.50
     p
   end
 end
