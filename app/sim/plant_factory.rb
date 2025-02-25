@@ -26,6 +26,7 @@ class PlantFactory
     p.mark_born
     p.energy = Random.rand(@energy_min..@energy_max)
     p.size = @size
+    p.initial_size = @size
     p.species_id = @species.id
     p.set_random_name
     p.set_loc_random

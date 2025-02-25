@@ -10,6 +10,7 @@ describe "Plant" do
     lf.species_id = species.id
     lf.energy = energy
     lf.size = size
+    lf.initial_size = 0.2
     lf.x = x
     lf.y = y
     lf.name = sprintf("add_lf(%f, %f, %f, %f)", x, y, size, energy)

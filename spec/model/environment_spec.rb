@@ -11,6 +11,7 @@ describe "Environment" do
     l.species_id = species.id
     l.energy = 10.0
     l.size = 1.0
+    l.initial_size = 0.2
     l.name = "Incredible Juniper"
     l.x = 0.0
     l.y = 0.0

@@ -42,6 +42,7 @@ class Lifeform < Sequel::Model
       species_id: other.species_id,
       energy: other.energy,
       size: other.size,
+      initial_size: other.initial_size,
       name: other.name,
       x: other.x,
       y: other.y

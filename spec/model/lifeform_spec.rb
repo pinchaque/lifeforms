@@ -18,6 +18,7 @@ describe "Lifeform" do
     l.species_id = species.id
     l.energy = 10.0
     l.size = 1.0
+    l.initial_size = 0.1
     l.name = "Incredible Juniper"
     l.x = 2.22
     l.y = 3.33
@@ -131,6 +132,7 @@ describe "Lifeform" do
       expect(lf_act.parent_id).to be_nil
       expect(lf_act.energy).to be_within(tol).of(tlf.energy)
       expect(lf_act.size).to be_within(tol).of(tlf.size)
+      expect(lf_act.initial_size).to be_within(tol).of(tlf.initial_size)
       expect(lf_act.name).to eq(tlf.name)
       expect(lf_act.x).to be_within(tol).of(tlf.x)
       expect(lf_act.y).to be_within(tol).of(tlf.y)
