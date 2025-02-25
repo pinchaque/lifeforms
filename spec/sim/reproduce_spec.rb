@@ -13,7 +13,8 @@ describe "Reproduce" do
     l.environment_id = env.id
     l.species_id = species.id
     l.energy = energy_parent
-    l.size = 1.0
+    l.size = 5.0
+    l.initial_size = 0.2
     l.name = "Incredible Juniper"
     l.generation = 3
     l.created_step = 0
@@ -35,7 +36,8 @@ describe "Reproduce" do
           expect(c.val1).to eq("foo")
           expect(c.val2).to eq(42)
           expect(c.energy).to be_within(tol).of(energy_offspring)
-          expect(c.size).to be_within(tol).of(tlf.size)
+          expect(c.size).to be_within(tol).of(tlf.initial_size) # starting size
+          expect(c.initial_size).to be_within(tol).of(tlf.initial_size)
           expect(c.name).not_to eq(tlf.name)
           expect(c.generation).to eq(tlf.generation + 1)
           expect(c.name).not_to be_nil
@@ -62,7 +64,8 @@ describe "Reproduce" do
           expect(c.val1).to eq("foo")
           expect(c.val2).to eq(42)
           expect(c.energy).to be_within(tol).of(energy_offspring)
-          expect(c.size).to be_within(tol).of(tlf.size)
+          expect(c.size).to be_within(tol).of(tlf.initial_size) # starting size
+          expect(c.initial_size).to be_within(tol).of(tlf.initial_size)
           expect(c.name).not_to eq(tlf.name)
           expect(c.generation).to eq(tlf.generation + 1)
           expect(c.name).not_to be_nil
