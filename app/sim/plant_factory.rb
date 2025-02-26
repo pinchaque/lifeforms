@@ -35,7 +35,7 @@ class PlantFactory
     p.energy_reserve_perc = 0.1
     p.repro_threshold = 60.0
     p.repro_num_offspring = 4
-    p.repro_energy_inherit_perc = 0.50
+    p.repro_energy_inherit_perc = 0.95
     p
   end
 end
