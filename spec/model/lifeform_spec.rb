@@ -8,15 +8,17 @@ describe "Lifeform" do
   let(:species) { Species.new(name: "Test Lifeform").save }
   let(:width) { 100 }
   let(:height) { 100 }
-  let(:env) { Environment.new(width: width, height: height, time_step: 0).save }
+  let(:env) { Environment.new(width: width, height: height, time_step: 3).save }
   let(:tlf) {
     l = TestLF.new
     l.val1 = "foo"
     l.val2 = 42
     l.environment_id = env.id
+    l.created_step = env.time_step
     l.species_id = species.id
     l.energy = 10.0
     l.size = 1.0
+    l.initial_size = 0.1
     l.name = "Incredible Juniper"
     l.x = 2.22
     l.y = 3.33
@@ -62,21 +64,6 @@ describe "Lifeform" do
     end
   end
 
-  def print_db
-    puts("\n--- environments ---")
-    DB.fetch("select * from environments") do |h|
-      puts row
-    end
-    puts("\n--- lifeforms ---")
-    DB.fetch("select * from lifeforms") do |row|
-      puts row
-    end
-    puts("\n--- lifeform_locs ---")
-    DB.fetch("select * from lifeform_locs") do |row|
-      puts row
-    end  
-  end
-
   context ".save" do
     it "saves to database" do
       # make sure lifeform and location are saved
@@ -90,6 +77,8 @@ describe "Lifeform" do
       expect(row[:environment_id]).to eq(env.id)
       expect(row[:species_id]).to eq(species.id)
       expect(row[:parent_id]).to be_nil
+      expect(row[:died_step]).to be_nil
+      expect(row[:created_step]).to eq(3)
       expect(row[:class_name]).to eq("TestLF")
       expect(row[:energy]).to be_within(tol).of(tlf.energy)
       expect(row[:size]).to be_within(tol).of(tlf.size)
@@ -143,6 +132,7 @@ describe "Lifeform" do
       expect(lf_act.parent_id).to be_nil
       expect(lf_act.energy).to be_within(tol).of(tlf.energy)
       expect(lf_act.size).to be_within(tol).of(tlf.size)
+      expect(lf_act.initial_size).to be_within(tol).of(tlf.initial_size)
       expect(lf_act.name).to eq(tlf.name)
       expect(lf_act.x).to be_within(tol).of(tlf.x)
       expect(lf_act.y).to be_within(tol).of(tlf.y)
@@ -155,6 +145,10 @@ describe "Lifeform" do
       expect(lf_act.id).to be_nil
       expect(lf_act.class_name).to be_nil
       expect(lf_act.obj_data).to be_nil
+
+      # created_step isn't copied and needs to be set manually
+      expect(lf_act.created_step).to be_nil
+      lf_act.created_step = 123 # pick a number so we can save
 
       # save the new object
       lf_act.save
@@ -217,6 +211,40 @@ describe "Lifeform" do
           # env boundary if distance is short
         end
       end
+    end
+  end
+
+  context ".mark_born" do
+    it "sets created_step" do
+      l = TestLF.new
+      l.environment_id = env.id
+      expect(l.id).to be_nil
+      expect(l.created_step).to be_nil
+      expect(l.died_step).to be_nil
+      expect(l.is_alive?).to be_truthy
+      expect(l.is_dead?).to be_falsey
+      l.mark_born
+      expect(l.id).to be_nil
+      expect(l.created_step).to eq(3)
+      expect(l.died_step).to be_nil  
+      expect(l.is_alive?).to be_truthy
+      expect(l.is_dead?).to be_falsey
+    end
+  end
+
+  context ".mark_dead" do
+    it "sets died_step" do
+      expect(tlf.created_step).to eq(3)
+      expect(tlf.died_step).to be_nil
+      expect(tlf.is_alive?).to be_truthy
+      expect(tlf.is_dead?).to be_falsey
+      env.time_step = 5
+      env.save
+      tlf.mark_dead
+      expect(tlf.created_step).to eq(3)
+      expect(tlf.died_step).to eq(5)
+      expect(tlf.is_alive?).to be_falsey
+      expect(tlf.is_dead?).to be_truthy
     end
   end
 end

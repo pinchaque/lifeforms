@@ -52,7 +52,7 @@ namespace "sim" do
         abort("Unable to find environment '#{id}'") if env.nil?
         log("Running #{num_gen} generations of simulation #{id}...")
     
-        (0..num_gen.to_i).each do
+        (0...num_gen.to_i).each do
             env.run_step
             log(env.to_s)
         end

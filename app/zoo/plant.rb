@@ -2,21 +2,20 @@
 # to other lifeforms.
 class Plant < Lifeform
   MIN_SIZE = 1.0
+  EXP = 3.0
 
-  # Percentage of the environmental energy availale to this lifeform that it
+  # Percentage of the environmental energy available to this lifeform that it
   # actually absorbs
   attr_accessor :energy_absorb_perc
 
-  # Energy usage per time step per unit area (aka basal metabolic rate)
-  attr_accessor :energy_metabolic_rate
+  # Amount of energy the lifeform takes at size 1; this is used to determine
+  # the metabolic energy usage as the lifeform grows and shrinks
+  attr_accessor :energy_base
 
-  # Amount of energy it takes to grow/shrink by a unit of size. This is used
-  # both for growth as well as size reduction.
-  attr_accessor :energy_size_ratio
-
-  # Percentage of its positive energy balance the lifeform invests into size 
-  # growth as opposed to increasing energy reserves.
-  attr_accessor :growth_invest_perc
+  # Target percentage of the incoming energy that this lifeform tries to 
+  # move into its energy stores. It will grow or shrink to try to achieve
+  # this percentage
+  attr_accessor :energy_reserve_perc
 
   # Energy level at which the lifeform reproduces
   attr_accessor :repro_threshold
@@ -46,9 +45,8 @@ class Plant < Lifeform
   def marshal_to_h
     super.merge({
       energy_absorb_perc: energy_absorb_perc,
-      energy_metabolic_rate: energy_metabolic_rate,
-      energy_size_ratio: energy_size_ratio,
-      growth_invest_perc: growth_invest_perc,
+      energy_base: energy_base,
+      energy_reserve_perc: energy_reserve_perc,
       repro_threshold: repro_threshold,
       repro_num_offspring: repro_num_offspring,
       repro_energy_inherit_perc: repro_energy_inherit_perc
@@ -57,13 +55,16 @@ class Plant < Lifeform
 
   def marshal_from_h(h)
     @energy_absorb_perc = h[:energy_absorb_perc]
-    @energy_metabolic_rate = h[:energy_metabolic_rate]
-    @energy_size_ratio = h[:energy_size_ratio]
-    @growth_invest_perc = h[:growth_invest_perc]
+    @energy_base = h[:energy_base]
+    @energy_reserve_perc = h[:energy_reserve_perc]
     @repro_threshold = h[:repro_threshold]
     @repro_num_offspring = h[:repro_num_offspring]
     @repro_energy_inherit_perc = h[:repro_energy_inherit_perc]
     super(h)
+  end
+
+  def energy_fn
+    EnergyFn.new(Plant::EXP, self.energy_base)
   end
 
   # The gross amount of energy supplied to this lifeform based on its area
@@ -98,47 +99,7 @@ class Plant < Lifeform
   # Returns the total metabolic energy needed for a timestep based on the 
   # current lifeform size.
   def metabolic_energy
-    area() * self.energy_metabolic_rate
-  end
-
-  # Resizes this lifeform up or down based on the specified energy delta and
-  # using the energy_size_ratio. Specifying a positive energy means we are 
-  # growing by using up that amount. Negative means shrinking and gaining
-  # that amount. This will update both self.size and self.energy after the 
-  # resize.
-  # If the requested resize cannot be performed (due to size or energy 
-  # limitations) then the function will do what it can, reducing size or
-  # energy to 0.0 as appropriate. Then it will return false.  
-  def resize_for_energy(egy)
-    # growing
-    if egy > 0.0
-      if egy > self.energy
-        # cannot use more energy than we have
-        self.size += Math.sqrt(self.energy / self.energy_size_ratio)
-        self.energy = 0.0
-        false
-      else
-        self.size += Math.sqrt(egy / self.energy_size_ratio)
-        self.energy -= egy
-        true
-      end
-    # shrinking
-    elsif egy < 0.0
-      delta_size = -1.0 * Math.sqrt(-1.0 * egy / self.energy_size_ratio)
-      if self.size + delta_size < 0.0
-        # cannot shrink more than our size
-        self.energy += self.size * self.size * self.energy_size_ratio
-        self.size = 0.0
-        false
-      else
-        self.size += delta_size
-        self.energy -= egy
-        true
-      end
-    # no-op
-    else
-      true
-    end
+    energy_fn.energy(self.size)
   end
 
   # Runs a time step for this lifeform. Figures out environmental energy, 
@@ -150,49 +111,51 @@ class Plant < Lifeform
     logf("[%s] run_step start", to_s)
 
     # Calc out how much energy we can absorb from the environment
-    new_env_energy = env_energy() * perc(self.energy_absorb_perc)
+    e_env = env_energy() * perc(self.energy_absorb_perc)
 
     # Subtract off our basal metabolic rate to get the energy delta for this
     # time step
-    meta = metabolic_energy()
-    delta_energy = new_env_energy - meta
+    e_meta = metabolic_energy()
+
+    # calculate the target amount of energy to reserve
+    e_reserve = e_env * perc(self.energy_reserve_perc)
+
+    # and the target metabolic energy usage
+    e_meta_target = e_env - e_reserve
     
-    logf("env_energy:%f - metabolic:%f = delta:%f", new_env_energy, meta, delta_energy)
+    logf("e_env:%f e_meta:%f e_reserve:%f e_meta_target:%f", e_env, e_meta, e_reserve, e_meta_target)
 
+    # update our current energy level
+    self.energy = [0.0, self.energy + e_env - e_meta].max
 
-    # If we have an energy surplus then we are in growth mode
-    if delta_energy > 0.0
-      # add to our energy stores
-      self.energy += delta_energy
+    # SURVIVAL MODE - we aren't generating enough energy to sustain ourselves
+    if e_env < e_meta
+      
+      # downsize
+      self.size /= 2.0
+      self.energy = 0.1 # so we don't kill it right away
 
-      # invest some of this surplus into growth
-      growth_energy = delta_energy * perc(growth_invest_perc)
-      resize_for_energy(growth_energy)
-      logf("Growing with growth_energy:%f; new size:%f energy:%f", growth_energy, size, energy)
+      logf("SURVIVAL: energy:%f size:%f", self.energy, self.size)
+    else
+      # we are self-sustaining but might be not sized right (too big or too 
+      # small). so let's figure out what that size should be and get halfway 
+      # there
+      size_target = energy_fn.size(e_meta_target)
+      size_new = (self.size + size_target) / 2.0
+      logf("SUSTAINING: energy:%f size_old:%f size_target:%f size_new:%f", 
+        self.energy, self.size, size_target, size_new)
+      self.size = size_new
 
       # now check if we have enough energy to reproduce
       if self.energy >= repro_threshold
         logf("Reproducing since energy:%f > repro_thresh:%f", self.energy, repro_threshold)
         reproduce
-      end
-    # Else if we have an energy deficit then we are in reduce mode
-    elsif delta_energy < 0.0
-      # Reduce current energy by this delta; this may push energy negative
-      self.energy += delta_energy
-
-      # If we've gone negative then we need to downsize the lifeform
-      growth_energy = self.energy
-      if growth_energy < 0.0
-        resize_for_energy(growth_energy)
-        logf("Shrinking with growth_energy:%f; new size:%f energy:%f", growth_energy, size, energy)
-
-        if size < 0.0 || energy < 0.0
-          # TODO: if the organism is too small then we kill it
-          self.size = 0.0
-          self.energy = 0.0
-        end
-      end
+      end      
     end
+    
+    # kill the lifeform off if needed
+    cull
+    logf("KILLED: energy:%f size:%f", self.energy, self.size) if is_dead?
     logf("[%s] run_step end", to_s)
     self
   end
@@ -225,6 +188,13 @@ class Plant < Lifeform
       logf("  - %s", child.to_s)
     end
     logf("After reproducing energy:%f", energy)
+    self
+  end
+
+  # Marks this organism as dead if it is too small or out of energy
+  def cull
+    mark_dead if self.size < MIN_SIZE || self.energy <= 0.0
+    self
   end
 
   # Returns the bounding box (square) around this lifeform

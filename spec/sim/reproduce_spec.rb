@@ -1,17 +1,26 @@
 describe "Reproduce" do
   let(:tol) { 0.0001 }
+  let(:species) { Species.new(name: "Test Lifeform").save }
   let(:energy_parent) { 50.0 }
   let(:energy_offspring) { 22.2 }
+  let(:width) { 100 }
+  let(:height) { 100 }
+  let(:env) { Environment.new(width: width, height: height, time_step: 5).save }
   let(:tlf) {
     l = TestLF.new
     l.val1 = "foo"
     l.val2 = 42
+    l.environment_id = env.id
+    l.species_id = species.id
     l.energy = energy_parent
-    l.size = 1.0
+    l.size = 5.0
+    l.initial_size = 0.2
     l.name = "Incredible Juniper"
-    l.id = '12345'
     l.generation = 3
-    l
+    l.created_step = 0
+    l.x = 2.22
+    l.y = 3.33
+    l.save
   }
 
   context ".generate" do
@@ -27,12 +36,13 @@ describe "Reproduce" do
           expect(c.val1).to eq("foo")
           expect(c.val2).to eq(42)
           expect(c.energy).to be_within(tol).of(energy_offspring)
-          expect(c.size).to be_within(tol).of(tlf.size)
+          expect(c.size).to be_within(tol).of(tlf.initial_size) # starting size
+          expect(c.initial_size).to be_within(tol).of(tlf.initial_size)
           expect(c.name).not_to eq(tlf.name)
           expect(c.generation).to eq(tlf.generation + 1)
           expect(c.name).not_to be_nil
-          #expect(c.x).to be_between(0.0, width).inclusive
-          #expect(c.y).to be_between(0.0, height).inclusive  
+          expect(c.died_step).to be_nil
+          expect(c.created_step).to eq(env.time_step)
           expect(c.id).to be_nil # not saved
           expect(c.parent_id).to eq(tlf.id)
         end
@@ -54,10 +64,13 @@ describe "Reproduce" do
           expect(c.val1).to eq("foo")
           expect(c.val2).to eq(42)
           expect(c.energy).to be_within(tol).of(energy_offspring)
-          expect(c.size).to be_within(tol).of(tlf.size)
+          expect(c.size).to be_within(tol).of(tlf.initial_size) # starting size
+          expect(c.initial_size).to be_within(tol).of(tlf.initial_size)
           expect(c.name).not_to eq(tlf.name)
           expect(c.generation).to eq(tlf.generation + 1)
           expect(c.name).not_to be_nil
+          expect(c.died_step).to be_nil
+          expect(c.created_step).to eq(env.time_step)
           expect(c.id).to be_nil # not saved
           expect(c.parent_id).to eq(tlf.id)
         end

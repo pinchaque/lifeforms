@@ -13,8 +13,9 @@ class Reproduce
       child.set_random_name
       child.parent_id = @parent.id
       child.generation = @parent.generation + 1
-      child.size = 1.0
-      # TODO should use some kind of "initial size" to set size and distance
+      child.mark_born
+      child.size = @parent.initial_size # set child size based on parent init_size
+      child.initial_size = @parent.initial_size # inherit value
       yield child if block_given? 
       children << child
     end

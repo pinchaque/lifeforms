@@ -42,11 +42,34 @@ class Lifeform < Sequel::Model
       species_id: other.species_id,
       energy: other.energy,
       size: other.size,
+      initial_size: other.initial_size,
       name: other.name,
       x: other.x,
       y: other.y
     )
     marshal_from_h(other.marshal_to_h)
+  end
+
+  # Mark that this lifeform has been born, adjusting data members as needed
+  def mark_born
+    self.created_step = env.time_step
+    self
+  end
+
+  # Mark that this lifeform has died, adjusting data members as needed
+  def mark_dead
+    self.died_step = env.time_step
+    self
+  end
+
+  # True if this lifeform is alive
+  def is_alive?
+    self.died_step.nil?
+  end
+
+  # True if this lifeform is dead
+  def is_dead?
+    !is_alive?
   end
 
   def run_step

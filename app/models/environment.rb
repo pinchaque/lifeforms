@@ -12,9 +12,9 @@ class Environment  < Sequel::Model
     lifeforms_ds.all
   end
   
-  # Returns Sequel Dataset for all lifeforms in this environment.
+  # Returns Sequel Dataset for all living lifeforms in this environment.
   def lifeforms_ds
-    Lifeform.where(environment_id: id)
+    Lifeform.where(environment_id: id, died_step: nil)
   end
 
   def run_steps(n)
