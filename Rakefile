@@ -3,12 +3,8 @@ require_relative './config/environment'
 ######################################################################
 # Helper functions
 #######################################################################
-def debug
-    true
-end
-
 def runcmd(cmd)      
-    log(cmd) if debug
+    Log.debug(cmd)
     system(cmd)
 end
 
@@ -32,15 +28,15 @@ namespace "sim" do
             (0..5).each do
                 pf.gen.save
             end
-            log("Created simulation: #{env.to_s}")
+            Log.info("Created simulation: #{env.to_s}")
         end
     end
 
     desc "Lists all existing simulations"
     task :list do
-        log("Available simulation environments:")
+        Log.info("Available simulation environments:")
         Environment.order(:created_at).reverse.each do |env|
-            log("  * #{env.to_s}")
+            Log.info("  * #{env.to_s}")
         end
     end
 
@@ -50,11 +46,11 @@ namespace "sim" do
         num_gen = args[:n]
         env = Environment.where(id: id).first
         abort("Unable to find environment '#{id}'") if env.nil?
-        log("Running #{num_gen} generations of simulation #{id}...")
+        Log.info("Running #{num_gen} generations of simulation #{id}...")
     
         (0...num_gen.to_i).each do
             env.run_step
-            log(env.to_s)
+            Log.info(env.to_s)
         end
     end
 
@@ -63,30 +59,30 @@ namespace "sim" do
         id = args[:id]
         env = Environment.where(id: id).first
         abort("Unable to find environment '#{id}'") if env.nil?
-        log(env.to_s_detailed)
+        Log.info(env.to_s_detailed)
     end
 
     desc "Deletes a single simulation"
     task :delete, [:id] do |t, args|
         id = args[:id]
         DB.transaction do
-            log("Removing data associated with simulation #{id}...")
+            Log.info("Removing data associated with simulation #{id}...")
             [Lifeform].each do |klass|
                 n = klass.where(environment_id: id).delete
-                log("Deleted #{n} rows from #{klass.to_s}")
+                Log.info("Deleted #{n} rows from #{klass.to_s}")
             end
             Environment.where(id: id).delete
-            log("Deleted simuilation #{id}")
+            Log.info("Deleted simuilation #{id}")
         end
     end
 
     desc "Deletes all existing simulations from the database"
     task :deleteall do
         DB.transaction do
-            log("Removing existing data...")
+            Log.info("Removing existing data...")
             [Lifeform, Environment, Species].each do |klass|
                 n = klass.where(true).delete
-                log("Deleted #{n} rows from #{klass.to_s}")
+                Log.info("Deleted #{n} rows from #{klass.to_s}")
             end
         end
     end
@@ -116,14 +112,14 @@ namespace "db" do
 
     desc "Prints current schema version"
     task :ver do
-        log("Current schema version: #{schema_ver}")
+        Log.info("Current schema version: #{schema_ver}")
     end
 
     desc "Migrates schema down one version"
     task :down do
         ver = schema_ver
         last_ver = ver - 1
-        log("Migrating down from #{ver} to #{last_ver}")
+        Log.info("Migrating down from #{ver} to #{last_ver}")
         migrate_to(last_ver)
     end
 
@@ -131,16 +127,16 @@ namespace "db" do
     task :up do
         ver = schema_ver
         next_ver = ver + 1
-        log("Migrating up from #{ver} to #{next_ver}")
+        Log.info("Migrating up from #{ver} to #{next_ver}")
         migrate_to(next_ver)
     end
 
     desc "Runs all migrations starting at current schema version"
     task :all do
         ver = schema_ver
-        log("Migrating up from starting version: #{ver}")
+        Log.info("Migrating up from starting version: #{ver}")
         runcmd("sequel -m #{mig_dir} #{db_cfg}")
-        log("Ending schema version: #{schema_ver}")
+        Log.info("Ending schema version: #{schema_ver}")
     end
 
     # NOTE: There's an issue that if you do a schema reset then you won't be
@@ -155,11 +151,11 @@ namespace "db" do
     task :reset, [:confirm] do |t, args|
         c = args[:confirm]
         if c == 'y'
-            log("Resetting to schema version 0")
+            Log.info("Resetting to schema version 0")
             migrate_to(0)
         else
-            log("*** WARNING *** Resets your database to original state (schema 0)")
-            log("If you really want to do this rerun this target with argument [y]")
+            Log.info("*** WARNING *** Resets your database to original state (schema 0)")
+            Log.info("If you really want to do this rerun this target with argument [y]")
         end
     end
 end
