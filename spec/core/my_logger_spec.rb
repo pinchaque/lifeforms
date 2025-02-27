@@ -25,8 +25,8 @@ end
 
 describe "Logger" do
   let(:tout) { TestOutputter.new }
-  let(:level) { Logger::INFO }
-  let(:logger) { Logger.new(level, tout) }
+  let(:level) { MyLogger::INFO }
+  let(:logger) { MyLogger.new(level, tout) }
   let(:time_re) { '\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}' }
 
   context ".fmt_time" do
@@ -78,42 +78,42 @@ describe "Logger" do
     let(:ctx) { {} }
 
     context "logger set to INFO" do
-      let(:level) { Logger::INFO }
+      let(:level) { MyLogger::INFO }
       let(:exp) { /^\[#{time_re}\] #{msg}$/ }
 
       it "adds error message" do
         expect(tout.str).to eq("")
-        logger.log(Logger::ERROR, msg)
+        logger.log(MyLogger::ERROR, msg)
         expect(tout.str).to match exp
       end
 
       it "adds warning message" do
         expect(tout.str).to eq("")
-        logger.log(Logger::WARNING, msg)
+        logger.log(MyLogger::WARNING, msg)
         expect(tout.str).to match exp
       end
 
       it "adds info message" do
         expect(tout.str).to eq("")
-        logger.log(Logger::INFO, msg)
+        logger.log(MyLogger::INFO, msg)
         expect(tout.str).to match exp
       end
 
       it "ignores debug message" do
         expect(tout.str).to eq("")
-        logger.log(Logger::DEBUG, msg)
+        logger.log(MyLogger::DEBUG, msg)
         expect(tout.str).to eq("")
       end
 
       it "ignores trace message" do
         expect(tout.str).to eq("")
-        logger.log(Logger::TRACE, msg)
+        logger.log(MyLogger::TRACE, msg)
         expect(tout.str).to eq("")
       end
     end
 
     context "logger set to DEBUG, with context" do
-      let(:level) { Logger::DEBUG }
+      let(:level) { MyLogger::DEBUG }
       let(:ctx) { { foo: "bar" } }
       let(:exp) { /^\[#{time_re}\] #{msg} \[foo:bar\]$/ }
 

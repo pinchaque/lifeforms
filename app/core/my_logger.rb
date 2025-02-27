@@ -42,26 +42,26 @@ class MyLogger
 
     # Outputs error log message with specified context
     def error(str, context = {})
-        log(Logger::ERROR, str, context)
+        log(MyLogger::ERROR, str, context)
     end
 
     # Outputs warning log message with specified context
     def warning(str, context = {})
-        log(Logger::WARNING, str, context)
+        log(MyLogger::WARNING, str, context)
     end
 
     # Outputs informational log message with specified context
     def info(str, context = {})
-        log(Logger::INFO, str, context)
+        log(MyLogger::INFO, str, context)
     end
 
     # Outputs debugging log message with specified context
     def debug(str, context = {})
-        log(Logger::DEBUG, str, context)
+        log(MyLogger::DEBUG, str, context)
     end
 
     # Outputs debug trace log message with specified context
     def trace(str, context = {})
-        log(Logger::TRACE, str, context)
+        log(MyLogger::TRACE, str, context)
     end
 end
