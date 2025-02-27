@@ -1,8 +1,4 @@
 describe "Plant" do
-  def debug
-    false
-  end
-
   def add_lf(x, y, size, energy)
     lf = Plant.new
     lf.environment_id = env.id
@@ -21,7 +17,6 @@ describe "Plant" do
     lf.repro_num_offspring = marshal_data[:repro_num_offspring]
     lf.repro_energy_inherit_perc = marshal_data[:repro_energy_inherit_perc]
     lf.save
-    puts("Added lifeform #{lf}") if debug
     lf
   end
 

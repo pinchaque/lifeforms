@@ -108,7 +108,7 @@ class Plant < Lifeform
   def run_step
     super
 
-    logf("[%s] run_step start", to_s)
+    Log.trace("[%s] run_step start", to_s)
 
     # Calc out how much energy we can absorb from the environment
     e_env = env_energy() * perc(self.energy_absorb_perc)
@@ -123,7 +123,7 @@ class Plant < Lifeform
     # and the target metabolic energy usage
     e_meta_target = e_env - e_reserve
     
-    logf("e_env:%f e_meta:%f e_reserve:%f e_meta_target:%f", e_env, e_meta, e_reserve, e_meta_target)
+    Log.trace("e_env:%f e_meta:%f e_reserve:%f e_meta_target:%f", e_env, e_meta, e_reserve, e_meta_target)
 
     # update our current energy level
     self.energy = [0.0, self.energy + e_env - e_meta].max
@@ -135,28 +135,28 @@ class Plant < Lifeform
       self.size /= 2.0
       self.energy = 0.1 # so we don't kill it right away
 
-      logf("SURVIVAL: energy:%f size:%f", self.energy, self.size)
+      Log.trace("SURVIVAL: energy:%f size:%f", self.energy, self.size)
     else
       # we are self-sustaining but might be not sized right (too big or too 
       # small). so let's figure out what that size should be and get halfway 
       # there
       size_target = energy_fn.size(e_meta_target)
       size_new = (self.size + size_target) / 2.0
-      logf("SUSTAINING: energy:%f size_old:%f size_target:%f size_new:%f", 
+      Log.trace("SUSTAINING: energy:%f size_old:%f size_target:%f size_new:%f", 
         self.energy, self.size, size_target, size_new)
       self.size = size_new
 
       # now check if we have enough energy to reproduce
       if self.energy >= repro_threshold
-        logf("Reproducing since energy:%f > repro_thresh:%f", self.energy, repro_threshold)
+        Log.trace("Reproducing since energy:%f > repro_thresh:%f", self.energy, repro_threshold)
         reproduce
       end      
     end
     
     # kill the lifeform off if needed
     cull
-    logf("KILLED: energy:%f size:%f", self.energy, self.size) if is_dead?
-    logf("[%s] run_step end", to_s)
+    Log.trace("KILLED: energy:%f size:%f", self.energy, self.size) if is_dead?
+    Log.trace("[%s] run_step end", to_s)
     self
   end
 
@@ -179,15 +179,15 @@ class Plant < Lifeform
     self.energy -= offspring_energy_tot
     save
 
-    logf("Creating %d children...", repro_num_offspring)
+    Log.trace("Creating %d children...", repro_num_offspring)
 
     r = Reproduce.new(self)
     r.generate(offspring_energy_each, repro_num_offspring) do |child|
       child.set_loc_dist(self.x, self.y, self.radius)
       child.save
-      logf("  - %s", child.to_s)
+      Log.trace("  - %s", child.to_s)
     end
-    logf("After reproducing energy:%f", energy)
+    Log.trace("After reproducing energy:%f", energy)
     self
   end
 

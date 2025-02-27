@@ -1,7 +1,7 @@
 require 'date'
 
 # Class that handles logging for the application.
-class Logger
+class MyLogger
     ERROR = 1
     WARNING = 2
     INFO = 3
