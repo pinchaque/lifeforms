@@ -145,6 +145,8 @@ GEM
       rspec-support (~> 3.13.0)
     rspec-support (3.13.2)
     ruby2_keywords (0.0.5)
+    rubystats (0.4.1)
+      matrix
     sequel (5.88.0)
       bigdecimal
     shellany (0.0.1)
@@ -196,6 +198,7 @@ DEPENDENCIES
   rackup (~> 2.2)
   rake
   rspec
+  rubystats
   sequel
   shotgun
   sinatra

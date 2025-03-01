@@ -135,4 +135,13 @@ class Lifeform < Sequel::Model
       generation: self.generation
     }
   end
+
+  # Mutates various data in this lifeform to provide genetic diversity.
+  # Typically this would be run on an offspring lifeform after it is 
+  # created. Subclasses should override this to mutate the data they
+  # contain.
+  def mutate
+    self.initial_size = 0.0 # TODO
+    self
+  end
 end

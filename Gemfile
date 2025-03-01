@@ -13,6 +13,7 @@ gem "rackup", "~> 2.2"
 gem "puma", "~> 6.5"
 gem "yaml"
 gem "guard-rack"
+gem "rubystats"
 
 
 group :test do
