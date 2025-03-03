@@ -79,4 +79,24 @@ module Program
       end
     end
   end
+
+  # # Constant TRUE
+  # def truthy
+  #   Expr::True.new
+  # end
+
+  # # Logical NOT
+  # def not(e)
+  #   Expr::Not.new(e)
+  # end
+
+  # # Logical AND
+  # def and(*e)
+  #   Expr::And.new(e...)
+  # end
+
+  # # Logical OR
+  # def or(*e)
+  #   Expr::Or.new(e...)
+  # end
 end
