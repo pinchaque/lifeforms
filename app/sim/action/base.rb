@@ -1,4 +1,4 @@
 module Action
-  class Base < Program::Node
-  end
+  # class Base < Program::Node
+  #end
 end
