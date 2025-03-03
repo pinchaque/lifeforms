@@ -76,7 +76,7 @@ module Program
       end
       
       def to_s
-        "#{@e1} #{@op_s} #{@e2}"
+        "(#{@e1} #{@op_s} #{@e2})"
       end
 
       def get_val(v, str)
