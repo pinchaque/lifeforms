@@ -29,74 +29,70 @@ module Program
     end
 
     # Logical NOT
-    class Not < Base
-      attr_accessor :expr
-
+    class Not
       def initialize(expr)
         @expr = expr
       end
 
       def eval(v)
-        !expr.eval(v)
+        !@expr.eval(v)
       end
       
       def to_s
-        "!(#{expr.to_s})"
+        "!#{@expr.to_s}"
       end
     end
 
     # Logical AND
-    class And < Base
-      attr_accessor :exprs
-
+    class And
       def initialize(*exprs)
         @exprs = exprs
       end
 
       def eval(v)
-        exprs.all? { |expr| expr.eval(v) }
+        @exprs.all? { |expr| expr.eval(v) }
       end
       
       def to_s
-        exprs.map{ |expr| "(#{expr.to_s})" }.join(" && ")
+        ret = @exprs.map{ |expr| "#{expr.to_s}" }.join(" && ")
+        (@exprs.count > 1) ? "(#{ret})" : ret
       end
     end
 
     # Logical OR
-    class Or < Base
-      attr_accessor :exprs
-
+    class Or
       def initialize(*exprs)
         @exprs = exprs
       end
 
       def eval(v)
-        exprs.any? { |expr| expr.eval(v) }
+        @exprs.any? { |expr| expr.eval(v) }
       end
       
       def to_s
-        exprs.map{ |expr| "(#{expr.to_s})" }.join(" || ")
+        ret = @exprs.map{ |expr| "#{expr.to_s}" }.join(" || ")
+        (@exprs.count > 1) ? "(#{ret})" : ret
       end
     end
   end
 
-  # # Constant TRUE
-  # def truthy
-  #   Expr::True.new
-  # end
+  # Constant TRUE
+  def e_true
+    Expr::True.new
+  end
 
-  # # Logical NOT
-  # def not(e)
-  #   Expr::Not.new(e)
-  # end
+  # Logical NOT
+  def e_not(e)
+    Expr::Not.new(e)
+  end
 
-  # # Logical AND
-  # def and(*e)
-  #   Expr::And.new(e...)
-  # end
+  # Logical AND
+  def e_and(*e)
+    Expr::And.new(*e)
+  end
 
-  # # Logical OR
-  # def or(*e)
-  #   Expr::Or.new(e...)
-  # end
+  # Logical OR
+  def e_or(*e)
+    Expr::Or.new(*e)
+  end
 end
