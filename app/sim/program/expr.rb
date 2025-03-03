@@ -6,6 +6,9 @@ module Program
       # def unmarshal(str)
       # end
 
+  # Future stuff:
+  # Simple math: Plus, Minus, Mult, Div
+  # 
     # Expresssion that always returns true
     class True
       def eval(v)
@@ -64,19 +67,79 @@ module Program
       end
     end
 
-    # Numeric Equality
-    class Equal
-      def initialize(e1, e2)
+    # Base class for numeric comparisons
+    class NumCmp
+      def initialize(e1, e2, op_s)
         @e1 = e1
         @e2 = e2
-      end
-
-      def eval(v)
-        v[@e1.to_sym] == v[@e2.to_sym]
+        @op_s = op_s
       end
       
       def to_s
-        "#{@e1} == #{@e2}"
+        "#{@e1} #{@op_s} #{@e2}"
+      end
+
+      def get_val(v, str)
+        v[str.to_sym].to_f
+      end
+
+      def eval(v)
+        cmp(get_val(v, @e1), get_val(v, @e2))
+      end
+    end
+
+    # Equality
+    class Equal < NumCmp
+      def initialize(e1, e2)
+        super(e1, e2, "==")
+      end
+
+      def cmp(a, b)
+        a == b
+      end
+    end
+  
+    # Less Than
+    class LT < NumCmp
+      def initialize(e1, e2)
+        super(e1, e2, "<")
+      end
+
+      def cmp(a, b)
+        a < b
+      end
+    end
+
+    # Less Than or Equal
+    class LTE < NumCmp
+      def initialize(e1, e2)
+        super(e1, e2, "<=")
+      end
+
+      def cmp(a, b)
+        a <= b
+      end
+    end
+
+    # Greater Than
+    class GT < NumCmp
+      def initialize(e1, e2)
+        super(e1, e2, ">")
+      end
+
+      def cmp(a, b)
+        a > b
+      end
+    end
+
+    # Greater Than or Equal
+    class GTE < NumCmp
+      def initialize(e1, e2)
+        super(e1, e2, ">=")
+      end
+
+      def cmp(a, b)
+        a >= b
       end
     end
   end
@@ -107,5 +170,25 @@ module Program
   # Numeric equality
   def e_equal(e1, e2)
     Expr::Equal.new(e1, e2)
+  end
+
+  # Numeric less than
+  def e_lt(e1, e2)
+    Expr::LT.new(e1, e2)
+  end
+
+  # Numeric less than or equal to
+  def e_lte(e1, e2)
+    Expr::LTE.new(e1, e2)
+  end
+
+  # Numeric greater than
+  def e_gt(e1, e2)
+    Expr::GT.new(e1, e2)
+  end
+
+  # Numeric greater than or equal to
+  def e_gte(e1, e2)
+    Expr::GTE.new(e1, e2)
   end
 end
