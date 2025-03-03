@@ -186,6 +186,29 @@ describe "Expr" do
   end
 
   context "Exceptions" do
-    
+    let(:h) { {
+      foo: 1.0,
+      bar: 2.0,
+      quux: 2.0,
+      str: "non numeric string",
+      emptystr: nil
+    } }
+
+    def t_err(e, str_exp, exception_exp)
+      expect(e.to_s).to eq(str_exp)
+      expect{e.eval(h)}.to raise_error(exception_exp)
+    end
+
+    it "Missing Value" do
+      t_err(e_lt(:foo, :xxx), "(foo < xxx)", "Missing value for symbol 'xxx'")
+    end
+
+    it "Non-numeric Value" do
+      t_err(e_lt(:foo, :str), "(foo < str)", "Value for 'str' is not numeric ('non numeric string')")
+    end
+
+    it "Non-numeric Value" do
+      t_err(e_lt(:foo, :emptystr), "(foo < emptystr)", "Value for 'emptystr' is nil")
+    end
   end
 end

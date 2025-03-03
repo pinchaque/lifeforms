@@ -80,7 +80,18 @@ module Program
       end
 
       def get_val(v, str)
-        v[str.to_sym].to_f
+        sym = str.to_sym
+        raise "Missing value for symbol '#{sym}'" unless v.has_key?(sym)
+        val = v[sym]
+        begin
+          Kernel.Float(val)
+        rescue ArgumentError
+          # Float("123.0_badstring") #=> ArgumentError: invalid value for Float(): "123.0_badstring"
+          raise "Value for '#{sym}' is not numeric ('#{val}')"
+        rescue TypeError
+          # Float(nil) => TypeError: can't convert nil into Float
+          raise "Value for '#{sym}' is nil"
+        end
       end
 
       def eval(v)
