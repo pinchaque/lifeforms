@@ -1,21 +1,10 @@
 module Program
   module Expr
-    # Interface parent class for all expressions
-    class Base
-      def eval(v)
-        raise "Invalid call to Expr::Base.eval()"
-      end
-      
-      def to_s
-        raise "Invalid call to Expr::Base.to_s()"
-      end
-
       # def marshal        
       # end
 
       # def unmarshal(str)
       # end
-    end
 
     # Expresssion that always returns true
     class True
@@ -74,7 +63,26 @@ module Program
         (@exprs.count > 1) ? "(#{ret})" : ret
       end
     end
+
+    # Numeric Equality
+    class Equal
+      def initialize(e1, e2)
+        @e1 = e1
+        @e2 = e2
+      end
+
+      def eval(v)
+        v[@e1.to_sym] == v[@e2.to_sym]
+      end
+      
+      def to_s
+        "#{@e1} == #{@e2}"
+      end
+    end
   end
+
+  # The below functions are helpers to create the above classes. This is most
+  # useful for testing and hard-coded behaviors.
 
   # Constant TRUE
   def e_true
@@ -94,5 +102,10 @@ module Program
   # Logical OR
   def e_or(*e)
     Expr::Or.new(*e)
+  end
+
+  # Numeric equality
+  def e_equal(e1, e2)
+    Expr::Equal.new(e1, e2)
   end
 end

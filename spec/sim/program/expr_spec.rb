@@ -97,4 +97,27 @@ describe "Expr" do
       expect(e.eval(h)).to be false
     end
   end
+  
+
+  context "Cmp Basics" do
+    let(:h) { {
+      foo: 1.0,
+      bar: 2.0,
+      quux: 2.0 
+    } }
+
+    it "Equal" do
+      e = e_equal(:foo, :foo)
+      expect(e.to_s).to eq("foo == foo")
+      expect(e.eval(h)).to be true
+    end
+
+    # LT
+    # LTE
+    # GT
+    # GTE
+  end
+
+  # Future stuff:
+  # Simple math: Plus, Minus, Mult, Div
 end
