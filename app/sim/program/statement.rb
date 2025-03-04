@@ -37,4 +37,17 @@ module Program
       end
     end
   end
+
+  # The below functions are helpers to create the above classes. This is most
+  # useful for testing and hard-coded behaviors.
+
+  # Sequence of statements
+  def s_seq(*sts)
+    Statement::Sequence.new(*sts)
+  end
+
+  # Executes s_true or s_false depending on expr_bool
+  def s_if(expr_bool, s_true, s_false)
+    Statement::If.new(expr_bool, s_true, s_false)
+  end
 end

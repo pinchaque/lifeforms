@@ -10,7 +10,7 @@ describe "Statement" do
   let(:f1) { e_not(e_true) }
 
   context "Sequence" do
-    let(:st) { Statement::Sequence.new(a1, a2, a3) }
+    let(:st) { s_seq(a1, a2, a3) }
 
     it "executes actions" do
       exp = ["foo", "bar", "quux"]
@@ -20,20 +20,20 @@ describe "Statement" do
 
   context "If" do
     it "executes true action" do
-      st = Statement::If.new(t1, a1, a2)
+      st = s_if(t1, a1, a2)
       expect(st.exec(ctx)).to eq("foo")
     end
 
     it "executes false action" do
-      st = Statement::If.new(f1, a1, a2)
+      st = s_if(f1, a1, a2)
       expect(st.exec(ctx)).to eq("bar")
     end
   end
 
   context "Nested Sequence -> If" do
-    let(:if1) { Statement::If.new(t1, a2, a3) }
-    let(:if2) { Statement::If.new(f1, a2, a3) }
-    let(:st) { Statement::Sequence.new(a1, if1, if2) }
+    let(:if1) { s_if(t1, a2, a3) }
+    let(:if2) { s_if(f1, a2, a3) }
+    let(:st) { s_seq(a1, if1, if2) }
 
     it "executes actions" do
       exp = ["foo", "bar", "quux"]
@@ -42,16 +42,16 @@ describe "Statement" do
   end
   
   context "Nested If -> Sequence" do
-    let(:seq1) { Statement::Sequence.new(a1, a2, a3) }
-    let(:seq2) { Statement::Sequence.new(a3, a2, a1) }
+    let(:seq1) { s_seq(a1, a2, a3) }
+    let(:seq2) { s_seq(a3, a2, a1) }
 
     it "executes true sequence" do
-      st = Statement::If.new(t1, seq1, seq2)
+      st = s_if(t1, seq1, seq2)
       expect(st.exec(ctx)).to eq(["foo", "bar", "quux"])
     end 
 
     it "executes false sequence" do
-      st = Statement::If.new(f1, seq1, seq2)
+      st = s_if(f1, seq1, seq2)
       expect(st.exec(ctx)).to eq(["quux", "bar", "foo"])
     end 
   end
