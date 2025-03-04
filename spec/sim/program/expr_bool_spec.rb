@@ -1,6 +1,6 @@
 include Program
 
-describe "Expr" do
+describe "ExprBool" do
   let(:h) { {} }
 
   def t(expr, str_exp, eval_exp)

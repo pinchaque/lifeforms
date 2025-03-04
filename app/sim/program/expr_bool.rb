@@ -1,5 +1,5 @@
 module Program
-  module Expr
+  module ExprBool
       # def marshal        
       # end
 
@@ -160,46 +160,46 @@ module Program
 
   # Constant TRUE
   def e_true
-    Expr::True.new
+    ExprBool::True.new
   end
 
   # Logical NOT
   def e_not(e)
-    Expr::Not.new(e)
+    ExprBool::Not.new(e)
   end
 
   # Logical AND
   def e_and(*e)
-    Expr::And.new(*e)
+    ExprBool::And.new(*e)
   end
 
   # Logical OR
   def e_or(*e)
-    Expr::Or.new(*e)
+    ExprBool::Or.new(*e)
   end
 
   # Numeric equality
   def e_equal(e1, e2)
-    Expr::Equal.new(e1, e2)
+    ExprBool::Equal.new(e1, e2)
   end
 
   # Numeric less than
   def e_lt(e1, e2)
-    Expr::LT.new(e1, e2)
+    ExprBool::LT.new(e1, e2)
   end
 
   # Numeric less than or equal to
   def e_lte(e1, e2)
-    Expr::LTE.new(e1, e2)
+    ExprBool::LTE.new(e1, e2)
   end
 
   # Numeric greater than
   def e_gt(e1, e2)
-    Expr::GT.new(e1, e2)
+    ExprBool::GT.new(e1, e2)
   end
 
   # Numeric greater than or equal to
   def e_gte(e1, e2)
-    Expr::GTE.new(e1, e2)
+    ExprBool::GTE.new(e1, e2)
   end
 end
