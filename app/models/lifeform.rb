@@ -67,11 +67,6 @@ class Lifeform < Sequel::Model
     !is_alive?
   end
 
-  def run_step
-    # nothing to do in base class
-    self
-  end
-
   def species
     Species.where(id: species_id).first
   end
@@ -136,12 +131,17 @@ class Lifeform < Sequel::Model
     }
   end
 
-  # Mutates various data in this lifeform to provide genetic diversity.
-  # Typically this would be run on an offspring lifeform after it is 
-  # created. Subclasses should override this to mutate the data they
-  # contain.
-  def mutate
-    self.initial_size = 0.0 # TODO
-    self
+  def run_step
+    # build values hash that consists of constants, parameters, or observations
+    h = build_values_hash
+
+    # execute our program
+    program.execute(h)
+
+    # deduct our metabolic energy
+    self.energy -= metabolic_energy(h)
+
+    # Marks this organism as dead if it is out of energy
+    mark_dead if self.energy <= 0.0
   end
 end

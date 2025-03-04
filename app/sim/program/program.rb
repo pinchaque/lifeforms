@@ -1,11 +1,9 @@
 module Program
   class Program
-    def marshal
-      
-    end
+    attr_accessor :statement
 
-    def unmarshal(str)
-      
+    def run
+      statement.run
     end
   end
 end
