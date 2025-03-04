@@ -1,11 +1,14 @@
 require 'json'
 
 class Lifeform < Sequel::Model
-  plugin :single_table_inheritance, :class_name
   plugin :after_initialize
   plugin :timestamps, :force => true, :update_on_create => true
 
+  attr_accessor :skills, :program
+
   def after_initialize
+    @skills = [] if @skills.nil?
+
     # marshal this objects data from obj_data if it exists
     unless obj_data.nil?
       h = JSON.parse(obj_data, {symbolize_names: true})
@@ -19,6 +22,21 @@ class Lifeform < Sequel::Model
     # object's data
     set(obj_data: JSON.generate(marshal_to_h))
     super
+  end
+
+  # Returns the Environment of which this lifeform is a part
+  def env
+    Environment.where(id: environment_id).first  
+  end
+
+  # Returns radius of the circle for this lifeform
+  def radius
+    self.size / 2.0
+  end
+  
+  # Returns area of the lifeform assuming circle of diameter "size"
+  def area
+    Math::PI * (radius ** 2.0)
   end
 
   # Converts this lifeform object's extra data into a hash
@@ -131,15 +149,74 @@ class Lifeform < Sequel::Model
     }
   end
 
+  def build_context
+    {
+      env: env,
+      lifeform: self
+    } 
+    # TODO need to derive this from skills
+  end
+
+  # Returns instance of the function to use for energy calculations
+  def energy_fn
+    EnergyFn.new(self.energy_exp, self.energy_base)
+  end
+
+  # Returns the total metabolic energy needed for a timestep based on the 
+  # current lifeform size.
+  def metabolic_energy
+    energy_fn.energy(self.size)
+  end
+
+  # Returns the bounding box (square) around this lifeform
+  def bounding_box
+    r = self.radius
+    return x - r, y - r, x + r, y + r
+  end
+
+  # Returns all other lifeforms in this environment that are potentially
+  # overlapping with this one. We are guaranteed that there are no overlaps
+  # that aren't in the return value. However, some of the returned Lifeforms
+  # might not be actual overlaps. This function uses heuristics within a 
+  # DB query to get the list, which should then be compared in more detail.
+  def find_potential_overlaps
+    # we identify potential overlaps by seeing if the bounding boxes of the
+    # lifeforms are overlapping
+    x0, y0, x1, y1 = bounding_box
+    ds = Lifeform.
+      where(Sequel.lit('lifeforms.environment_id = ?', [environment_id])).
+      where(Sequel.lit('lifeforms.species_id = ?', [species_id])).
+      where(Sequel.lit('lifeforms.id != ?', [id])).
+      where(Sequel.lit('lifeforms.x <= ? + (lifeforms.size / 2.0)', [x1])).
+      where(Sequel.lit('lifeforms.x >= ? - (lifeforms.size / 2.0)', [x0])).
+      where(Sequel.lit('lifeforms.y <= ? + (lifeforms.size / 2.0)', [y1])).
+      where(Sequel.lit('lifeforms.y >= ? - (lifeforms.size / 2.0)', [y0]))
+    ds.all
+  end
+
+  # Returns all other lifeforms in this environment that overlap this one.
+  # Only returns lifeforms of the SAME SPECIES. Assumes all lifeforms are 
+  # CIRCULAR.
+  def find_overlaps
+    find_potential_overlaps.select do |o|
+      # we have a real overlap if the actual distance between the centers
+      # is <= the sum of the radii of the two lifeforms
+      dx = o.x - self.x
+      dy = o.y - self.y
+      dist = Math.sqrt(dx * dx + dy * dy)
+      dist <= (self.size + o.size) / 2.0
+    end
+  end
+
   def run_step
     # build values hash that consists of constants, parameters, or observations
-    h = build_values_hash
+    ctx = build_context
 
     # execute our program
-    program.execute(h)
+    program.exec(ctx)
 
     # deduct our metabolic energy
-    self.energy -= metabolic_energy(h)
+    self.energy -= metabolic_energy
 
     # Marks this organism as dead if it is out of energy
     mark_dead if self.energy <= 0.0

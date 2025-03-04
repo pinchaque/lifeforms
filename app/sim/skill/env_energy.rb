@@ -1,23 +1,50 @@
 module Skill
   class EnvEnergy < Base
-    def actions
+
+    def initialize
+      super
+    end
+
+    def self.param_specs
+      # TODO need way to register parameters
       [
-        :absorb
+        ParamSpec.new(:energy_absorb_perc, "Percentage of the environmental energy available to this lifeform that it actually absorbs"),
       ]
     end
 
-    def observations
-      [
-        :area_clear
-      ]
+    # The amount of energy lost due to overlaps with other lifeforms. This is
+    # returned as a non-negative number.
+    def energy_overlap_loss(env, lf)
+      # To calculate the loss we add up the areas of all the overlapping 
+      # lifeforms of this species. Then we divide that by two because 
+      # the lifeforms are splitting the energy. Then we multiply by the
+      # environmental energy rate to get actual energy.
+      # 
+      # NOTE: This does not take into account the case where there are more than
+      # 2 lifeforms overlapping and splitting the same area. The actual loss 
+      # would be less if we calculated that precisely. So this is an heuristic
+      # that will over-estimate the energy loss.
+      env.energy_rate * 0.5 * lf.find_overlaps.map{ |oth| 
+        circle_area_intersect(lf.x, lf.y, lf.radius, oth.x, oth.y, oth.radius) }.sum
     end
 
-    def params
-      [
-        # Percentage of the environmental energy available to this lifeform that it
-        # actually absorbs
-        :energy_absorb_perc,
-      ]
+    def exec(ctx)
+      env = ctx[:env]
+      lf = ctx[:lifeform]
+
+      # The gross amount of energy supplied to this lifeform based on its area
+      # alone, not taking into account overlaps with other lifeforms.
+      env_gross = env.energy_rate * lf.area
+
+      # energy lost to overlaps with other lifeforms
+      overlap_loss = energy_overlap_loss(env, lf)
+      
+      energy_net = [0.0, env_gross - overlap_loss].max
+
+      # Calc out how much energy we can absorb from the environment
+      energy_absorb = energy_net * prm(:energy_absorb_perc)
+
+      lf.energy += energy_absorb
     end
   end
 end

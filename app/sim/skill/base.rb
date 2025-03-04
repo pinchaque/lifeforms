@@ -1,15 +1,15 @@
 module Skill
   class Base
-    def actions
-      []
+    attr_accessor :paramset
+
+    def initialize
+      @paramset = ParamSet.new
+
+      # TODO how to set initial values for parameters and define which is available for the child class
     end
 
-    def observations
-      []
-    end
-
-    def params
-      []
+    def prm(sym)
+      @paramset.value(sym)
     end
   end
 end
