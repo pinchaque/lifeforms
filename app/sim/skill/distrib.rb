@@ -6,6 +6,11 @@ module Skill
     def rnd
       raise "Invalid call to base class function"
     end    
+
+    # Returns a random mutation of the specified value within the distribution
+    def mutate(v)
+      raise "Invalid call to base class function"
+    end    
   end
 
   # Represents linear distribution between two values (inclusive)
@@ -17,6 +22,12 @@ module Skill
 
     def rnd
       Random.rand(@min..@max)
+    end
+
+    def mutate(v)
+      # since all values are equally likely we just return another random 
+      # numnber
+      rnd
     end
   end
 
@@ -31,11 +42,16 @@ module Skill
     def initialize(mean, stddev)
       @mean = mean
       @stddev = stddev
-      @dist = Rubystats::NormalDistribution.new(mean, stddev)
     end
 
     def rnd
-      @dist.rng
+      Rubystats::NormalDistribution.new(@mean, @stddev).rng
+    end
+
+    def mutate(v)
+      # we use the same stddev but center the distribution on the specified
+      # value
+      Rubystats::NormalDistribution.new(v, @stddev).rng
     end
   end
 end
