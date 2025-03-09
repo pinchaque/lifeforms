@@ -8,12 +8,13 @@ describe "Distrib" do
   let(:max) { mean + 4 * stddev }
   let(:dist) { DistribNormal.new(mean, stddev) }
   let(:id) { :foobar }
+  let(:desc) { "Test ParamDef" }
   let(:pd) { 
     p = ParamDef.new(id) 
     p.distrib = dist
     p.value_min = min
     p.value_max = max
-    p.desc = "Test ParamDef"
+    p.desc = desc
     p
   }
 
@@ -90,6 +91,64 @@ describe "Distrib" do
         t_valid(500, true, nil)
         t_valid(501, false, "501 is greater than maximum value (500)")
       end 
+    end
+
+    context "Construct Helpers" do
+      context "ParamDefLinear" do      
+        it "exceptions" do
+          expect{ParamDefLinear(id: id)}.to raise_error(ArgumentError)
+        end
+
+        it "required args" do
+          pd = ParamDefLinear(id: id, min: min, max: max)
+          expect(pd.id).to eq(id)
+          expect(pd.desc).to be_nil
+          expect(pd.value_min).to eq(min)
+          expect(pd.value_max).to eq(max)
+          expect(pd.distrib.class.to_s).to eq("Skill::DistribLinear")
+          expect(pd.distrib.min).to eq(min)
+          expect(pd.distrib.max).to eq(max)
+        end
+
+        it "optional args" do
+          pd = ParamDefLinear(id: id, min: min, max: max, desc: desc)
+          expect(pd.id).to eq(id)
+          expect(pd.desc).to eq(desc)
+          expect(pd.value_min).to eq(min)
+          expect(pd.value_max).to eq(max)
+          expect(pd.distrib.class.to_s).to eq("Skill::DistribLinear")
+          expect(pd.distrib.min).to eq(min)
+          expect(pd.distrib.max).to eq(max)
+        end
+      end
+
+      context "ParamDefNormal" do
+        it "exceptions" do
+          expect{ParamDefNormal(id: id)}.to raise_error(ArgumentError)
+        end
+
+        it "required args" do
+          pd = ParamDefNormal(id: id, mean: mean, stddev: stddev)
+          expect(pd.id).to eq(id)
+          expect(pd.desc).to be_nil
+          expect(pd.value_min).to be_nil
+          expect(pd.value_max).to be_nil
+          expect(pd.distrib.class.to_s).to eq("Skill::DistribNormal")
+          expect(pd.distrib.mean).to eq(mean)
+          expect(pd.distrib.stddev).to eq(stddev)
+        end
+
+        it "optional args" do
+          pd = ParamDefNormal(id: id, mean: mean, stddev: stddev, min: min, desc: desc)
+          expect(pd.id).to eq(id)
+          expect(pd.desc).to eq(desc)
+          expect(pd.value_min).to eq(min)
+          expect(pd.value_max).to be_nil
+          expect(pd.distrib.class.to_s).to eq("Skill::DistribNormal")
+          expect(pd.distrib.mean).to eq(mean)
+          expect(pd.distrib.stddev).to eq(stddev)
+        end
+      end
     end
   end
 end

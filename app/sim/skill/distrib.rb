@@ -15,6 +15,8 @@ module Skill
 
   # Represents linear distribution between two values (inclusive)
   class DistribLinear < Distrib
+    attr_accessor :min, :max
+    
     def initialize(min, max)
       @min = min
       @max = max
@@ -39,6 +41,8 @@ module Skill
   # deviation of the mean, 95% within two standard deviations, and 99.7% within 
   # three standard deviations, known as the empirical rule."
   class DistribNormal < Distrib
+    attr_accessor :mean, :stddev
+
     def initialize(mean, stddev)
       @mean = mean
       @stddev = stddev

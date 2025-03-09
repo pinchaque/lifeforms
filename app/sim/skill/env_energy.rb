@@ -1,10 +1,10 @@
 module Skill
   class EnvEnergy < Base
 
-    def self.param_specs
-      # TODO need way to register parameters
+    def self.param_defs
       [
-        ParamSpec.new(:energy_absorb_perc, "Percentage of the environmental energy available to this lifeform that it actually absorbs"),
+        ParamDefNormal(:energy_absorb_perc, 
+        "Percentage of the environmental energy available to this lifeform that it actually absorbs"),
       ]
     end
 

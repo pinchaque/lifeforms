@@ -1,7 +1,7 @@
 module Skill
   class ParamDef
     # Unique identifier - convention is a snake_case symbol
-    attr_accessor :id
+    attr_reader :id
 
     # User-friendly description
     attr_accessor :desc
@@ -56,5 +56,25 @@ module Skill
     def valid?(v)
       check_validity(v).nil?
     end
+  end
+
+  # Helper function to create a ParamDef with Linear distribution. 
+  def ParamDefLinear(id:, min:, max:, **opts)
+    pd = ParamDef.new(id)
+    pd.desc = opts[:desc]
+    pd.value_min = min
+    pd.value_max = max
+    pd.distrib = DistribLinear.new(min, max)
+    pd
+  end
+
+  # Helper function to create a ParamDef with Normal distribution. 
+  def ParamDefNormal(id:, mean:, stddev:, **opts)
+    pd = ParamDef.new(id)
+    pd.desc = opts[:desc]
+    pd.value_min = opts[:min]
+    pd.value_max = opts[:max]
+    pd.distrib = DistribNormal.new(mean, stddev)
+    pd
   end
 end
