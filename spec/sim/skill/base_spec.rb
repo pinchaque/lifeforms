@@ -12,9 +12,9 @@ describe "Base" do
   context "#id" do
 
     it "produces correct id" do
-      expect(Base.id).to eq("base")
-      expect(TestSkill.id).to eq("test_skill")
-      expect(TestSkillChild.id).to eq("test_skill_child")
+      expect(Base.id).to eq(:base)
+      expect(TestSkill.id).to eq(:test_skill)
+      expect(TestSkillChild.id).to eq(:test_skill_child)
     end
   end
 end

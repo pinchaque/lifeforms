@@ -149,6 +149,36 @@ describe "Distrib" do
           expect(pd.distrib.stddev).to eq(stddev)
         end
       end
+
+      context "ParamDefNormalPerc" do
+        it "exceptions" do
+          expect{ParamDefNormalPerc(id: id)}.to raise_error(ArgumentError)
+          expect{ParamDefNormalPerc(id: id, mean: mean, stddev: stddev, min: -0.2)}.to raise_error(ArgumentError, "min and max must be in range 0..1")
+          expect{ParamDefNormalPerc(id: id, mean: mean, stddev: stddev, max: 0.5, min: 1.2)}.to raise_error(ArgumentError, "min and max must be in range 0..1")
+        end
+
+        it "required args" do
+          pd = ParamDefNormalPerc(id: id, mean: mean, stddev: stddev)
+          expect(pd.id).to eq(id)
+          expect(pd.desc).to be_nil
+          expect(pd.value_min).to eq(0.0)
+          expect(pd.value_max).to eq(1.0)
+          expect(pd.distrib.class.to_s).to eq("Skill::DistribNormal")
+          expect(pd.distrib.mean).to eq(mean)
+          expect(pd.distrib.stddev).to eq(stddev)
+        end
+
+        it "optional args" do
+          pd = ParamDefNormalPerc(id: id, mean: mean, stddev: stddev, min: 0.2, desc: desc)
+          expect(pd.id).to eq(id)
+          expect(pd.desc).to eq(desc)
+          expect(pd.value_min).to eq(0.2)
+          expect(pd.value_max).to eq(1.0)
+          expect(pd.distrib.class.to_s).to eq("Skill::DistribNormal")
+          expect(pd.distrib.mean).to eq(mean)
+          expect(pd.distrib.stddev).to eq(stddev)
+        end
+      end
     end
   end
 end

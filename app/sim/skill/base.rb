@@ -4,7 +4,7 @@ module Skill
     # if you want to use a different ID.
     def self.id
       base_name = self.name.gsub(/^.*::/, '')
-      camel_to_snake(base_name)
+      camel_to_snake(base_name).to_sym
     end
 
     # Returns array of ParamDef objects for this Skill

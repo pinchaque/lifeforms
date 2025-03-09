@@ -77,4 +77,25 @@ module Skill
     pd.distrib = DistribNormal.new(mean, stddev)
     pd
   end
+
+  # Helper function to create a ParamDef with Normal distribution with min and 
+  # max set to 0 and 1 by default. This min/max can be overridden but can't be out
+  # of this range.
+  def ParamDefNormalPerc(id:, mean:, stddev:, **opts)
+    pd = ParamDef.new(id)
+    pd.desc = opts[:desc]
+
+    msg = "min and max must be in range 0..1"
+
+    opts[:min] ||= 0.0
+    raise(ArgumentError.new(msg)) unless (0.0..1.0) === opts[:min]
+    pd.value_min = opts[:min]
+
+    opts[:max] ||= 1.0
+    raise(ArgumentError.new(msg)) unless (0.0..1.0) === opts[:max]
+    pd.value_max = opts[:max]
+
+    pd.distrib = DistribNormal.new(mean, stddev)
+    pd
+  end
 end
