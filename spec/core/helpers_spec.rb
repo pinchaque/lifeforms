@@ -19,4 +19,18 @@ describe "Helpers" do
       end
     end
   end
+
+  context "camel_to_snake" do
+    def t(s, exp)
+      expect(camel_to_snake(s)).to eq(exp)
+    end
+
+    it "converts as expected" do
+      t("CamelCase", "camel_case")
+      t("FooBarQuux", "foo_bar_quux")
+      t("FooBarQQuux", "foo_bar_q_quux")
+      t("Foo123Bar456", "foo123_bar456")
+      t("Skill::Base", "skill_base")
+    end
+  end
 end

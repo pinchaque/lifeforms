@@ -9,3 +9,12 @@ def perc(p)
     p
   end
 end
+
+# Converts a CamelCase string to snake_case
+def camel_to_snake(s)
+  s.gsub(/::/, '').
+  gsub(/([A-Z]+)([A-Z][a-z])/,'\1_\2').
+  gsub(/([a-z\d])([A-Z])/,'\1_\2').
+  tr("-", "_").
+  downcase
+end
