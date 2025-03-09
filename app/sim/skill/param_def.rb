@@ -1,6 +1,6 @@
 module Skill
   class ParamDef
-    # Unique identifier - convention is snake_case
+    # Unique identifier - convention is a snake_case symbol
     attr_accessor :id
 
     # User-friendly description
@@ -9,6 +9,7 @@ module Skill
     # Min and max allowable values
     attr_accessor :value_min, :value_max
 
+    # Distribution function to use
     attr_accessor :distrib
 
     # Initialize the parameter definition with an id to use. This ID is used
