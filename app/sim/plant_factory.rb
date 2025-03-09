@@ -45,7 +45,9 @@ class PlantFactory
     lf.set_loc_random
     lf.energy_base = 1.0
     lf.energy_exp = 3.0
-    lf.skills = get_skills
+    get_skills.each do |s|
+      lf.register_skill(s)
+    end
     lf.program = get_program
     lf
   end

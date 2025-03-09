@@ -1,10 +1,6 @@
 module Skill
   class EnvEnergy < Base
 
-    def initialize
-      super
-    end
-
     def self.param_specs
       # TODO need way to register parameters
       [

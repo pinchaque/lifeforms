@@ -4,10 +4,12 @@ class Lifeform < Sequel::Model
   plugin :after_initialize
   plugin :timestamps, :force => true, :update_on_create => true
 
-  attr_accessor :skills, :program
+  attr_reader :skills, :params
+  attr_accessor :program
 
   def after_initialize
     @skills = [] if @skills.nil?
+    @params = ParamSet.new if @params.nil?
 
     # marshal this objects data from obj_data if it exists
     unless obj_data.nil?
@@ -147,6 +149,18 @@ class Lifeform < Sequel::Model
       energy: self.energy,
       generation: self.generation
     }
+  end
+
+  def register_skill(s)
+    s.generate_params do |prm|
+      @params.add(prm)
+    end
+    @skills.add(s)
+  end
+
+  def clear_skills
+    @skills.clear
+    @params.clear
   end
 
   def build_context
