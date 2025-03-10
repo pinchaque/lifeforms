@@ -13,6 +13,11 @@ module Skill
       @params[p.id] = p
     end
 
+    # Returns number of Params in this ParamSet
+    def count
+      @params.count
+    end
+
     # Removes all parameters
     def clear
       @params.clear

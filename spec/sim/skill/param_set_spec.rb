@@ -22,26 +22,26 @@ describe "ParamSet" do
 
   context ".initialize" do
     it "creates empty ParamSet" do
-      expect(pset.params.count).to eq(0)
+      expect(pset.count).to eq(0)
     end
   end
 
   context "add/include/value/clear" do
     it "handles basic functionality" do
       # empty to start
-      expect(pset.params.count).to eq(0)
+      expect(pset.count).to eq(0)
       expect(pset.include?(id)).to be false
       expect(pset.value(id)).to be_nil
 
       # include the param
       pset.add(prm)
-      expect(pset.params.count).to eq(1)
+      expect(pset.count).to eq(1)
       expect(pset.include?(id)).to be true
       expect(pset.value(id)).to eq(prm.value)
 
       # back to empty
       pset.clear
-      expect(pset.params.count).to eq(0)
+      expect(pset.count).to eq(0)
       expect(pset.include?(id)).to be false
       expect(pset.value(id)).to be_nil
     end
