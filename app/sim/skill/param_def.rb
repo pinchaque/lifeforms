@@ -56,6 +56,12 @@ module Skill
     def valid?(v)
       check_validity(v).nil?
     end
+
+    # Creates a mutation of the specified value using the assigned distirbution.
+    # Constrains the mutation to be within our min/max.
+    def mutate(v)
+      constrain(@distrib.mutate(v))
+    end
   end
 
   # Helper function to create a ParamDef with Linear distribution. 
