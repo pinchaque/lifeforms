@@ -30,7 +30,9 @@ class PlantFactory
   end
 
   def get_program
-    # TODO implement    
+    s_seq(
+      Skill::EnvEnergy
+    )
   end
 
   def gen

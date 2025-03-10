@@ -53,6 +53,6 @@ describe "Statement" do
     it "executes false sequence" do
       st = s_if(f1, seq1, seq2)
       expect(st.exec(ctx)).to eq(["quux", "bar", "foo"])
-    end 
+    end
   end
 end

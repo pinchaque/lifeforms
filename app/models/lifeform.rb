@@ -163,12 +163,8 @@ class Lifeform < Sequel::Model
     @params.clear
   end
 
-  def build_context
-    {
-      env: env,
-      lifeform: self
-    } 
-    # TODO need to derive this from skills
+  def context
+    Program::Context.new(env, self)
   end
 
   # Returns instance of the function to use for energy calculations
@@ -223,7 +219,7 @@ class Lifeform < Sequel::Model
   end
 
   def run_step
-    # build values hash that consists of constants, parameters, or observations
+    # build context to use for this program execution
     ctx = build_context
 
     # execute our program
