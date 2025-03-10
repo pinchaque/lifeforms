@@ -4,9 +4,9 @@ module Program
 
     # Initializes the context for the specified lifeform
     def initialize(lifeform)
-      @lf = lf
-      @env = lf.env
-      @params = lf.params
+      @lifeform = lifeform
+      @env = lifeform.env
+      @params = lifeform.params
     end
 
     # Returns the value for the given ID, which can refer to a parameter,

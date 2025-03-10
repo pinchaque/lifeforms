@@ -55,4 +55,25 @@ describe "Statement" do
       expect(st.exec(ctx)).to eq(["quux", "bar", "foo"])
     end
   end
+
+  context "Skill" do
+
+    class TestSkill < Skill::Base
+      def self.exec(base)
+        "return value"
+      end
+    end
+
+    let(:s) { s_skill(TestSkill.id) }
+    let(:lf) { 
+      l = MockLifeform.new 
+      l.register_skill(TestSkill)
+      l
+    }
+    let(:ctx) { Context.new(lf) }
+
+    it "executes test skill" do
+      expect(s.exec(ctx)).to eq("return value")
+    end
+  end
 end

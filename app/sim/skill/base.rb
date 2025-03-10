@@ -26,5 +26,10 @@ module Skill
       end
       block_given? ? nil : r
     end
+
+    # Base class exec, shouldn't be called
+    def self.exec(ctx)
+      raise "Tried to execute Skill::Base"
+    end
   end
 end

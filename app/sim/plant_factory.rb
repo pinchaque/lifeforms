@@ -31,7 +31,7 @@ class PlantFactory
 
   def get_program
     s_seq(
-      Skill::EnvEnergy
+      s_skill(Skill::EnvEnergy.id)
     )
   end
 

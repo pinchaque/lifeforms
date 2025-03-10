@@ -7,9 +7,14 @@ class Lifeform < Sequel::Model
   attr_reader :skills, :params
   attr_accessor :program
 
+  def initialize
+    @skills = Hash.new
+    @params = Hash.new
+  end
+
   def after_initialize
-    @skills = [] if @skills.nil?
-    @params = ParamSet.new if @params.nil?
+    @skills = Hash.new if @skills.nil?
+    @params = Hash.new if @params.nil?
 
     # marshal this objects data from obj_data if it exists
     unless obj_data.nil?
@@ -153,9 +158,9 @@ class Lifeform < Sequel::Model
 
   def register_skill(s)
     s.generate_params do |prm|
-      @params.add(prm)
+      @params[prm.id] = prm
     end
-    @skills.add(s)
+    @skills[s.id] = s
   end
 
   def clear_skills

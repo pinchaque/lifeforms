@@ -36,6 +36,20 @@ module Program
         end
       end
     end
+
+    # Statement wrapper around a Skill
+    class Skill
+      # Initialie with the ID of the skill that will be executed
+      def initialize(id)
+        @id = id
+      end
+
+      # Executes the skill with the given Context
+      def exec(ctx)
+        skill = ctx.lifeform.skills[@id]
+        skill.exec(ctx) unless skill.nil?
+      end
+    end
   end
 
   # The below functions are helpers to create the above classes. This is most
@@ -49,5 +63,10 @@ module Program
   # Executes s_true or s_false depending on expr_bool
   def s_if(expr_bool, s_true, s_false)
     Statement::If.new(expr_bool, s_true, s_false)
+  end
+
+  # Executes a Skill as a statement
+  def s_skill(s)
+    Statement::Skill.new(s)
   end
 end
