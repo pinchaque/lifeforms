@@ -19,5 +19,7 @@ module Skill
         :energy_reserve_perc
       ]
     end
+        # lf.energy_reserve_perc = 0.1
+
   end
 end

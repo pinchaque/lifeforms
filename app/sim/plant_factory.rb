@@ -20,13 +20,6 @@ class PlantFactory
       Skill::EnvEnergy,
       Skill::Grow
     ]
-    # TODO How do we set parameters??
-
-    # lf.energy_absorb_perc = 1.0
-    # lf.energy_reserve_perc = 0.1
-    # lf.repro_threshold = 60.0
-    # lf.repro_num_offspring = 4
-    # lf.repro_energy_inherit_perc = 0.95
   end
 
   def get_program

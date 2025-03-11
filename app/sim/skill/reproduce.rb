@@ -24,6 +24,9 @@ module Skill
         :repro_energy_inherit_perc,
       ]
     end
+    # lf.repro_threshold = 60.0
+    # lf.repro_num_offspring = 4
+    # lf.repro_energy_inherit_perc = 0.95
 
     class Action
       def initialize(parent)

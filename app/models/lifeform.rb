@@ -7,11 +7,6 @@ class Lifeform < Sequel::Model
   attr_reader :skills, :params
   attr_accessor :program
 
-  def initialize
-    @skills = Hash.new
-    @params = Hash.new
-  end
-
   def after_initialize
     @skills = Hash.new if @skills.nil?
     @params = Hash.new if @params.nil?

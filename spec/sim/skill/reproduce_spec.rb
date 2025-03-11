@@ -1,26 +1,17 @@
 describe "Reproduce" do
   let(:tol) { 0.0001 }
-  let(:species) { Species.new(name: "Test Lifeform").save }
   let(:energy_parent) { 50.0 }
   let(:energy_offspring) { 22.2 }
+  let(:species) { TestFactory.species }
   let(:width) { 100 }
   let(:height) { 100 }
-  let(:env) { Environment.new(width: width, height: height, time_step: 5).save }
-  let(:tlf) {
-    l = TestLF.new
-    l.val1 = "foo"
-    l.val2 = 42
-    l.environment_id = env.id
-    l.species_id = species.id
+  let(:time_step) { 5 }
+  let(:env) { TestFactory.env(width, height, time_step) }
+  let(:lf) { 
+    l = TestFactory.lifeform(env, species) 
     l.energy = energy_parent
-    l.size = 5.0
-    l.initial_size = 0.2
-    l.name = "Incredible Juniper"
-    l.generation = 3
-    l.created_step = 0
-    l.x = 2.22
-    l.y = 3.33
     l.save
+    l
   }
 
   context ".generate" do
