@@ -2,22 +2,13 @@ include Program
 
 describe "Statement" do
   let(:ctx) { {} }
+  TestSkillFoo = TestFactory.skill("foo")
+  TestSkillBar = TestFactory.skill("bar")
+  TestSkillQuux = TestFactory.skill("quux")
 
-  let(:a1) {  Class.new(Skill::Base) do
-    def self.exec(ctx)
-      "foo"
-    end
-  end }
-  let(:a2) {  Class.new(Skill::Base) do
-    def self.exec(ctx)
-      "bar"
-    end
-  end }
-  let(:a3) {  Class.new(Skill::Base) do
-    def self.exec(ctx)
-      "quux"
-    end
-  end }
+  let(:a1) { TestSkillFoo }
+  let(:a2) { TestSkillBar }
+  let(:a3) { TestSkillQuux }
   let(:t1) { e_true }
   let(:f1) { e_not(e_true) }
 
@@ -69,11 +60,7 @@ describe "Statement" do
   end
 
   context "Skill" do
-    let(:skill_class) {  TestSkill = Class.new(Skill::Base) do
-      def self.exec(ctx)
-        "return value"
-      end
-    end }
+    let(:skill_class) { TestSkill = TestFactory.skill("return value") }
     let(:s) { s_skill(skill_class.id) }
     let(:lf) { 
       l = MockLifeform.new 

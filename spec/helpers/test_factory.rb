@@ -26,4 +26,17 @@ class TestFactory
     l.save
     l
   end
+
+  # Creates a Skill class that returns the specified string when exec is 
+  # called. This returns an unnamed class, so for things to work you
+  # need to assign the return of this function to a CamelCase class name
+  # because that's how Skill.id is computed.
+  def self.skill(ret)
+    Class.new(Skill::Base) do
+      @ret = ret
+      def self.exec(ctx)
+        @ret
+      end
+    end
+  end
 end
