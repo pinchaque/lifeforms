@@ -37,6 +37,13 @@ class TestFactory
       def self.exec(ctx)
         @ret
       end
+
+      def self.param_defs
+        [
+          Skill.ParamDefNormalPerc(id: :param1, mean: 0.5, stddev: 0.2, desc: "Test param 1"),
+          Skill.ParamDefNormalPerc(id: :param2, mean: 0.5, stddev: 0.2, desc: "Test param 2"),
+        ]
+      end
     end
   end
 end

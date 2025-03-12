@@ -137,11 +137,11 @@ describe "ParamDef" do
   context "Construct Helpers" do
     context "ParamDefLinear" do      
       it "exceptions" do
-        expect{ParamDefLinear(id: id)}.to raise_error(ArgumentError)
+        expect{Skill.ParamDefLinear(id: id)}.to raise_error(ArgumentError)
       end
 
       it "required args" do
-        pd = ParamDefLinear(id: id, min: min, max: max)
+        pd = Skill.ParamDefLinear(id: id, min: min, max: max)
         expect(pd.id).to eq(id)
         expect(pd.desc).to be_nil
         expect(pd.value_min).to eq(min)
@@ -152,7 +152,7 @@ describe "ParamDef" do
       end
 
       it "optional args" do
-        pd = ParamDefLinear(id: id, min: min, max: max, desc: desc)
+        pd = Skill.ParamDefLinear(id: id, min: min, max: max, desc: desc)
         expect(pd.id).to eq(id)
         expect(pd.desc).to eq(desc)
         expect(pd.value_min).to eq(min)
@@ -165,11 +165,11 @@ describe "ParamDef" do
 
     context "ParamDefNormal" do
       it "exceptions" do
-        expect{ParamDefNormal(id: id)}.to raise_error(ArgumentError)
+        expect{Skill.ParamDefNormal(id: id)}.to raise_error(ArgumentError)
       end
 
       it "required args" do
-        pd = ParamDefNormal(id: id, mean: mean, stddev: stddev)
+        pd = Skill.ParamDefNormal(id: id, mean: mean, stddev: stddev)
         expect(pd.id).to eq(id)
         expect(pd.desc).to be_nil
         expect(pd.value_min).to be_nil
@@ -180,7 +180,7 @@ describe "ParamDef" do
       end
 
       it "optional args" do
-        pd = ParamDefNormal(id: id, mean: mean, stddev: stddev, min: min, desc: desc)
+        pd = Skill.ParamDefNormal(id: id, mean: mean, stddev: stddev, min: min, desc: desc)
         expect(pd.id).to eq(id)
         expect(pd.desc).to eq(desc)
         expect(pd.value_min).to eq(min)
@@ -193,13 +193,13 @@ describe "ParamDef" do
 
     context "ParamDefNormalPerc" do
       it "exceptions" do
-        expect{ParamDefNormalPerc(id: id)}.to raise_error(ArgumentError)
-        expect{ParamDefNormalPerc(id: id, mean: mean, stddev: stddev, min: -0.2)}.to raise_error(ArgumentError, "min and max must be in range 0..1")
-        expect{ParamDefNormalPerc(id: id, mean: mean, stddev: stddev, max: 0.5, min: 1.2)}.to raise_error(ArgumentError, "min and max must be in range 0..1")
+        expect{Skill.ParamDefNormalPerc(id: id)}.to raise_error(ArgumentError)
+        expect{Skill.ParamDefNormalPerc(id: id, mean: mean, stddev: stddev, min: -0.2)}.to raise_error(ArgumentError, "min and max must be in range 0..1")
+        expect{Skill.ParamDefNormalPerc(id: id, mean: mean, stddev: stddev, max: 0.5, min: 1.2)}.to raise_error(ArgumentError, "min and max must be in range 0..1")
       end
 
       it "required args" do
-        pd = ParamDefNormalPerc(id: id, mean: mean, stddev: stddev)
+        pd = Skill.ParamDefNormalPerc(id: id, mean: mean, stddev: stddev)
         expect(pd.id).to eq(id)
         expect(pd.desc).to be_nil
         expect(pd.value_min).to eq(0.0)
@@ -210,7 +210,7 @@ describe "ParamDef" do
       end
 
       it "optional args" do
-        pd = ParamDefNormalPerc(id: id, mean: mean, stddev: stddev, min: 0.2, desc: desc)
+        pd = Skill.ParamDefNormalPerc(id: id, mean: mean, stddev: stddev, min: 0.2, desc: desc)
         expect(pd.id).to eq(id)
         expect(pd.desc).to eq(desc)
         expect(pd.value_min).to eq(0.2)

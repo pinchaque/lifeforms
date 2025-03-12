@@ -65,7 +65,7 @@ module Skill
   end
 
   # Helper function to create a ParamDef with Linear distribution. 
-  def ParamDefLinear(id:, min:, max:, **opts)
+  def self.ParamDefLinear(id:, min:, max:, **opts)
     pd = ParamDef.new(id)
     pd.desc = opts[:desc]
     pd.value_min = min
@@ -75,7 +75,7 @@ module Skill
   end
 
   # Helper function to create a ParamDef with Normal distribution. 
-  def ParamDefNormal(id:, mean:, stddev:, **opts)
+  def self.ParamDefNormal(id:, mean:, stddev:, **opts)
     pd = ParamDef.new(id)
     pd.desc = opts[:desc]
     pd.value_min = opts[:min]
@@ -87,7 +87,7 @@ module Skill
   # Helper function to create a ParamDef with Normal distribution with min and 
   # max set to 0 and 1 by default. This min/max can be overridden but can't be out
   # of this range.
-  def ParamDefNormalPerc(id:, mean:, stddev:, **opts)
+  def self.ParamDefNormalPerc(id:, mean:, stddev:, **opts)
     pd = ParamDef.new(id)
     pd.desc = opts[:desc]
 

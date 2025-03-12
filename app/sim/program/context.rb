@@ -13,7 +13,7 @@ module Program
     # observation, constant, etc. Returns specified default if not found.
     def value(id, default = nil)
       if @params.include?(id)
-        @params.value(id)
+        @params[id].value
       # TODO Need to add observations and constants
       else
         default

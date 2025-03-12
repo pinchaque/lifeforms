@@ -10,7 +10,7 @@ describe "Param" do
   let(:id) { :foobar }
   let(:desc) { "Test ParamDef" }
   let(:pd) { 
-    ParamDefNormal(
+    Skill.ParamDefNormal(
       id: id, 
       mean: mean, 
       stddev: stddev, 
