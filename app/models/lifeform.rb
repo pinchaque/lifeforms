@@ -43,12 +43,16 @@ class Lifeform < Sequel::Model
 
   # Converts this lifeform object's extra data into a hash
   def marshal_to_h
-    Hash.new
+    {
+      params: @params,
+      skills: @skills
+    }
   end
 
   # Populates this lifeform object's extra data from a hash
   def marshal_from_h(h)
-    # do nothing - only used in child classes
+    @params = h[:params]
+    @skills = h[:skills]
   end
 
   # Copies the attributes of another lifeform into this one

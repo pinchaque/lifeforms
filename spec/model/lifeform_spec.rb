@@ -5,7 +5,6 @@ end
 
 describe "Lifeform" do
   let(:tol) { 0.0001 }
-
   let(:species) { TestFactory.species }
   let(:width) { 100 }
   let(:height) { 100 }
@@ -29,7 +28,7 @@ describe "Lifeform" do
 
   context ".to_s" do
     it "with location" do
-      expect(lf.to_s).to eq("#{lf.id} Test Lifeform Incredible Juniper energy:10.00 size:1.00 loc:(2.22, 3.33) val1:foo val2:42")
+      expect(lf.to_s).to eq("#{lf.id} Test Lifeform Incredible Juniper energy:10.00 size:1.00 loc:(2.22, 3.33)")
     end
   end
 
