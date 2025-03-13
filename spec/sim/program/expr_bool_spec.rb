@@ -231,7 +231,6 @@ describe "ExprBool" do
       expect(Program::ExprBool::Base.full_class_name("And")).to eq("Program::ExprBool::And")
     end
 
-
     it "True" do
       t_marshal(e_true, {t: "True"})
     end
@@ -253,6 +252,31 @@ describe "ExprBool" do
         {t: "Or", v: [{t: "True"}, {t: "Not", v: {t: "True"}}]},
         {t: "Or", v: [{t: "True"}, {t: "True"}]}]}
       t_marshal(e_and(e_or(e_true, e_not(e_true)), e_or(e_true, e_true)), exp)
+    end
+
+    it "NumCmp classes" do
+      t_marshal(e_equal(:foo, :bar), {t: "Equal", v: {l: :foo, r: :bar}})
+      t_marshal(e_lt(:foo, :bar), {t: "LT", v: {l: :foo, r: :bar}})
+      t_marshal(e_lte(:foo, :bar), {t: "LTE", v: {l: :foo, r: :bar}})
+      t_marshal(e_gt(:bar, :foo), {t: "GT", v: {l: :bar, r: :foo}})
+      t_marshal(e_gte(:bar, :foo), {t: "GTE", v: {l: :bar, r: :foo}})
+    end
+
+    it "Combined logic & NumCmp" do
+      expr = e_or(
+        e_and(e_lt(:foo, :bar), e_lte(:bar, :quux)),
+        e_and(e_gt(:foo, :bar), e_gte(:foo, :quux))
+      )
+
+      t_marshal(expr, {t: "Or", v: 
+        [
+          {:t => "And", :v => [
+            {:t => "LT", :v => {:l => :foo, :r => :bar}}, 
+            {:t => "LTE", :v => {:l => :bar, :r => :quux}}]},
+          {:t => "And", :v => [
+            {:t => "GT", :v => {:l => :foo, :r => :bar}}, 
+            {:t => "GTE", :v => {:l => :foo, :r => :quux}}]}
+        ]})
     end
   end
 end

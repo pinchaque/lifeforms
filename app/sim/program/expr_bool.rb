@@ -145,6 +145,14 @@ module Program
       def eval(v)
         cmp(get_val(v, @e1), get_val(v, @e2))
       end
+
+      def marshal
+        marshal_value({l: @e1, r: @e2})
+      end
+
+      def self.unmarshal_value(v)
+        self.new(v[:l], v[:r])
+      end
     end
 
     # Equality
