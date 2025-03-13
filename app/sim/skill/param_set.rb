@@ -36,15 +36,13 @@ module Skill
 
     # Marshals this ParamSet to a hash that can be later converted to JSON
     def marshal_to_h
-      @params.to_h do |id, prm|
-        [id, prm.marshal_to_h]
-      end
+      @params.values.map { |prm| prm.marshal_to_h }
     end
 
     # Creates and returns a new ParamSet from the given hash
     def self.unmarshal_from_h(h)
       ParamSet.new do |pset|
-        h.each do |id, v|
+        h.each do |v|
           pset.add(Param.unmarshal_from_h(v))
         end
       end

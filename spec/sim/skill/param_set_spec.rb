@@ -73,14 +73,14 @@ describe "ParamSet" do
       pset.add(prm2)
       expect(pset.count).to eq(2)
 
-      h_exp = {
-        id => prm.marshal_to_h,
-        id2 => prm2.marshal_to_h
-      }
-      h_act = pset.marshal_to_h
-      expect(h_act).to eq(h_exp)
+      m_exp = [
+        prm.marshal_to_h,
+        prm2.marshal_to_h
+      ]
+      m_act = pset.marshal_to_h
+      expect(m_act).to eq(m_exp)
 
-      pset_new = ParamSet.unmarshal_from_h(h_act)
+      pset_new = ParamSet.unmarshal_from_h(m_act)
       expect(pset_new.count).to eq(2)
       expect(pset_new.include?(id)).to be true
       expect(pset_new.include?(id2)).to be true
