@@ -221,4 +221,38 @@ describe "ParamDef" do
       end
     end
   end
+
+  context "marshalling" do
+    let(:min) { 0.0 }
+    let(:max) { 1.0 }
+    let(:mean) { 0.5 }
+    let(:stddev) { 0.1 }
+  
+    it "marshals and unmarshals" do
+      pd = Skill.ParamDefNormalPerc(id: id, mean: mean, stddev: stddev, min: min, max: max, desc: desc)
+      expect(pd.id).to eq(id)
+      expect(pd.desc).to eq(desc)
+      expect(pd.value_min).to eq(min)
+      expect(pd.value_max).to eq(max)
+      expect(pd.distrib.class.to_s).to eq("Skill::DistribNormal")
+      expect(pd.distrib.mean).to eq(mean)
+      expect(pd.distrib.stddev).to eq(stddev)
+
+      h_exp = { 
+        desc: desc, id: id, value_max: max, value_min: min,
+        distrib: pd.distrib.marshal_to_h
+      }
+      h_act = pd.marshal_to_h
+      expect(h_act).to eq(h_exp)
+
+      pd_new = ParamDef.unmarshal_from_h(h_act)
+      expect(pd_new.id).to eq(id)
+      expect(pd_new.desc).to eq(desc)
+      expect(pd_new.value_min).to eq(min)
+      expect(pd_new.value_max).to eq(max)
+      expect(pd_new.distrib.class.to_s).to eq("Skill::DistribNormal")
+      expect(pd_new.distrib.mean).to eq(mean)
+      expect(pd_new.distrib.stddev).to eq(stddev)
+    end
+  end
 end

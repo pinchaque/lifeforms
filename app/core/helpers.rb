@@ -18,3 +18,9 @@ def camel_to_snake(s)
   tr("-", "_").
   downcase
 end
+
+# Returns the class object associatd with the given name, which
+# can include module "::" separators.
+def class_from_name(name)
+  Object.const_get(name)
+end

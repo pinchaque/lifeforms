@@ -36,4 +36,22 @@ describe "Param" do
       expect(prm.value != old_value).to be true
     end
   end
+
+  context "marshaling" do
+    let(:value) { 2.22 }
+
+    it "marshals and unmarshals" do
+      prm.value = value
+      h_exp = { 
+        value: value,
+        def: pd.marshal_to_h
+      }
+      h_act = prm.marshal_to_h
+      expect(h_act).to eq(h_exp)
+
+      prm_new = Param.unmarshal_from_h(h_act)
+      expect(prm_new.value).to eq(value)
+      expect(prm.def.id).to eq(pd.id)
+    end
+  end
 end

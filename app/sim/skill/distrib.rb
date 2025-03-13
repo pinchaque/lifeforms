@@ -5,12 +5,17 @@ module Skill
     # Returns random value within the distribution
     def rnd
       raise "Invalid call to base class function"
-    end    
+    end
 
     # Returns a random mutation of the specified value within the distribution
     def mutate(v)
       raise "Invalid call to base class function"
-    end    
+    end
+
+    # Unmarshals from a hash and returns a new Distrib object of the correct type
+    def self.unmarshal_from_h(h)
+      class_from_name(h[:class]).unmarshal_from_h(h)
+    end
   end
 
   # Represents linear distribution between two values (inclusive)
@@ -30,6 +35,19 @@ module Skill
       # since all values are equally likely we just return another random 
       # numnber
       rnd
+    end
+
+    # Marshals this object into a hash
+    def marshal_to_h
+      {
+        class: self.class.to_s,
+        min: @min,
+        max: @max
+      }
+    end
+
+    def self.unmarshal_from_h(h)
+      DistribLinear.new(h[:min], h[:max])
     end
   end
 
@@ -56,6 +74,19 @@ module Skill
       # we use the same stddev but center the distribution on the specified
       # value
       Rubystats::NormalDistribution.new(v, @stddev).rng
+    end
+
+    # Marshals this object into a hash
+    def marshal_to_h
+      {
+        class: self.class.to_s,
+        mean: @mean,
+        stddev: @stddev
+      }
+    end
+
+    def self.unmarshal_from_h(h)
+      DistribNormal.new(h[:mean], h[:stddev])
     end
   end
 end

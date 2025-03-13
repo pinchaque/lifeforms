@@ -33,4 +33,46 @@ describe "Helpers" do
       t("Skill::Base", "skill_base")
     end
   end
+
+  context "class_from_name" do
+    class Bar
+      def self.print
+        "bare class"
+      end  
+    end
+
+    module Foo
+      class Bar
+        def self.print
+          "nested class"
+        end  
+      end
+
+      class Quux
+        class Bar
+          def self.print
+            "double nested class"
+          end  
+        end
+      end
+    end
+
+    it "handles bare class" do
+      klass = class_from_name("Bar")
+      expect(klass.name).to eq("Bar")
+      expect(klass.print).to eq("bare class")
+    end
+
+    it "handles nested class" do
+      klass = class_from_name("Foo::Bar")
+      expect(klass.name).to eq("Foo::Bar")
+      expect(klass.print).to eq("nested class")
+    end
+
+    it "handles double-nested class" do
+      klass = class_from_name("Foo::Quux::Bar")
+      expect(klass.name).to eq("Foo::Quux::Bar")
+      expect(klass.print).to eq("double nested class")
+    end
+  end
 end
