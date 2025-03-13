@@ -1,8 +1,50 @@
 module Program
   module Statement
 
+    class Base
+
+      # Returns shortened class name that we use for marshaling
+      def short_class_name
+        self.class.name.gsub(/Program::Statement::/, '')
+      end
+
+      # Returns full class name from the short one
+      def self.full_class_name(str)
+        "Program::Statement::" + str
+      end
+      
+      # Marshals an expression into the expected built-in class format. Key "t"
+      # is the type and "v" is the value. The child class should call this with
+      # the value it needs to unmarshal properly.
+      def marshal_value(v = nil)
+        {t: short_class_name}.merge(v.nil? ? {} : {v: v})
+      end
+
+      # Unmarshals the passed-in object into a Statement of the correct type.
+      def self.unmarshal(obj)
+        class_from_name(full_class_name(obj[:t])).unmarshal_value(obj[:v])
+      end      
+    end
+
+    class Noop < Base
+      def initialize
+      end
+
+      def exec(ctx)
+        # do nothing
+      end
+
+      def marshal
+        marshal_value
+      end
+
+      def self.unmarshal_value(v)
+        Noop.new
+      end
+    end
+
     # Represents a sequence of statements that are executed in order
-    class Sequence
+    class Sequence < Base
       # List of any number of statements to execute.
       def initialize(*sts)
         @sts = sts
@@ -17,7 +59,7 @@ module Program
 
     # Represents a conditional: one statement will execute if true, the other
     # if false
-    class If
+    class If < Base
       # Conditional expression, statement to execute if true, statement to 
       # execute if false.
       def initialize(expr_bool, s_true, s_false)
@@ -38,7 +80,7 @@ module Program
     end
 
     # Statement wrapper around a Skill
-    class Skill
+    class Skill < Base
       # Initialie with the ID of the skill that will be executed
       def initialize(id)
         @id = id
@@ -54,6 +96,12 @@ module Program
 
   # The below functions are helpers to create the above classes. This is most
   # useful for testing and hard-coded behaviors.
+
+
+  # No-op
+  def s_noop
+    Statement::Noop.new
+  end
 
   # Sequence of statements
   def s_seq(*sts)
