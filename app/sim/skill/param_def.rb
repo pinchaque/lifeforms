@@ -64,23 +64,23 @@ module Skill
     end
 
     # Marshals this object into a hash
-    def marshal_to_h
+    def marshal
       {
         id: @id,
         desc: @desc,
         value_min: @value_min,
         value_max: @value_max,
-        distrib: @distrib.marshal_to_h
+        distrib: @distrib.marshal
       }
     end
 
     # Unmarshals from a hash and returns a new ParamDef object
-    def self.unmarshal_from_h(h)
+    def self.unmarshal(h)
       pd = ParamDef.new(h[:id])
       pd.desc = h[:desc]
       pd.value_min = h[:value_min]
       pd.value_max = h[:value_max]
-      pd.distrib = Distrib::unmarshal_from_h(h[:distrib])
+      pd.distrib = Distrib::unmarshal(h[:distrib])
       pd
     end
   end

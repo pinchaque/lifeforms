@@ -22,16 +22,16 @@ module Skill
     end
 
     # Marshals this object into a hash
-    def marshal_to_h
+    def marshal
       {
-        def: @def.marshal_to_h,
+        def: @def.marshal,
         value: @value
       }
     end
 
     # Unmarshals from a hash and returns a new Param object
-    def self.unmarshal_from_h(h)
-      pd = ParamDef.unmarshal_from_h(h[:def])
+    def self.unmarshal(h)
+      pd = ParamDef.unmarshal(h[:def])
       Param.new(pd, h[:value].to_f)
     end
   end

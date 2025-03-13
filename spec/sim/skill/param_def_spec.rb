@@ -240,12 +240,12 @@ describe "ParamDef" do
 
       h_exp = { 
         desc: desc, id: id, value_max: max, value_min: min,
-        distrib: pd.distrib.marshal_to_h
+        distrib: pd.distrib.marshal
       }
-      h_act = pd.marshal_to_h
+      h_act = pd.marshal
       expect(h_act).to eq(h_exp)
 
-      pd_new = ParamDef.unmarshal_from_h(h_act)
+      pd_new = ParamDef.unmarshal(h_act)
       expect(pd_new.id).to eq(id)
       expect(pd_new.desc).to eq(desc)
       expect(pd_new.value_min).to eq(min)

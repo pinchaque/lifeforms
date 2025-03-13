@@ -12,16 +12,16 @@ describe "Lifeform" do
   let(:env) { TestFactory.env(width, height, time_step) }
   let(:lf) { TestFactory.lifeform(env, species) }
   
-  context ".marshal_to_h" do
+  context ".marshal" do
     it "TODO - needs to be implemented" do
-      expect(lf.marshal_to_h).to eq("")
+      expect(lf.marshal).to eq("")
     end
   end
 
-  context ".marshal_from_h" do
+  context ".unmarshal" do
     it "TODO - needs to be implemented" do
       lf = Lifeform.new
-      lf.marshal_from_h({})
+      lf.unmarshal({})
       expect(lf.val1).to eq("foo")
     end
   end

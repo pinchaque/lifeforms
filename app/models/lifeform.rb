@@ -70,7 +70,7 @@ class Lifeform < Sequel::Model
     #   x: other.x,
     #   y: other.y
     # )
-    # marshal_from_h(other.marshal_to_h)
+    # unmarshal(other.marshal)
     #           child = @parent.class.new
     # child.copy_from(@parent)
     # child.energy = energy

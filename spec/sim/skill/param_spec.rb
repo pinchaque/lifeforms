@@ -44,12 +44,12 @@ describe "Param" do
       prm.value = value
       h_exp = { 
         value: value,
-        def: pd.marshal_to_h
+        def: pd.marshal
       }
-      h_act = prm.marshal_to_h
+      h_act = prm.marshal
       expect(h_act).to eq(h_exp)
 
-      prm_new = Param.unmarshal_from_h(h_act)
+      prm_new = Param.unmarshal(h_act)
       expect(prm_new.value).to eq(value)
       expect(prm.def.id).to eq(pd.id)
     end

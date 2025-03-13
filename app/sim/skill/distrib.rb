@@ -13,8 +13,8 @@ module Skill
     end
 
     # Unmarshals from a hash and returns a new Distrib object of the correct type
-    def self.unmarshal_from_h(h)
-      class_from_name(h[:class]).unmarshal_from_h(h)
+    def self.unmarshal(h)
+      class_from_name(h[:class]).unmarshal(h)
     end
   end
 
@@ -38,7 +38,7 @@ module Skill
     end
 
     # Marshals this object into a hash
-    def marshal_to_h
+    def marshal
       {
         class: self.class.to_s,
         min: @min,
@@ -46,7 +46,7 @@ module Skill
       }
     end
 
-    def self.unmarshal_from_h(h)
+    def self.unmarshal(h)
       DistribLinear.new(h[:min], h[:max])
     end
   end
@@ -77,7 +77,7 @@ module Skill
     end
 
     # Marshals this object into a hash
-    def marshal_to_h
+    def marshal
       {
         class: self.class.to_s,
         mean: @mean,
@@ -85,7 +85,7 @@ module Skill
       }
     end
 
-    def self.unmarshal_from_h(h)
+    def self.unmarshal(h)
       DistribNormal.new(h[:mean], h[:stddev])
     end
   end

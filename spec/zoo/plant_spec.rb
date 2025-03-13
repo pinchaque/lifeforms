@@ -38,23 +38,23 @@ describe "Plant" do
   }
 
 
-  context ".marshal_to_h" do
+  context ".marshal" do
     it "marshals to hash" do
-      expect(lf.marshal_to_h).to eq(marshal_data)
+      expect(lf.marshal).to eq(marshal_data)
     end
   end
 
-  context ".marshal_from_h" do
+  context ".unmarshal" do
     it "marshals from hash" do
       lfnew = Plant.new
-      lfnew.marshal_from_h(marshal_data)
+      lfnew.unmarshal(marshal_data)
       expect(lf.energy_absorb_perc).to eq(marshal_data[:energy_absorb_perc])
       expect(lf.energy_base).to eq(marshal_data[:energy_base])
       expect(lf.energy_reserve_perc).to eq(marshal_data[:energy_reserve_perc])
       expect(lf.repro_threshold).to eq(marshal_data[:repro_threshold])
       expect(lf.repro_num_offspring).to eq(marshal_data[:repro_num_offspring])
       expect(lf.repro_energy_inherit_perc).to eq(marshal_data[:repro_energy_inherit_perc])
-      expect(lfnew.marshal_to_h).to eq(marshal_data) # confirm round trip
+      expect(lfnew.marshal).to eq(marshal_data) # confirm round trip
     end
   end
 

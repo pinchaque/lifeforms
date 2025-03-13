@@ -25,10 +25,10 @@ describe "Distrib" do
 
     it "marshals and unmarshals" do
       h_exp = {class: klass, min: min, max: max}
-      h_act = dist.marshal_to_h
+      h_act = dist.marshal
       expect(h_act).to eq(h_exp)
 
-      dist_new = Distrib.unmarshal_from_h(h_act)
+      dist_new = Distrib.unmarshal(h_act)
       expect(dist_new.class.name).to eq(klass)
       expect(dist_new.min).to eq(min)
       expect(dist_new.max).to eq(max)
@@ -54,10 +54,10 @@ describe "Distrib" do
 
     it "marshals and unmarshals" do
       h_exp = {class: klass, mean: mean, stddev: stddev}
-      h_act = dist.marshal_to_h
+      h_act = dist.marshal
       expect(h_act).to eq(h_exp)
 
-      dist_new = Distrib.unmarshal_from_h(h_act)
+      dist_new = Distrib.unmarshal(h_act)
       expect(dist_new.class.name).to eq(klass)
       expect(dist_new.mean).to eq(mean)
       expect(dist_new.stddev).to eq(stddev)

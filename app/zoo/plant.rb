@@ -42,7 +42,7 @@ class Plant < Lifeform
     Math::PI * (radius ** 2.0)
   end
   
-  def marshal_to_h
+  def marshal
     super.merge({
       energy_absorb_perc: energy_absorb_perc,
       energy_base: energy_base,
@@ -53,7 +53,7 @@ class Plant < Lifeform
     })
   end
 
-  def marshal_from_h(h)
+  def unmarshal(h)
     @energy_absorb_perc = h[:energy_absorb_perc]
     @energy_base = h[:energy_base]
     @energy_reserve_perc = h[:energy_reserve_perc]
