@@ -3,6 +3,8 @@ include Skill
 class TestSkill < Skill::Base
 end
 
+class TestSkill2 < Skill::Base
+end
 
 describe "SkillSet" do
   let(:ss) { SkillSet.new }
@@ -11,7 +13,7 @@ describe "SkillSet" do
 
   context ".initialize" do
     it "creates empty SkillSet" do
-      expect(ss.skills.count).to eq(0)
+      expect(ss.count).to eq(0)
     end
   end
 
@@ -30,6 +32,26 @@ describe "SkillSet" do
       ss.clear
       expect(ss.count).to eq(0)
       expect(ss.include?(id)).to be false
+    end
+  end
+
+  context "marshalling" do
+    it "marshals and unmarshals" do
+      ss.add(TestSkill)
+      ss.add(TestSkill2)
+      expect(ss.count).to eq(2)
+
+      m_exp = [
+        TestSkill.name,
+        TestSkill2.name
+      ]
+      m_act = ss.marshal
+      expect(m_act).to eq(m_exp)
+
+      ss_new = SkillSet.unmarshal(m_act)
+      expect(ss_new.count).to eq(2)
+      expect(ss_new.include?(TestSkill.id)).to be true
+      expect(ss_new.include?(TestSkill2.id)).to be true
     end
   end
 end

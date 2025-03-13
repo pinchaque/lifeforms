@@ -18,6 +18,19 @@ describe "Base" do
     end
   end
 
+  context "marshaling" do
+    it "marshals" do
+      expect(TestSkill.marshal).to eq("TestSkill")
+      expect(TestSkillChild.marshal).to eq("TestSkillChild")
+    end
+
+    it "unmarshals" do
+      expect(Skill::Base.unmarshal("TestSkill").name).to eq(TestSkill.name)
+      expect(Skill::Base.unmarshal("TestSkillChild").name).to eq(TestSkillChild.name)
+    end
+  end
+
+  # sanith-check tests of our TestFactory
   context "TestFactory" do
     let(:ret) { "test return value" }
     let(:ctx) { nil }

@@ -31,5 +31,15 @@ module Skill
     def self.exec(ctx)
       raise "Tried to execute Skill::Base"
     end
+
+    # Unmarshals the value and returns a new Skill class of the correct type
+    def self.unmarshal(obj)
+      class_from_name(obj)
+    end
+
+    # Marshals this Skill to a value.
+    def self.marshal
+      name
+    end
   end
 end
