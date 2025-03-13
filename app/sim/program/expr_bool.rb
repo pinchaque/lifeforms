@@ -1,16 +1,27 @@
 module Program
   module ExprBool
-      # def marshal        
-      # end
+    class Base
 
-      # def unmarshal(str)
-      # end
+      # Returns shortened class name that we use for marshaling
+      def short_class_name
+        self.class.name.gsub(/Program::ExprBool::/, '')
+      end
+      
+      # Marshals an expression into the expected built-in class format. Key "t"
+      # is the type and "v" is the value. The child class should call this with
+      # the value it needs to unmarshal properly.
+      def marshal_value(v = nil)
+        {t: short_class_name}.merge(v.nil? ? {} : {v: v})
+      end
 
-  # Future stuff:
-  # Simple math: Plus, Minus, Mult, Div
-  # 
+      # Unmarshals the passed-in object into an ExprBool of the correct type.
+      def self.unmarshal(obj)
+        Base.new
+      end
+    end
+
     # Expresssion that always returns true
-    class True
+    class True < Base
       def eval(v)
         true
       end
@@ -18,10 +29,14 @@ module Program
       def to_s
         "true"
       end
+
+      def marshal
+        marshal_value
+      end
     end
 
     # Logical NOT
-    class Not
+    class Not < Base
       def initialize(expr)
         @expr = expr
       end
@@ -33,10 +48,14 @@ module Program
       def to_s
         "!#{@expr.to_s}"
       end
+
+      def marshal
+        marshal_value(@expr.marshal)
+      end
     end
 
     # Logical AND
-    class And
+    class And < Base
       def initialize(*exprs)
         @exprs = exprs
       end
@@ -46,13 +65,17 @@ module Program
       end
       
       def to_s
-        ret = @exprs.map{ |expr| "#{expr.to_s}" }.join(" && ")
+        ret = @exprs.map { |expr| "#{expr.to_s}" }.join(" && ")
         (@exprs.count > 1) ? "(#{ret})" : ret
+      end
+
+      def marshal
+        marshal_value(@exprs.map { |expr| expr.marshal })
       end
     end
 
     # Logical OR
-    class Or
+    class Or < Base
       def initialize(*exprs)
         @exprs = exprs
       end
@@ -65,10 +88,14 @@ module Program
         ret = @exprs.map{ |expr| "#{expr.to_s}" }.join(" || ")
         (@exprs.count > 1) ? "(#{ret})" : ret
       end
+
+      def marshal
+        marshal_value(@exprs.map { |expr| expr.marshal })
+      end
     end
 
     # Base class for numeric comparisons
-    class NumCmp
+    class NumCmp < Base
       def initialize(e1, e2, op_s)
         @e1 = e1
         @e2 = e2

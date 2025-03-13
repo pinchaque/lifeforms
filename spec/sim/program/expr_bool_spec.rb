@@ -211,4 +211,42 @@ describe "ExprBool" do
       t_err(e_lt(:foo, :emptystr), "(foo < emptystr)", "Value for 'emptystr' is nil")
     end
   end
+
+  context "Marshaling" do
+    def t_marshal(expr, exp)
+      act = expr.marshal
+      expect(act).to eq(exp)
+
+      # TODO Unmarshaling
+    end
+
+    it ".short_class_name" do
+      expect(e_true.short_class_name).to eq("True")
+      expect(e_gt(:foo, :foo).short_class_name).to eq("GT")
+      expect(e_and(e_true).short_class_name).to eq("And")
+    end
+
+    it "True" do
+      t_marshal(e_true, {t: "True"})
+    end
+
+    it "Not(True)" do
+      t_marshal(e_not(e_true), {t: "Not", v: {t: "True"}})
+    end
+
+    it "And(True)" do
+      t_marshal(e_and(e_true), {t: "And", v: [{t: "True"}]})
+    end
+
+    it "Or(True)" do
+      t_marshal(e_or(e_true), {t: "Or", v: [{t: "True"}]})
+    end
+
+    it "And(Or(True, Not(True)), Or(True, True))" do
+      exp = {t: "And", v: [
+        {t: "Or", v: [{t: "True"}, {t: "Not", v: {t: "True"}}]},
+        {t: "Or", v: [{t: "True"}, {t: "True"}]}]}
+      t_marshal(e_and(e_or(e_true, e_not(e_true)), e_or(e_true, e_true)), exp)
+    end
+  end
 end
