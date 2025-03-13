@@ -63,7 +63,7 @@ module Skill
       constrain(@distrib.mutate(v))
     end
 
-    # Marshals this object into a hash
+    # Marshals this object into built-in classes
     def marshal
       {
         id: @id,
@@ -74,13 +74,13 @@ module Skill
       }
     end
 
-    # Unmarshals from a hash and returns a new ParamDef object
-    def self.unmarshal(h)
-      pd = ParamDef.new(h[:id])
-      pd.desc = h[:desc]
-      pd.value_min = h[:value_min]
-      pd.value_max = h[:value_max]
-      pd.distrib = Distrib::unmarshal(h[:distrib])
+    # Unmarshals from an object and returns a new ParamDef object
+    def self.unmarshal(obj)
+      pd = ParamDef.new(obj[:id])
+      pd.desc = obj[:desc]
+      pd.value_min = obj[:value_min]
+      pd.value_max = obj[:value_max]
+      pd.distrib = Distrib::unmarshal(obj[:distrib])
       pd
     end
   end

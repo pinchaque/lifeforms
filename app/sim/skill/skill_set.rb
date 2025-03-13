@@ -34,15 +34,15 @@ module Skill
       @skills.fetch(id, default)
     end
 
-    # Marshals this SkillSet to a hash that can be later converted to JSON
+    # Marshals this SkillSet to built-in objects can be later converted to JSON
     def marshal
       @skills.values.map { |sk| sk.marshal }
     end
 
-    # Creates and returns a new SkillSet from the given hash
-    def self.unmarshal(h)
+    # Creates and returns a new SkillSet from the given object
+    def self.unmarshal(obj)
       SkillSet.new do |sset|
-        h.each do |v|
+        obj.each do |v|
           sset.add(Skill::Base.unmarshal(v))
         end
       end

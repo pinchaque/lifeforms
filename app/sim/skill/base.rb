@@ -1,4 +1,6 @@
 module Skill
+  # Base class to use for all skills. It provides behavior that is needed for
+  # the Skills to work within the simulation.
   class Base
     # Generates the id of the skill based on the class name. Override this
     # if you want to use a different ID.

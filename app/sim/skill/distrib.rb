@@ -12,9 +12,9 @@ module Skill
       raise "Invalid call to base class function"
     end
 
-    # Unmarshals from a hash and returns a new Distrib object of the correct type
-    def self.unmarshal(h)
-      class_from_name(h[:class]).unmarshal(h)
+    # Unmarshals from an object and returns a new Distrib object of the correct type
+    def self.unmarshal(obj)
+      class_from_name(obj[:class]).unmarshal(obj)
     end
   end
 
@@ -37,7 +37,7 @@ module Skill
       rnd
     end
 
-    # Marshals this object into a hash
+    # Marshals this object built-in Ruby classes
     def marshal
       {
         class: self.class.to_s,
@@ -46,8 +46,8 @@ module Skill
       }
     end
 
-    def self.unmarshal(h)
-      DistribLinear.new(h[:min], h[:max])
+    def self.unmarshal(obj)
+      DistribLinear.new(obj[:min], obj[:max])
     end
   end
 
@@ -76,7 +76,7 @@ module Skill
       Rubystats::NormalDistribution.new(v, @stddev).rng
     end
 
-    # Marshals this object into a hash
+    # Marshals this object built-in Ruby classes
     def marshal
       {
         class: self.class.to_s,
@@ -85,8 +85,8 @@ module Skill
       }
     end
 
-    def self.unmarshal(h)
-      DistribNormal.new(h[:mean], h[:stddev])
+    def self.unmarshal(obj)
+      DistribNormal.new(obj[:mean], obj[:stddev])
     end
   end
 end

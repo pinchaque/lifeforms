@@ -34,15 +34,15 @@ module Skill
       @params.fetch(id, default)
     end
 
-    # Marshals this ParamSet to a hash that can be later converted to JSON
+    # Marshals this ParamSet to built-in objects that can be later converted to JSON
     def marshal
       @params.values.map { |prm| prm.marshal }
     end
 
-    # Creates and returns a new ParamSet from the given hash
-    def self.unmarshal(h)
+    # Creates and returns a new ParamSet from the given object
+    def self.unmarshal(obj)
       ParamSet.new do |pset|
-        h.each do |v|
+        obj.each do |v|
           pset.add(Param.unmarshal(v))
         end
       end

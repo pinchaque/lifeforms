@@ -21,7 +21,7 @@ module Skill
       @value = @def.mutate(@value)
     end
 
-    # Marshals this object into a hash
+    # Marshals this object into built-in objects
     def marshal
       {
         def: @def.marshal,
@@ -29,10 +29,10 @@ module Skill
       }
     end
 
-    # Unmarshals from a hash and returns a new Param object
-    def self.unmarshal(h)
-      pd = ParamDef.unmarshal(h[:def])
-      Param.new(pd, h[:value].to_f)
+    # Unmarshals from an object and returns a new Param object
+    def self.unmarshal(obj)
+      pd = ParamDef.unmarshal(obj[:def])
+      Param.new(pd, obj[:value].to_f)
     end
   end
 end
