@@ -55,6 +55,14 @@ module Program
       def exec(ctx)
         @sts.map { |st| st.exec(ctx) }
       end
+
+      def marshal
+        marshal_value(@sts.map { |st| st.marshal })
+      end
+
+      def self.unmarshal_value(v)
+        Sequence.new(*v.map{ |i| self.unmarshal(i)})
+      end
     end
 
     # Represents a conditional: one statement will execute if true, the other
@@ -77,6 +85,21 @@ module Program
           @s_false.exec(ctx)
         end
       end
+
+      def marshal
+        marshal_value(
+          if: @expr_bool.marshal,
+          then: @s_true.marshal,
+          else: @s_false.marshal
+        )
+      end
+
+      def self.unmarshal_value(v)
+        If.new(
+          ExprBool::Base.unmarshal(v[:if]), 
+          self.unmarshal(v[:then]), 
+          self.unmarshal(v[:else]))
+      end
     end
 
     # Statement wrapper around a Skill
@@ -90,6 +113,14 @@ module Program
       def exec(ctx)
         skill = ctx.lifeform.skills[@id]
         skill.exec(ctx) unless skill.nil?
+      end
+
+      def marshal
+        marshal_value(@id)
+      end
+
+      def self.unmarshal_value(v)
+        Skill.new(v.to_sym)
       end
     end
   end
