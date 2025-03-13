@@ -217,7 +217,8 @@ describe "ExprBool" do
       act = expr.marshal
       expect(act).to eq(exp)
 
-      # TODO Unmarshaling
+      expr_new = Program::ExprBool::Base.unmarshal(act)
+      expect(expr_new.to_s).to eq(expr.to_s)
     end
 
     it ".short_class_name" do
@@ -225,6 +226,11 @@ describe "ExprBool" do
       expect(e_gt(:foo, :foo).short_class_name).to eq("GT")
       expect(e_and(e_true).short_class_name).to eq("And")
     end
+
+    it "#full_class_name" do
+      expect(Program::ExprBool::Base.full_class_name("And")).to eq("Program::ExprBool::And")
+    end
+
 
     it "True" do
       t_marshal(e_true, {t: "True"})

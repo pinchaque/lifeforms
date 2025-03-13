@@ -6,6 +6,11 @@ module Program
       def short_class_name
         self.class.name.gsub(/Program::ExprBool::/, '')
       end
+
+      # Returns full class name from the short one
+      def self.full_class_name(str)
+        "Program::ExprBool::" + str
+      end
       
       # Marshals an expression into the expected built-in class format. Key "t"
       # is the type and "v" is the value. The child class should call this with
@@ -16,7 +21,7 @@ module Program
 
       # Unmarshals the passed-in object into an ExprBool of the correct type.
       def self.unmarshal(obj)
-        Base.new
+        class_from_name(full_class_name(obj[:t])).unmarshal_value(obj[:v])
       end
     end
 
@@ -32,6 +37,10 @@ module Program
 
       def marshal
         marshal_value
+      end
+
+      def self.unmarshal_value(v)
+        True.new
       end
     end
 
@@ -51,6 +60,10 @@ module Program
 
       def marshal
         marshal_value(@expr.marshal)
+      end
+
+      def self.unmarshal_value(v)
+        Not.new(self.unmarshal(v))
       end
     end
 
@@ -72,6 +85,10 @@ module Program
       def marshal
         marshal_value(@exprs.map { |expr| expr.marshal })
       end
+
+      def self.unmarshal_value(v)
+        And.new(*v.map{ |i| self.unmarshal(i)})
+      end
     end
 
     # Logical OR
@@ -91,6 +108,10 @@ module Program
 
       def marshal
         marshal_value(@exprs.map { |expr| expr.marshal })
+      end
+
+      def self.unmarshal_value(v)
+        Or.new(*v.map{ |i| self.unmarshal(i)})
       end
     end
 
