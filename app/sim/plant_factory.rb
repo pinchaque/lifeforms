@@ -18,13 +18,13 @@ class PlantFactory
   def get_skills
     [
       Skill::EnvEnergy,
-      Skill::Grow
+#      Skill::Grow
     ]
   end
 
   def get_program
-    s_seq(
-      s_skill(Skill::EnvEnergy.id)
+    Program::s_seq(
+      Program::s_skill(Skill::EnvEnergy.id)
     )
   end
 

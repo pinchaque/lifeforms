@@ -29,6 +29,10 @@ module Program
       def initialize
       end
 
+      def to_s
+        "NOOP()"
+      end
+
       def exec(ctx)
         # do nothing
       end
@@ -47,6 +51,13 @@ module Program
       # List of any number of statements to execute.
       def initialize(*sts)
         @sts = sts
+      end
+
+      def to_s
+        sep = "\n  - "
+        "SEQ(" + sep + 
+        @sts.map{ |st| st.to_s }.join(sep) +
+        "\n)"
       end
 
       # Executes sequence of statements in order, returning array of their
@@ -73,6 +84,12 @@ module Program
         @expr_bool = expr_bool
         @s_true = s_true
         @s_false = s_false
+      end
+
+      def to_s
+        "IF(#{@expr_bool.to_s}\n" +
+        "  THEN #{@s_true.to_s}\n" +
+        "  ELSE #{@s_false.to_s}\n)"
       end
 
       # Evaluates the expression and executes the true or false statement
@@ -108,9 +125,13 @@ module Program
         @id = id
       end
 
+      def to_s
+        "SKILL(#{@id})"
+      end
+
       # Executes the skill with the given Context
       def exec(ctx)
-        skill = ctx.lifeform.skills[@id]
+        skill = ctx.lifeform.skills.fetch(@id)
         skill.exec(ctx) unless skill.nil?
       end
 

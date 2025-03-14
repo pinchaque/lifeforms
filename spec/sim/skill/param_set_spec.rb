@@ -57,7 +57,7 @@ describe "ParamSet" do
   end
 
   context "marshalling" do
-    let(:id2) { "quux" }
+    let(:id2) { "quux" } # tests string -> sym conversion
     let(:pd2) { 
       Skill::ParamDefNormal(
         id: id2,
@@ -80,7 +80,10 @@ describe "ParamSet" do
       m_act = pset.marshal
       expect(m_act).to eq(m_exp)
 
-      pset_new = ParamSet.unmarshal(m_act)
+      # execute a round trip through JSON like we would for the db
+      m_act_json = JSON.parse(JSON.generate(m_act), {symbolize_names: true})
+
+      pset_new = ParamSet.unmarshal(m_act_json)
       expect(pset_new.count).to eq(2)
       expect(pset_new.include?(id)).to be true
       expect(pset_new.include?(id2)).to be true

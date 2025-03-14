@@ -238,14 +238,17 @@ describe "ParamDef" do
       expect(pd.distrib.mean).to eq(mean)
       expect(pd.distrib.stddev).to eq(stddev)
 
-      h_exp = { 
+      m_exp = { 
         desc: desc, id: id, value_max: max, value_min: min,
         distrib: pd.distrib.marshal
       }
-      h_act = pd.marshal
-      expect(h_act).to eq(h_exp)
+      m_act = pd.marshal
+      expect(m_act).to eq(m_exp)
 
-      pd_new = ParamDef.unmarshal(h_act)
+      # execute a round trip through JSON like we would for the db
+      m_act_json = JSON.parse(JSON.generate(m_act), {symbolize_names: true})
+
+      pd_new = ParamDef.unmarshal(m_act_json)
       expect(pd_new.id).to eq(id)
       expect(pd_new.desc).to eq(desc)
       expect(pd_new.value_min).to eq(min)

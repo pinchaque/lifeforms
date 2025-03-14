@@ -123,6 +123,10 @@ class Lifeform < Sequel::Model
     sprintf("%s %s %s energy:%.2f size:%.2f loc:%s", id, species.name, name, energy, size, loc_str)
   end
 
+  def to_s_debug
+    [to_s, @skills.to_s, @params.to_s, @program.to_s].join("\n") + "\n"
+  end
+
   # Selects a random name for this lifeform.
   def set_random_name
     self.name = (NameParts::LF_DESCRIPTORS.sample.capitalize + " " + NameParts::LF_GIVENS.sample.capitalize).strip
@@ -242,6 +246,8 @@ class Lifeform < Sequel::Model
   end
 
   def run_step
+    Log.debug(to_s_debug)
+
     # execute our program
     program.exec(context)
 
@@ -250,5 +256,7 @@ class Lifeform < Sequel::Model
 
     # Marks this organism as dead if it is out of energy
     mark_dead if self.energy <= 0.0
+
+    self
   end
 end

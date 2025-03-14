@@ -8,6 +8,10 @@ module Skill
       yield self if block_given?
     end
 
+    def to_s
+      "[SkillSet] " + @skills.values.map{ |s| s.name }.join(", ")
+    end
+
     # Number of Skills in this object
     def count
       @skills.count

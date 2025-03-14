@@ -8,6 +8,10 @@ module Skill
       yield self if block_given?
     end
 
+    def to_s
+      "[ParamSet] " + @params.keys.map{ |id| "#{id}:#{@params[id].value}" }.join(", ")
+    end
+
     # Number of Params in this object
     def count
       @params.count
@@ -15,8 +19,9 @@ module Skill
 
     # Adds a Param to this object
     def add(p)
-      raise "Param #{p.id} already exists" if @params.key?(p.id)
-      @params[p.id] = p
+      id = p.id.to_sym
+      raise "Param #{id} already exists" if @params.key?(id)
+      @params[id] = p
     end
 
     # Clears all Params from this object
@@ -26,12 +31,12 @@ module Skill
 
     # Returns true if the Param with the given ID exists in this object
     def include?(id)
-      @params.include?(id)
+      @params.include?(id.to_sym)
     end
 
     # Fetches the Param with the given ID, returning default if it is not found
     def fetch(id, default = nil)
-      @params.fetch(id, default)
+      @params.fetch(id.to_sym, default)
     end
 
     # Marshals this ParamSet to built-in objects that can be later converted to JSON

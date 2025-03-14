@@ -48,7 +48,10 @@ describe "SkillSet" do
       m_act = ss.marshal
       expect(m_act).to eq(m_exp)
 
-      ss_new = SkillSet.unmarshal(m_act)
+      # execute a round trip through JSON like we would for the db
+      m_act_json = JSON.parse(JSON.generate(m_act), {symbolize_names: true})
+
+      ss_new = SkillSet.unmarshal(m_act_json)
       expect(ss_new.count).to eq(2)
       expect(ss_new.include?(TestSkill.id)).to be true
       expect(ss_new.include?(TestSkill2.id)).to be true

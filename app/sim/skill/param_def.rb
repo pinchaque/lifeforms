@@ -15,7 +15,7 @@ module Skill
     # Initialize the parameter definition with an id to use. This ID is used
     # to refer to this parameter throughout the project.
     def initialize(id)
-      @id = id
+      @id = id.to_sym
     end
 
     # Generates and returns a default value for the parameter given the
@@ -76,7 +76,7 @@ module Skill
 
     # Unmarshals from an object and returns a new ParamDef object
     def self.unmarshal(obj)
-      pd = ParamDef.new(obj[:id])
+      pd = ParamDef.new(obj[:id].to_sym)
       pd.desc = obj[:desc]
       pd.value_min = obj[:value_min]
       pd.value_max = obj[:value_max]

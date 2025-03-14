@@ -42,14 +42,17 @@ describe "Param" do
 
     it "marshals and unmarshals" do
       prm.value = value
-      h_exp = { 
+      m_exp = { 
         value: value,
         def: pd.marshal
       }
-      h_act = prm.marshal
-      expect(h_act).to eq(h_exp)
+      m_act = prm.marshal
+      expect(m_act).to eq(m_exp)
 
-      prm_new = Param.unmarshal(h_act)
+      # execute a round trip through JSON like we would for the db
+      m_act_json = JSON.parse(JSON.generate(m_act), {symbolize_names: true})
+
+      prm_new = Param.unmarshal(m_act_json)
       expect(prm_new.value).to eq(value)
       expect(prm.def.id).to eq(pd.id)
     end
