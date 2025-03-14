@@ -71,4 +71,40 @@ describe "Reproduce" do
       end
     end
   end
+
+  context ".reproduce" do
+    # we have separate tests for Reproduce so here we just need to test that
+    # the resultant energy is correct
+  
+    [1, 4].each do |num_offspring|
+      it "inherits all" do
+        lf.repro_energy_inherit_perc = 1.0
+        lf.energy = 100.0
+        lf.repro_num_offspring = num_offspring
+        lf.reproduce
+        expect(lf.energy).to be_within(tol).of(0.0)
+      end
+    end
+
+    [1, 4].each do |num_offspring|
+      it "inherits none" do
+        lf.repro_energy_inherit_perc = 0.0
+        lf.energy = 100.0
+        lf.repro_num_offspring = num_offspring
+        lf.reproduce
+        expect(lf.energy).to be_within(tol).of(100.0)
+      end
+    end
+
+    [1, 4].each do |num_offspring|
+      it "inherits half" do
+        lf.repro_energy_inherit_perc = 0.5
+        lf.energy = 100.0
+        lf.repro_num_offspring = num_offspring
+        lf.reproduce
+        expect(lf.energy).to be_within(tol).of(50.0)
+      end
+    end
+  end
+
 end
