@@ -16,6 +16,7 @@ class TestFactory
     l.created_step = e.time_step
     l.energy = 10.0
     l.size = 1.0
+    l.generation = 2
     l.initial_size = 0.2
     l.name = "Incredible Juniper"
     l.x = 2.22

@@ -10,6 +10,7 @@ class Lifeform < Sequel::Model
   def after_initialize
     @skills = Skill::SkillSet.new if @skills.nil?
     @params = Skill::ParamSet.new if @params.nil?
+    @program = Program::Statement::Noop.new if @program.nil?
 
     # marshal this object's data from obj_data if it exists
     unless obj_data.nil?
@@ -44,44 +45,47 @@ class Lifeform < Sequel::Model
   # Converts this lifeform object's extra data into a hash
   def objdata_to_h
     {
-      params: @params,
-      skills: @skills
+      params: @params.marshal,
+      skills: @skills.marshal,
+      program: @program.marshal
     }
   end
 
   # Populates this lifeform object's extra data from a hash
   def objdata_from_h(h)
-    @params = h[:params]
-    @skills = h[:skills]
+    @params = Skill::ParamSet.unmarshal(h[:params])
+    @skills = Skill::SkillSet.unmarshal(h[:skills])
+    @program = Program::Statement.unmarshal(h[:program])
   end
 
   # Creates and returns a new Lifeform object that is the child of this one.
   # Attriutes are inherited from the parent where that makes sense. No genetic
   # mutations take place - those must be done afterwards.
   def create_child
-    Lifeform.new
+    c = Lifeform.new
 
-    # set(environment_id: other.environment_id,
-    #   species_id: other.species_id,
-    #   energy: other.energy,
-    #   size: other.size,
-    #   initial_size: other.initial_size,
-    #   name: other.name,
-    #   x: other.x,
-    #   y: other.y
-    # )
-    # unmarshal(other.marshal)
-    #           child = @parent.class.new
-    # child.copy_from(@parent)
-    # child.energy = energy
-    # child.set_random_name
-    # child.parent_id = @parent.id
-    # child.generation = @parent.generation + 1
-    # child.mark_born
-    # child.size = @parent.initial_size # set child size based on parent init_size
-    # child.initial_size = @parent.initial_size # inherit value
-    # yield child if block_given? 
+    # basic attributes that get inherited as is
+    c.environment_id = self.environment_id
+    c.species_id = self.species_id
+    c.initial_size = self.initial_size
+    c.x = self.x
+    c.y = self.y
+    c.energy_base = self.energy_base
+    c.energy_exp = self.energy_exp
 
+    # copy params, skills, program
+    c.objdata_from_h(self.objdata_to_h)
+
+    # these data are updated for new children
+    c.parent_id = self.id
+    c.created_step = env.time_step
+    c.size = self.initial_size
+    c.energy = 0.0
+    c.set_random_name
+    c.died_step = nil
+    c.generation = self.generation + 1
+
+    c
   end
 
   # Mark that this lifeform has been born, adjusting data members as needed
@@ -183,7 +187,7 @@ class Lifeform < Sequel::Model
   end
 
   def context
-    Program::Context.new(env, self)
+    Program::Context.new(self)
   end
 
   # Returns instance of the function to use for energy calculations

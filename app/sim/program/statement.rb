@@ -1,6 +1,5 @@
 module Program
   module Statement
-
     class Base
 
       # Returns shortened class name that we use for marshaling
@@ -123,6 +122,12 @@ module Program
         Skill.new(v.to_sym)
       end
     end
+
+
+    # Unmarshals the specified object into the correct Statement child class
+    def self.unmarshal(obj)
+      Base::unmarshal(obj)
+    end
   end
 
   # The below functions are helpers to create the above classes. This is most
@@ -130,22 +135,22 @@ module Program
 
 
   # No-op
-  def s_noop
+  def self.s_noop
     Statement::Noop.new
   end
 
   # Sequence of statements
-  def s_seq(*sts)
+  def self.s_seq(*sts)
     Statement::Sequence.new(*sts)
   end
 
   # Executes s_true or s_false depending on expr_bool
-  def s_if(expr_bool, s_true, s_false)
+  def self.s_if(expr_bool, s_true, s_false)
     Statement::If.new(expr_bool, s_true, s_false)
   end
 
   # Executes a Skill as a statement
-  def s_skill(s)
+  def self.s_skill(s)
     Statement::Skill.new(s)
   end
 end
