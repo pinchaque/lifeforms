@@ -70,6 +70,7 @@ describe "EnvEnergy" do
       l.energy = energy
       l.register_skill(EnvEnergy)
       l.params.fetch(:energy_absorb_perc).value = energy_absorb_perc
+      l.save
       l
     end
 
@@ -111,6 +112,12 @@ describe "EnvEnergy" do
 
       exp_egy = Math::PI * env_energy_rate
       exp_loss = env_energy_rate * overlap_area / 2.0
+
+      # sanith-check with hard-coded values
+      expect(overlap_area).to be_within(tol).of(1.2283696986087564)
+      expect(exp_egy).to be_within(tol).of(31.41592653589793)
+      expect(exp_loss).to be_within(tol).of(6.141848493043782)
+      expect(env_energy_rate).to be_within(tol).of(10.0)
 
       expect(klass.env_gross(ctx0)).to be_within(tol).of(exp_egy)
       expect(klass.overlap_loss(ctx0)).to be_within(tol).of(exp_loss)
