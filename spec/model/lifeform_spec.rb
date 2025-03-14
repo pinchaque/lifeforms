@@ -495,8 +495,27 @@ describe "Lifeform" do
   end
 
   context ".run_step" do
-    it "TODO - implement" do
-      expect("foo").to eq("TODO - implement")
+    it "deducts metabolic energy" do
+      meta_egy = lf.metabolic_energy
+      egy_before = lf.energy
+      expect(meta_egy).to eq(1.0)
+      expect(egy_before).to eq(10.0)
+      expect(lf.is_alive?).to be true
+
+      lf.run_step
+      expect(lf.energy).to be_within(tol).of(9.0)
+      expect(lf.is_alive?).to be true
+    end
+
+    it "kills if run out of energy" do
+      meta_egy = lf.metabolic_energy
+      lf.energy = 0.9
+      expect(meta_egy).to eq(1.0)
+      expect(lf.is_alive?).to be true
+
+      lf.run_step
+      expect(lf.energy).to eq(0.0)
+      expect(lf.is_alive?).to be false
     end
   end
 end

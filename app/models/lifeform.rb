@@ -242,14 +242,11 @@ class Lifeform < Sequel::Model
   end
 
   def run_step
-    # build context to use for this program execution
-    ctx = build_context
-
     # execute our program
-    program.exec(ctx)
+    program.exec(context)
 
     # deduct our metabolic energy
-    self.energy -= metabolic_energy
+    self.energy = [self.energy - metabolic_energy, 0.0].max
 
     # Marks this organism as dead if it is out of energy
     mark_dead if self.energy <= 0.0
