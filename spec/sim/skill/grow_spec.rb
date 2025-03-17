@@ -13,8 +13,8 @@ describe "Grow" do
   context "Generic Lifeform" do
     let(:lf) { 
       l = TestFactory.lifeform(env, species) 
-      l.register_skill(Grow)
-      l.params.fetch(:grow_perc).value = grow_perc
+      l.register_skill(klass)
+      l.params.fetch(:grow_perc).set(grow_perc)
       l.size = init_size
       l.save
       l

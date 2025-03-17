@@ -17,6 +17,7 @@ module Skill
       grow_perc = ctx.value(:grow_perc)
       old_size = lf.size
       lf.size *= (1.0 + grow_perc)
+      lf.save
       Log.trace(sprintf("[Grow] Growing from %.2f to %.2f (%0.2f%%)", old_size, lf.size, grow_perc * 100.0))
     end
   end

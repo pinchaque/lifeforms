@@ -12,8 +12,8 @@ describe "EnvEnergy" do
   context "Generic Lifeform" do
     let(:lf) { 
       l = TestFactory.lifeform(env, species) 
-      l.register_skill(EnvEnergy)
-      l.params.fetch(:energy_absorb_perc).value = energy_absorb_perc
+      l.register_skill(klass)
+      l.params.fetch(:energy_absorb_perc).set(energy_absorb_perc)
       l
     }
     let(:ctx) { lf.context }
@@ -69,7 +69,7 @@ describe "EnvEnergy" do
       l.size = size
       l.energy = energy
       l.register_skill(EnvEnergy)
-      l.params.fetch(:energy_absorb_perc).value = energy_absorb_perc
+      l.params.fetch(:energy_absorb_perc).set(energy_absorb_perc)
       l.save
       l
     end
