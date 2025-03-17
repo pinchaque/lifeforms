@@ -50,7 +50,11 @@ module Skill
     # the total provided by the environment, minus that excluded by overlaps,
     # times the absorbtion percentage.
     def self.exec(ctx)
-      ctx.lifeform.energy += energy_absorb(ctx)
+      lf = ctx.lifeform
+      old_energy = lf.energy
+      egy_absorb = energy_absorb(ctx)
+      lf.energy += egy_absorb
+      Log.trace(sprintf("[EnvEnergy] Energy changed from %.2f to %.2f (absorbed %.2f)", old_energy, lf.energy, egy_absorb))
     end
   end
 end
