@@ -2,6 +2,7 @@ include Skill
 
 
 describe "Param" do
+  let(:tol) { 0.00001 }
   let(:mean) { 100.0 }
   let(:stddev) { 10.0 }
   let(:min) { mean - 4 * stddev }
@@ -27,6 +28,32 @@ describe "Param" do
     end
   end
 
+  context ".set" do
+    let(:min) { 0.0 }
+    let(:max) { 100.0 }
+    let(:mean) { 50.0 }
+    let(:stddev) { 5.0 }
+  
+    it "cannot set using accessor" do
+      expect{prm.value = 5}.to raise_error(NoMethodError)
+    end
+
+    it "sets basic value" do
+      prm.set(5.0)
+      expect(prm.value).to be_within(tol).of(5.0)
+    end
+
+    it "constrains to min while setting" do
+      prm.set(min - 5.0)
+      expect(prm.value).to be_within(tol).of(min)
+    end
+
+    it "constrains to max while setting" do
+      prm.set(max + 5.0)
+      expect(prm.value).to be_within(tol).of(max)
+    end
+  end
+
   context ".mutate" do
     it "mutates to new value" do
       old_value = prm.value
@@ -38,10 +65,10 @@ describe "Param" do
   end
 
   context "marshaling" do
-    let(:value) { 2.22 }
+    let(:value) { 77.77 }
 
     it "marshals and unmarshals" do
-      prm.value = value
+      prm.set(value)
       m_exp = { 
         value: value,
         def: pd.marshal

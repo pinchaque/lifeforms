@@ -4,7 +4,7 @@ module Skill
     attr_reader :def
 
     # Current value
-    attr_accessor :value
+    attr_reader :value
 
     def initialize(d, v = nil)
       @def = d
@@ -14,6 +14,12 @@ module Skill
     # ID for this parameter, taken from the associated ParamDef
     def id
       @def.id
+    end
+
+    # Sets the value of the parameter and applies the ParamDef's constraints
+    # to ensure an allowable value.
+    def set(v)
+      @value = @def.constrain(v)
     end
 
     # Mutates the parameter value using the distribution
