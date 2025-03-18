@@ -8,9 +8,9 @@ class Lifeform < Sequel::Model
   attr_accessor :program
 
   def after_initialize
-    @skills = Skill::SkillSet.new if @skills.nil?
-    @params = Skill::ParamSet.new if @params.nil?
-    @program = Program::Statement::Noop.new if @program.nil?
+    @skills = SkillSet.new if @skills.nil?
+    @params = ParamSet.new if @params.nil?
+    @program = Statement::Noop.new if @program.nil?
 
     # marshal this object's data from obj_data if it exists
     unless obj_data.nil?
@@ -69,9 +69,9 @@ class Lifeform < Sequel::Model
 
   # Populates this lifeform object's extra data from a hash
   def objdata_from_h(h)
-    @params = Skill::ParamSet.unmarshal(h[:params])
-    @skills = Skill::SkillSet.unmarshal(h[:skills])
-    @program = Program::Statement.unmarshal(h[:program])
+    @params = ParamSet.unmarshal(h[:params])
+    @skills = SkillSet.unmarshal(h[:skills])
+    @program = Statement.unmarshal(h[:program])
   end
 
   # Creates and returns a new Lifeform object that is the child of this one.
@@ -199,7 +199,7 @@ class Lifeform < Sequel::Model
   end
 
   def context
-    Program::Context.new(self)
+    Context.new(self)
   end
 
   # Returns instance of the function to use for energy calculations

@@ -1,4 +1,4 @@
-describe "Helpers" do  
+describe "Math" do  
   let(:tol) { 0.000001 }
   context "circle_area_intersect" do
     it "no overlap" do

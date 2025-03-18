@@ -2,13 +2,13 @@ module Skill
   class Reproduce < Base
     def self.param_defs
       [
-        Skill.ParamDefNormalInt(
+        ParamDefNormalInt(
           id: :repro_num_offspring,
           desc: "How many offspring the lifeform creates upon reproduction",
           mean: 4,
           stddev: 1
         ),
-        Skill.ParamDefNormalPerc(
+        ParamDefNormalPerc(
           id: :repro_energy_inherit_perc,
           desc: "What percentage of this lifeform's energy reserves it gives to its offspring upon reproduction",
           mean: 0.95,

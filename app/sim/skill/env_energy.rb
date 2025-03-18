@@ -3,7 +3,7 @@ module Skill
 
     def self.param_defs
       [
-        Skill.ParamDefNormalPerc(
+        ParamDefNormalPerc(
           id: :energy_absorb_perc,
           desc: "Percentage of the environmental energy available to this lifeform that it actually absorbs",
           mean: 0.95,

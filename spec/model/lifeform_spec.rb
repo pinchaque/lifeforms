@@ -49,7 +49,7 @@ describe "Lifeform" do
     let(:lf) { 
       l = TestFactory.lifeform(env, species)
       l.register_skill(LifeformTestSkill2)
-      l.program = Program::s_seq(Program::s_noop, Program::s_skill(LifeformTestSkill2.id))
+      l.program = s_seq(s_noop, s_skill(LifeformTestSkill2.id))
       l
     }
 
@@ -70,7 +70,7 @@ describe "Lifeform" do
       # shouldn't have any of these yet
       expect(lf_new.skills.count).to eq(0)
       expect(lf_new.params.count).to eq(0)
-      expect(lf_new.program.marshal).to eq(Program::Statement::Noop.new.marshal)
+      expect(lf_new.program.marshal).to eq(Statement::Noop.new.marshal)
 
       # reconstitute from our marshaled data
       h = lf.objdata_to_h

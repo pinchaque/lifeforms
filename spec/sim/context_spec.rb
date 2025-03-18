@@ -1,5 +1,3 @@
-include Program
-
 describe "Context" do
   let(:ret) { "Context return value" }
   let(:species) { TestFactory.species }

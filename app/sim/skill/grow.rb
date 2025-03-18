@@ -3,7 +3,7 @@ module Skill
 
     def self.param_defs
       [
-        Skill.ParamDefNormalPerc(
+        ParamDefNormalPerc(
           id: :grow_perc,
           desc: "Percentage to grow when this skill is executed",
           mean: 0.05,

@@ -1,12 +1,10 @@
-include Skill
-
 describe "Reproduce" do
   let(:tol) { 0.0001 }
   let(:species) { TestFactory.species }
   let(:env_energy_rate) { 10.0 }
   let(:time_step) { 5 }
   let(:env) { TestFactory.env(100, 100, time_step, env_energy_rate) }
-  let(:klass) { Reproduce }
+  let(:klass) { Skill::Reproduce }
   let(:skill_id) { klass.id }
   let(:energy_parent) { 50.0 }
   let(:size_parent) { 22.2 }

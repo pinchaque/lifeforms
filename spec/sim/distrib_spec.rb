@@ -1,5 +1,3 @@
-include Skill
-
 describe "Distrib" do
   let(:mean) { 100.0 }
   let(:stddev) { 10.0 }
@@ -10,7 +8,7 @@ describe "Distrib" do
 
   context "DistribLinear" do
     let(:dist) { DistribLinear.new(min, max) }
-    let(:klass) { "Skill::DistribLinear" }
+    let(:klass) { "DistribLinear" }
     it "generates random values within range" do
       (0...reps).each do |i|
         expect(rnd).to be_between(min, max).inclusive
@@ -37,7 +35,7 @@ describe "Distrib" do
   
   context "DistribNormal" do
     let(:dist) { DistribNormal.new(mean, stddev) }
-    let(:klass) { "Skill::DistribNormal" }
+    let(:klass) { "DistribNormal" }
     it "generates random values within range" do
       (0...reps).each do |i|
         # not perfect but should be good

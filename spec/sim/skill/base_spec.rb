@@ -1,9 +1,4 @@
-include Skill
-
-
 describe "Base" do
-
-
   context "#id" do
     class TestSkill < Skill::Base
     end
@@ -12,7 +7,7 @@ describe "Base" do
     end
 
     it "produces correct id" do
-      expect(Base.id).to eq(:base)
+      expect(Skill::Base.id).to eq(:base)
       expect(TestSkill.id).to eq(:test_skill)
       expect(TestSkillChild.id).to eq(:test_skill_child)
     end

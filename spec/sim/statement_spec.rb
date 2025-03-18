@@ -1,5 +1,3 @@
-include Program
-
 describe "Statement" do
   TestSkillFoo = TestFactory.skill("foo")
   TestSkillBar = TestFactory.skill("bar")
@@ -14,9 +12,9 @@ describe "Statement" do
   }
   let(:ctx) { Context.new(lf) }
 
-  let(:a1) { Program.s_skill(TestSkillFoo.id) }
-  let(:a2) { Program.s_skill(TestSkillBar.id) }
-  let(:a3) { Program.s_skill(TestSkillQuux.id) }
+  let(:a1) { s_skill(TestSkillFoo.id) }
+  let(:a2) { s_skill(TestSkillBar.id) }
+  let(:a3) { s_skill(TestSkillQuux.id) }
   let(:t1) { e_true }
   let(:f1) { e_not(e_true) }
 
@@ -31,35 +29,35 @@ describe "Statement" do
   def t_marshal(st, exp)
     act = st.marshal
     expect(act).to eq(exp)
-    st_new = Program::Statement::Base.unmarshal(act)
+    st_new = Statement::Base.unmarshal(act)
     expect(st_new.marshal).to eq(act)
   end
 
   context "Base" do
     it ".short_class_name" do
-      expect(Program.s_noop.short_class_name).to eq("Noop")
-      expect(Program.s_seq(a1, a2, a3).short_class_name).to eq("Sequence")
-      expect(Program.s_skill(TestSkillFoo.id).short_class_name).to eq("Skill")
+      expect(s_noop.short_class_name).to eq("Noop")
+      expect(s_seq(a1, a2, a3).short_class_name).to eq("Sequence")
+      expect(s_skill(TestSkillFoo.id).short_class_name).to eq("Skill")
     end
 
     it "#full_class_name" do
-      expect(Program::Statement::Base.full_class_name("Noop")).to eq("Program::Statement::Noop")
+      expect(Statement::Base.full_class_name("Noop")).to eq("Statement::Noop")
     end
   end
 
   context "Noop" do
-    let(:st) { Program.s_noop }
+    let(:st) { s_noop }
     it "executes actions" do
       t_exec(st, ctx, nil)
     end
 
     it "marshals/unmarshals" do
-      t_marshal(Program.s_noop, {t: "Noop"})
+      t_marshal(s_noop, {t: "Noop"})
     end
   end
 
   context "Skill" do
-    let(:st) { Program.s_skill(TestSkillFoo.id) }
+    let(:st) { s_skill(TestSkillFoo.id) }
 
     it "executes action" do
       t_exec(st, ctx, "foo")
@@ -71,7 +69,7 @@ describe "Statement" do
   end
 
   context "Sequence" do
-    let(:st) { Program.s_seq(a1, a2, a3) }
+    let(:st) { s_seq(a1, a2, a3) }
 
     it "executes actions" do
       t_exec(st, ctx, ["foo", "bar", "quux"])
@@ -89,12 +87,12 @@ describe "Statement" do
 
   context "If" do
     it "executes true action" do
-      st = Program.s_if(t1, a1, a2)
+      st = s_if(t1, a1, a2)
       t_exec(st, ctx, "foo")
     end
 
     it "executes false action" do
-      st = Program.s_if(f1, a1, a2)
+      st = s_if(f1, a1, a2)
       t_exec(st, ctx, "bar")
     end
   
@@ -104,7 +102,7 @@ describe "Statement" do
         then: {:t => "Skill", :v => :test_skill_foo},
         else: {:t => "Skill", :v => :test_skill_bar}
       }}
-      t_marshal(Program.s_if(t1, a1, a2), exp)
+      t_marshal(s_if(t1, a1, a2), exp)
     end
   
     it "marshals/unmarshals - false" do
@@ -113,14 +111,14 @@ describe "Statement" do
         then: {:t => "Skill", :v => :test_skill_foo},
         else: {:t => "Skill", :v => :test_skill_bar}
       }}
-      t_marshal(Program.s_if(f1, a1, a2), exp)
+      t_marshal(s_if(f1, a1, a2), exp)
     end
   end
 
   context "Nested Sequence -> If" do
-    let(:if1) { Program.s_if(t1, a2, a3) }
-    let(:if2) { Program.s_if(f1, a2, a3) }
-    let(:st) { Program.s_seq(a1, if1, if2) }
+    let(:if1) { s_if(t1, a2, a3) }
+    let(:if2) { s_if(f1, a2, a3) }
+    let(:st) { s_seq(a1, if1, if2) }
 
     it "executes actions" do
       t_exec(st, ctx, ["foo", "bar", "quux"])
@@ -146,15 +144,15 @@ describe "Statement" do
   end
   
   context "Nested If -> Sequence" do
-    let(:seq1) { Program.s_seq(a1, a2, a3) }
-    let(:seq2) { Program.s_seq(a3, a2, a1) }
+    let(:seq1) { s_seq(a1, a2, a3) }
+    let(:seq2) { s_seq(a3, a2, a1) }
 
     it "executes true sequence" do
-      t_exec(Program.s_if(t1, seq1, seq2), ctx, ["foo", "bar", "quux"])
+      t_exec(s_if(t1, seq1, seq2), ctx, ["foo", "bar", "quux"])
     end 
 
     it "executes false sequence" do
-      t_exec(Program.s_if(f1, seq1, seq2), ctx, ["quux", "bar", "foo"])
+      t_exec(s_if(f1, seq1, seq2), ctx, ["quux", "bar", "foo"])
     end
   end
 end

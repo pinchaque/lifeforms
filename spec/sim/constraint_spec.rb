@@ -1,5 +1,3 @@
-include Skill
-
 describe "Constraint" do
   let(:tol) { 0.0001 }
   let(:mean) { 100.0 }
@@ -20,7 +18,7 @@ describe "Constraint" do
   end
 
   context "MinMax" do
-    let(:klass) { "Skill::ConstraintMinMax" }
+    let(:klass) { "ConstraintMinMax" }
     let(:min) { nil }
     let(:max) { nil }
     let(:ct) { ConstraintMinMax.new(min, max) }
@@ -80,7 +78,7 @@ describe "Constraint" do
   end
 
   context "Int" do
-    let(:klass) { "Skill::ConstraintInt" }
+    let(:klass) { "ConstraintInt" }
     let(:ct) { ConstraintInt.new }
     it "ensures integer" do
       t_valid(51, 51, true, nil)

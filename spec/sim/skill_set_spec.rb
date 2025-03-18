@@ -1,5 +1,3 @@
-include Skill
-
 class TestSkill < Skill::Base
 end
 

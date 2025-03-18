@@ -1,5 +1,3 @@
-include Program
-
 describe "ExprBool" do
   let(:h) { {} }
 
@@ -217,7 +215,7 @@ describe "ExprBool" do
       act = expr.marshal
       expect(act).to eq(exp)
 
-      expr_new = Program::ExprBool::Base.unmarshal(act)
+      expr_new = ExprBool::Base.unmarshal(act)
       expect(expr_new.to_s).to eq(expr.to_s)
     end
 
@@ -228,7 +226,7 @@ describe "ExprBool" do
     end
 
     it "#full_class_name" do
-      expect(Program::ExprBool::Base.full_class_name("And")).to eq("Program::ExprBool::And")
+      expect(ExprBool::Base.full_class_name("And")).to eq("ExprBool::And")
     end
 
     it "True" do

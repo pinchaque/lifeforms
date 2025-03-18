@@ -24,9 +24,9 @@ class PlantFactory
   end
 
   def get_program
-    Program::s_seq(
-      Program::s_skill(Skill::EnvEnergy.id), # Absorb environmental energy
-      Program::s_skill(Skill::Grow.id), # Grow larger
+    s_seq(
+      s_skill(Skill::EnvEnergy.id), # Absorb environmental energy
+      s_skill(Skill::Grow.id), # Grow larger
       )
   end
 

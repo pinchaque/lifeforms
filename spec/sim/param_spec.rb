@@ -1,6 +1,3 @@
-include Skill
-
-
 describe "Param" do
   let(:tol) { 0.00001 }
   let(:mean) { 100.0 }
@@ -9,9 +6,9 @@ describe "Param" do
   let(:max) { mean + 4 * stddev }
   let(:dist) { DistribNormal.new(mean, stddev) }
   let(:id) { :foobar }
-  let(:desc) { "Test ParamDef" }
+  let(:desc) { "Test Param" }
   let(:pd) { 
-    Skill.ParamDefNormal(
+    ParamDefNormal(
       id: id, 
       mean: mean, 
       stddev: stddev, 

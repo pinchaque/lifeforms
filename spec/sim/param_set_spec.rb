@@ -1,5 +1,3 @@
-include Skill
-
 describe "ParamSet" do
   let(:mean) { 100.0 }
   let(:stddev) { 10.0 }
@@ -9,7 +7,7 @@ describe "ParamSet" do
   let(:id) { :foobar }
   let(:desc) { "Test ParamDef" }
   let(:pd) { 
-    Skill::ParamDefNormal(
+    ParamDefNormal(
       id: id, 
       mean: mean, 
       stddev: stddev, 
@@ -59,7 +57,7 @@ describe "ParamSet" do
   context "marshalling" do
     let(:id2) { "quux" } # tests string -> sym conversion
     let(:pd2) { 
-      Skill::ParamDefNormal(
+      ParamDefNormal(
         id: id2,
         mean: mean, 
         stddev: stddev, 
