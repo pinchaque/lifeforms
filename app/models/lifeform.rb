@@ -207,6 +207,21 @@ class Lifeform < Sequel::Model
     EnergyFn.new(self.energy_exp, self.energy_base)
   end
 
+  # Gets a hash of "attributes" - characteristics of this lifeform that can
+  # be used in expressions
+  def attrs
+    {
+      lf_energy: self.energy,
+      lf_age: self.created_step - env.time_step,
+      lf_metabolic_energy: self.metabolic_energy,
+      lf_size: self.size,
+      lf_generation: self.generation,
+      lf_initial_size: self.initial_size,
+      lf_x: self.x,
+      lf_y: self.y,
+  }
+  end
+
   # Returns the total metabolic energy needed for a timestep based on the 
   # current lifeform size.
   def metabolic_energy

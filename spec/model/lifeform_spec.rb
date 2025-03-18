@@ -29,6 +29,27 @@ describe "Lifeform" do
     lf
   end
 
+  context ".attrs" do
+    let(:age) { 4 }
+    it "returns attr hash" do
+      lf.created_step = env.time_step + age
+      lf.save
+      attr_exp = {
+        lf_age: age,
+        lf_energy: 10.0,
+        lf_metabolic_energy: lf.metabolic_energy,
+        lf_size: 1.0,
+        lf_generation: 2,
+        lf_initial_size: 0.2,
+        lf_x: 2.22,
+        lf_y: 3.33,
+      }
+
+      attr_act = lf.attrs
+      cmp_hash_vals(attr_act, attr_exp, tol)
+    end
+  end
+
   context ".register_skill" do
     it "registers skill" do
       LifeformTestSkill1 = TestFactory.skill("skill1")

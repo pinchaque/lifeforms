@@ -1,4 +1,5 @@
 describe "Context" do
+  let(:tol) { 0.0001 }
   let(:ret) { "Context return value" }
   let(:species) { TestFactory.species }
   let(:width) { 100 }
@@ -33,6 +34,12 @@ describe "Context" do
       expect(ctx.value(:param1, dflt)).to be_between(0.0, 1.0).inclusive
       expect(ctx.value(:param2, dflt)).to be_between(0.0, 1.0).inclusive
       expect(ctx.value(:param3, dflt)).to eq(dflt)
+    end
+
+    it "returns valuea from attrs" do
+      # this doesn't test all the attrs as that's done in lifeform_spec
+      expect(ctx.value(:lf_energy)).to be_within(tol).of(lf.energy)
+      expect(ctx.value(:lf_x)).to be_within(tol).of(lf.x)
     end
   end
 end
