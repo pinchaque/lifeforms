@@ -43,7 +43,29 @@ module ExprNum
     end
 
     def self.unmarshal_value(v)
-      Const.new(v[:value].to_f)
+      Const.new(v.to_f)
+    end
+  end
+
+  class Lookup < Base
+    def initialize(id)
+      @id = id.to_sym
+    end
+
+    def eval(ctx)
+      ctx.fetch(@id)
+    end
+
+    def to_s
+      @id.to_s
+    end
+
+    def marshal
+      marshal_value(@id.to_s)
+    end
+
+    def self.unmarshal_value(v)
+      Lookup.new(v.to_sym)
     end
   end
 end
@@ -54,4 +76,9 @@ end
 # Constant value
 def e_const(v)
   ExprNum::Const.new(v)
+end
+
+# Looks up given symbol in Context
+def e_lookup(sym)
+  ExprNum::Lookup.new(sym)
 end
