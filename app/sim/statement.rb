@@ -15,12 +15,12 @@ module Statement
     # is the type and "v" is the value. The child class should call this with
     # the value it needs to unmarshal properly.
     def marshal_value(v = nil)
-      {t: short_class_name}.merge(v.nil? ? {} : {v: v})
+      {c: short_class_name}.merge(v.nil? ? {} : {v: v})
     end
 
     # Unmarshals the passed-in object into a Statement of the correct type.
     def self.unmarshal(obj)
-      class_from_name(full_class_name(obj[:t])).unmarshal_value(obj[:v])
+      class_from_name(full_class_name(obj[:c])).unmarshal_value(obj[:v])
     end      
   end
 
@@ -111,7 +111,7 @@ module Statement
 
     def self.unmarshal_value(v)
       If.new(
-        ExprBool::Base.unmarshal(v[:if]), 
+        Expr::Base.unmarshal(v[:if]), 
         self.unmarshal(v[:then]), 
         self.unmarshal(v[:else]))
     end

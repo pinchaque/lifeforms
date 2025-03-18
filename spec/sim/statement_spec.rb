@@ -52,7 +52,7 @@ describe "Statement" do
     end
 
     it "marshals/unmarshals" do
-      t_marshal(s_noop, {t: "Noop"})
+      t_marshal(s_noop, {c: "Noop"})
     end
   end
 
@@ -64,7 +64,7 @@ describe "Statement" do
     end
 
     it "marshals/unmarshals" do
-      t_marshal(st, {t: "Skill", v: :test_skill_foo})
+      t_marshal(st, {c: "Skill", v: :test_skill_foo})
     end
   end
 
@@ -76,10 +76,10 @@ describe "Statement" do
     end
 
     it "marshals/unmarshals" do
-      exp = {t: "Sequence", v: [
-        {:t => "Skill", :v => :test_skill_foo}, 
-        {:t => "Skill", :v => :test_skill_bar}, 
-        {:t => "Skill", :v => :test_skill_quux}
+      exp = {c: "Sequence", v: [
+        {c: "Skill", v: :test_skill_foo}, 
+        {c: "Skill", v: :test_skill_bar}, 
+        {c: "Skill", v: :test_skill_quux}
       ]}
       t_marshal(st, exp)
     end
@@ -97,19 +97,19 @@ describe "Statement" do
     end
   
     it "marshals/unmarshals - true" do
-      exp = {t: "If", v: {
-        if: {t: "True"},
-        then: {:t => "Skill", :v => :test_skill_foo},
-        else: {:t => "Skill", :v => :test_skill_bar}
+      exp = {c: "If", v: {
+        if: {c: "True"},
+        then: {c: "Skill", v: :test_skill_foo},
+        else: {c: "Skill", v: :test_skill_bar}
       }}
       t_marshal(s_if(t1, a1, a2), exp)
     end
   
     it "marshals/unmarshals - false" do
-      exp = {t: "If", v: {
-        if: {t: "Not", v: {t: "True"}},
-        then: {:t => "Skill", :v => :test_skill_foo},
-        else: {:t => "Skill", :v => :test_skill_bar}
+      exp = {c: "If", v: {
+        if: {c: "Not", v: {c: "True"}},
+        then: {c: "Skill", v: :test_skill_foo},
+        else: {c: "Skill", v: :test_skill_bar}
       }}
       t_marshal(s_if(f1, a1, a2), exp)
     end
@@ -126,17 +126,17 @@ describe "Statement" do
 
     it "marshals/unmarshals" do
       exp = {
-        t: "Sequence",
+        c: "Sequence",
         v: [
-          {:t => "Skill", :v => :test_skill_foo}, 
-          {:t => "If", :v => {
-            :if => {:t => "True"}, 
-            :then => {:t => "Skill", :v => :test_skill_bar},
-            :else => {:t => "Skill", :v => :test_skill_quux}}}, 
-          {:t => "If", :v => {
-            :if => {:t => "Not", :v => {:t => "True"}}, 
-            :then => {:t => "Skill", :v => :test_skill_bar},
-            :else => {:t => "Skill", :v => :test_skill_quux}}}
+          {c: "Skill", v: :test_skill_foo}, 
+          {c: "If", v: {
+            :if => {c: "True"}, 
+            :then => {c: "Skill", v: :test_skill_bar},
+            :else => {c: "Skill", v: :test_skill_quux}}}, 
+          {c: "If", v: {
+            :if => {c: "Not", v: {c: "True"}}, 
+            :then => {c: "Skill", v: :test_skill_bar},
+            :else => {c: "Skill", v: :test_skill_quux}}}
           ]
       }
       t_marshal(st, exp)

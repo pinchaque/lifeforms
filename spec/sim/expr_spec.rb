@@ -201,7 +201,7 @@ describe "Expr" do
     end
 
     it "represents integer 234" do
-      t_num(e_const(234), "234", 234, {c: "Const", v: 234})
+      t_num(e_const(234), "234.0", 234, {c: "Const", v: 234})
     end
   end
 

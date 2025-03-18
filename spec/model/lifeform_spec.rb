@@ -142,7 +142,7 @@ describe "Lifeform" do
       expect(row[:size]).to be_within(tol).of(lf.size)
       expect(row[:name]).to eq(lf.name)
       expect(row[:generation]).to eq(2)
-      expect(row[:obj_data]).to eq("{\"params\":[],\"skills\":[],\"program\":{\"t\":\"Noop\"}}")
+      expect(row[:obj_data]).to eq("{\"params\":[],\"skills\":[],\"program\":{\"c\":\"Noop\"}}")
     end
 
     it "can be loaded from the db" do
@@ -165,7 +165,7 @@ describe "Lifeform" do
       expect(lf_act.size).to be_within(tol).of(lf.size)
       expect(lf_act.name).to eq(lf.name)
       expect(lf_act.generation).to eq(lf.generation)
-      expect(lf_act.obj_data).to eq("{\"params\":[],\"skills\":[],\"program\":{\"t\":\"Noop\"}}")
+      expect(lf_act.obj_data).to eq("{\"params\":[],\"skills\":[],\"program\":{\"c\":\"Noop\"}}")
     end
   end
 
@@ -208,7 +208,7 @@ describe "Lifeform" do
 
       # now we should have these set
       expect(lf_child.id).not_to be_nil
-      expect(lf_child.obj_data).to eq("{\"params\":[],\"skills\":[],\"program\":{\"t\":\"Noop\"}}")
+      expect(lf_child.obj_data).to eq("{\"params\":[],\"skills\":[],\"program\":{\"c\":\"Noop\"}}")
 
       # now validate the children and parent helpers
       parent_act = lf_child.parent

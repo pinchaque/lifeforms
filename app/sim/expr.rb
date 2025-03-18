@@ -148,8 +148,8 @@ module Expr
     end
   end
 
-  # Base class for numeric comparisons; the component numeric expressions
-  # should be of type ExprNum.
+  # Base class for numeric comparisons; the component expressions should return
+  # numbers when evaluated
   class NumCmp < BaseDuo
     def get_val(ctx, expr_num)
       val = expr_num.eval(ctx)
@@ -308,7 +308,7 @@ module Expr
     end
     
     def op_s
-      "+"
+      "*"
     end
   end
 
@@ -389,35 +389,35 @@ end
 
 # Constant value
 def e_const(v)
-  ExprNum::Const.new(v)
+  Expr::Const.new(v)
 end
 
 # Looks up given symbol in Context
 def e_lookup(sym)
-  ExprNum::Lookup.new(sym)
+  Expr::Lookup.new(sym)
 end
 
 # Adds expressions together
 def e_add(*e)
-  ExprNum::Add.new(*e)
+  Expr::Add.new(*e)
 end
 
 # Subtracts one expression from another
 def e_sub(e1, e2)
-  ExprNum::Sub.new(e1, e2)
+  Expr::Sub.new(e1, e2)
 end
 
 # Multiplies expressions together
 def e_mul(*e)
-  ExprNum::Mul.new(*e)
+  Expr::Mul.new(*e)
 end
 
 # Divs one expression by another
 def e_div(e1, e2)
-  ExprNum::Div.new(e1, e2)
+  Expr::Div.new(e1, e2)
 end
 
 # Raises one expression to the power of another
 def e_pow(e_base, e_exp)
-  ExprNum::Pow.new(e_base, e_exp)
+  Expr::Pow.new(e_base, e_exp)
 end
