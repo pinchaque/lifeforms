@@ -18,14 +18,16 @@ class PlantFactory
   def get_skills
     [
       Skill::EnvEnergy,
-#      Skill::Grow
+      Skill::Grow,
+      Skill::Reproduce
     ]
   end
 
   def get_program
     Program::s_seq(
-      Program::s_skill(Skill::EnvEnergy.id)
-    )
+      Program::s_skill(Skill::EnvEnergy.id), # Absorb environmental energy
+      Program::s_skill(Skill::Grow.id), # Grow larger
+      )
   end
 
   def gen

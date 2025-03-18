@@ -115,7 +115,6 @@ module Skill
     pd
   end
 
-
   # Helper function to create a ParamDef with Normal distribution. 
   def self.ParamDefNormalInt(id:, mean:, stddev:, **opts)
     pd = ParamDef.new(id)

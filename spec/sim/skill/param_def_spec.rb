@@ -52,6 +52,7 @@ describe "ParamDef" do
           new_val = pd.mutate(old_val)
           expect(new_val).to be_between(min, max).inclusive
           expect(old_val != new_val).to be true
+          expect(pd.valid?(new_val)).to be true
         end
       end
     end
@@ -63,6 +64,7 @@ describe "ParamDef" do
           new_val = pd.mutate(old_val)
           expect(new_val).to be_between(min, max).inclusive
           expect(old_val != new_val).to be true
+          expect(pd.valid?(new_val)).to be true
         end
       end
     end
@@ -74,6 +76,7 @@ describe "ParamDef" do
           new_val = pd.mutate(old_val)
           expect(new_val).to be_between(min, max).inclusive
           expect(old_val != new_val).to be true
+          expect(pd.valid?(new_val)).to be true
         end
       end
     end
@@ -152,6 +155,7 @@ describe "ParamDef" do
       it "exceptions" do
         expect{Skill.ParamDefNormalInt(id: id)}.to raise_error(ArgumentError)
       end
+
 
       it "required args" do
         pd = Skill.ParamDefNormalInt(id: id, mean: mean, stddev: stddev)
