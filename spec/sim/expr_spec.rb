@@ -1,4 +1,4 @@
-describe "ExprBool" do
+describe "Expr" do
   let(:h) { {} }
   let(:e_foo) { e_lookup(:foo) }
   let(:e_bar) { e_lookup(:bar) }
@@ -220,7 +220,9 @@ describe "ExprBool" do
       act = expr.marshal
       expect(act).to eq(exp)
 
-      expr_new = ExprBool::Base.unmarshal(act)
+      pp(act)
+
+      expr_new = Expr::Base.unmarshal(act)
       expect(expr_new.to_s).to eq(expr.to_s)
     end
 
@@ -231,38 +233,38 @@ describe "ExprBool" do
     end
 
     it "#full_class_name" do
-      expect(ExprBool::Base.full_class_name("And")).to eq("ExprBool::And")
+      expect(Expr::Base.full_class_name("And")).to eq("Expr::And")
     end
 
     it "True" do
-      t_marshal(e_true, {t: "True"})
+      t_marshal(e_true, {c: "True"})
     end
 
     it "Not(True)" do
-      t_marshal(e_not(e_true), {t: "Not", v: {t: "True"}})
+      t_marshal(e_not(e_true), {c: "Not", v: {c: "True"}})
     end
 
     it "And(True)" do
-      t_marshal(e_and(e_true), {t: "And", v: [{t: "True"}]})
+      t_marshal(e_and(e_true), {c: "And", v: [{c: "True"}]})
     end
 
     it "Or(True)" do
-      t_marshal(e_or(e_true), {t: "Or", v: [{t: "True"}]})
+      t_marshal(e_or(e_true), {c: "Or", v: [{c: "True"}]})
     end
 
     it "And(Or(True, Not(True)), Or(True, True))" do
-      exp = {t: "And", v: [
-        {t: "Or", v: [{t: "True"}, {t: "Not", v: {t: "True"}}]},
-        {t: "Or", v: [{t: "True"}, {t: "True"}]}]}
+      exp = {c: "And", v: [
+        {c: "Or", v: [{c: "True"}, {c: "Not", v: {c: "True"}}]},
+        {c: "Or", v: [{c: "True"}, {c: "True"}]}]}
       t_marshal(e_and(e_or(e_true, e_not(e_true)), e_or(e_true, e_true)), exp)
     end
 
     it "NumCmp classes" do
-      t_marshal(e_equal(e_foo, e_bar), {t: "Equal", v: {l: e_foo.marshal, r: e_bar.marshal}})
-      t_marshal(e_lt(e_foo, e_bar), {t: "LT", v: {l: e_foo.marshal, r: e_bar.marshal}})
-      t_marshal(e_lte(e_foo, e_bar), {t: "LTE", v: {l: e_foo.marshal, r: e_bar.marshal}})
-      t_marshal(e_gt(e_bar, e_foo), {t: "GT", v: {l: e_bar.marshal, r: e_foo.marshal}})
-      t_marshal(e_gte(e_bar, e_foo), {t: "GTE", v: {l: e_bar.marshal, r: e_foo.marshal}})
+      t_marshal(e_equal(e_foo, e_bar), {c: "Equal", v: {l: e_foo.marshal, r: e_bar.marshal}})
+      t_marshal(e_lt(e_foo, e_bar), {c: "LT", v: {l: e_foo.marshal, r: e_bar.marshal}})
+      t_marshal(e_lte(e_foo, e_bar), {c: "LTE", v: {l: e_foo.marshal, r: e_bar.marshal}})
+      t_marshal(e_gt(e_bar, e_foo), {c: "GT", v: {l: e_bar.marshal, r: e_foo.marshal}})
+      t_marshal(e_gte(e_bar, e_foo), {c: "GTE", v: {l: e_bar.marshal, r: e_foo.marshal}})
     end
 
     it "Combined logic & NumCmp" do
@@ -271,14 +273,14 @@ describe "ExprBool" do
         e_and(e_gt(e_foo, e_bar), e_gte(e_foo, e_quux))
       )
 
-      t_marshal(expr, {t: "Or", v: 
+      t_marshal(expr, {c: "Or", v: 
         [
-          {:t => "And", :v => [
-            {:t => "LT", :v => {l: e_foo.marshal, r: e_bar.marshal}}, 
-            {:t => "LTE", :v => {l: e_bar.marshal, r: e_quux.marshal}}]},
-          {:t => "And", :v => [
-            {:t => "GT", :v => {l: e_foo.marshal, r: e_bar.marshal}}, 
-            {:t => "GTE", :v => {l: e_foo.marshal, r: e_quux.marshal}}]}
+          {c: "And", :v => [
+            {c: "LT", :v => {l: e_foo.marshal, r: e_bar.marshal}}, 
+            {c: "LTE", :v => {l: e_bar.marshal, r: e_quux.marshal}}]},
+          {c: "And", :v => [
+            {c: "GT", :v => {l: e_foo.marshal, r: e_bar.marshal}}, 
+            {c: "GTE", :v => {l: e_foo.marshal, r: e_quux.marshal}}]}
         ]})
     end
   end
