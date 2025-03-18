@@ -130,7 +130,7 @@ describe "ExprBool" do
     } }
 
     let(:t1) { e_lt(e_foo, e_bar) }
-    let(:t2) { e_lte(e_bar, e_quux) }
+    let(:t2) { e_lte(e_const(1.5), e_quux) }
     let(:t3) { e_gt(e_quux, e_foo) }
     let(:t4) { e_gte(e_quux, e_quux) }
 
@@ -141,7 +141,7 @@ describe "ExprBool" do
 
     it "Basic Exprs" do
       t(t1, "(foo < bar)", true)
-      t(t2, "(bar <= quux)", true)
+      t(t2, "(1.5 <= quux)", true)
       t(t3, "(quux > foo)", true)
       t(t4, "(quux >= quux)", true)
 
@@ -162,10 +162,10 @@ describe "ExprBool" do
     let(:f8) { e_and(f1, f2) }
 
     it "Single Level" do
-      t(t5, "((foo < bar) && (bar <= quux))", true)
+      t(t5, "((foo < bar) && (1.5 <= quux))", true)
       t(t6, "!(foo > bar)", true)
       t(t7, "((foo > bar) || (foo > foo) || (quux < bar) || (bar <= foo) || (quux > foo))", true)
-      t(t8, "((quux >= quux) && (quux > foo) && (bar <= quux) && (foo < bar))", true)
+      t(t8, "((quux >= quux) && (quux > foo) && (1.5 <= quux) && (foo < bar))", true)
 
       t(f5, "((quux > foo) && (bar <= foo) && (quux < bar))", false)
       t(f6, "!(quux > foo)", false)
@@ -180,11 +180,11 @@ describe "ExprBool" do
     let(:f10) { e_not(t8) }
 
     it "Two Levels" do
-      t(t9, "(!(foo > bar) && ((quux >= quux) && (quux > foo) && (bar <= quux) && (foo < bar)))", true)
-      t(t10, "(!(quux > foo) || ((foo > bar) && (foo > foo)) || ((foo < bar) && (bar <= quux)))", true)
+      t(t9, "(!(foo > bar) && ((quux >= quux) && (quux > foo) && (1.5 <= quux) && (foo < bar)))", true)
+      t(t10, "(!(quux > foo) || ((foo > bar) && (foo > foo)) || ((foo < bar) && (1.5 <= quux)))", true)
 
-      t(f9, "(!(foo > bar) && ((quux >= quux) && (quux > foo) && (bar <= quux) && (foo < bar)) && !(quux > foo))", false)
-      t(f10, "!((quux >= quux) && (quux > foo) && (bar <= quux) && (foo < bar))", false)
+      t(f9, "(!(foo > bar) && ((quux >= quux) && (quux > foo) && (1.5 <= quux) && (foo < bar)) && !(quux > foo))", false)
+      t(f10, "!((quux >= quux) && (quux > foo) && (1.5 <= quux) && (foo < bar))", false)
     end
   end
 
