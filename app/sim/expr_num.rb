@@ -43,7 +43,7 @@ module ExprNum
     end
 
     def self.unmarshal_value(v)
-      Const.new(v.to_f)
+      self.new(v.to_f)
     end
   end
 
@@ -53,6 +53,7 @@ module ExprNum
     end
 
     def eval(ctx)
+      raise "Missing value for id '#{@id}'" unless ctx.has_key?(@id)
       ctx.fetch(@id)
     end
 
@@ -65,7 +66,7 @@ module ExprNum
     end
 
     def self.unmarshal_value(v)
-      Lookup.new(v.to_sym)
+      self.new(v.to_sym)
     end
   end
 end

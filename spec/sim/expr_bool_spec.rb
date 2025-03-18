@@ -1,5 +1,10 @@
 describe "ExprBool" do
   let(:h) { {} }
+  let(:e_foo) { e_lookup(:foo) }
+  let(:e_bar) { e_lookup(:bar) }
+  let(:e_quux) { e_lookup(:quux) }
+  let(:e_str) { e_lookup(:str) }
+  let(:e_empty) { e_lookup(:empty) }
 
   def t(expr, str_exp, eval_exp)
     expect(expr.to_s).to eq(str_exp)
@@ -79,41 +84,41 @@ describe "ExprBool" do
 
 
     it "Equal" do
-      t(e_equal(:foo, :foo), "(foo == foo)", true)
-      t(e_equal(:bar, :quux), "(bar == quux)", true)
-      t(e_equal(:foo, :bar), "(foo == bar)", false)
+      t(e_equal(e_foo, e_foo), "(foo == foo)", true)
+      t(e_equal(e_bar, e_quux), "(bar == quux)", true)
+      t(e_equal(e_foo, e_bar), "(foo == bar)", false)
     end
 
     it "Less Than" do
-      t(e_lt(:foo, :foo), "(foo < foo)", false)
-      t(e_lt(:bar, :quux), "(bar < quux)", false)
-      t(e_lt(:quux, :bar), "(quux < bar)", false)
-      t(e_lt(:foo, :bar), "(foo < bar)", true)
-      t(e_lt(:bar, :foo), "(bar < foo)", false)
+      t(e_lt(e_foo, e_foo), "(foo < foo)", false)
+      t(e_lt(e_bar, e_quux), "(bar < quux)", false)
+      t(e_lt(e_quux, e_bar), "(quux < bar)", false)
+      t(e_lt(e_foo, e_bar), "(foo < bar)", true)
+      t(e_lt(e_bar, e_foo), "(bar < foo)", false)
     end
 
     it "Less Than Equal" do
-      t(e_lte(:foo, :foo), "(foo <= foo)", true)
-      t(e_lte(:bar, :quux), "(bar <= quux)", true)
-      t(e_lte(:quux, :bar), "(quux <= bar)", true)
-      t(e_lte(:foo, :bar), "(foo <= bar)", true)
-      t(e_lte(:bar, :foo), "(bar <= foo)", false)
+      t(e_lte(e_foo, e_foo), "(foo <= foo)", true)
+      t(e_lte(e_bar, e_quux), "(bar <= quux)", true)
+      t(e_lte(e_quux, e_bar), "(quux <= bar)", true)
+      t(e_lte(e_foo, e_bar), "(foo <= bar)", true)
+      t(e_lte(e_bar, e_foo), "(bar <= foo)", false)
     end
 
     it "Greater Than" do
-      t(e_gt(:foo, :foo), "(foo > foo)", false)
-      t(e_gt(:bar, :quux), "(bar > quux)", false)
-      t(e_gt(:quux, :bar), "(quux > bar)", false)
-      t(e_gt(:foo, :bar), "(foo > bar)", false)
-      t(e_gt(:bar, :foo), "(bar > foo)", true)
+      t(e_gt(e_foo, e_foo), "(foo > foo)", false)
+      t(e_gt(e_bar, e_quux), "(bar > quux)", false)
+      t(e_gt(e_quux, e_bar), "(quux > bar)", false)
+      t(e_gt(e_foo, e_bar), "(foo > bar)", false)
+      t(e_gt(e_bar, e_foo), "(bar > foo)", true)
     end
 
     it "Greater Than Equal" do
-      t(e_gte(:foo, :foo), "(foo >= foo)", true)
-      t(e_gte(:bar, :quux), "(bar >= quux)", true)
-      t(e_gte(:quux, :bar), "(quux >= bar)", true)
-      t(e_gte(:foo, :bar), "(foo >= bar)", false)
-      t(e_gte(:bar, :foo), "(bar >= foo)", true)
+      t(e_gte(e_foo, e_foo), "(foo >= foo)", true)
+      t(e_gte(e_bar, e_quux), "(bar >= quux)", true)
+      t(e_gte(e_quux, e_bar), "(quux >= bar)", true)
+      t(e_gte(e_foo, e_bar), "(foo >= bar)", false)
+      t(e_gte(e_bar, e_foo), "(bar >= foo)", true)
     end
   end
 
@@ -124,15 +129,15 @@ describe "ExprBool" do
       quux: 2.0 
     } }
 
-    let(:t1) { e_lt(:foo, :bar) }
-    let(:t2) { e_lte(:bar, :quux) }
-    let(:t3) { e_gt(:quux, :foo) }
-    let(:t4) { e_gte(:quux, :quux) }
+    let(:t1) { e_lt(e_foo, e_bar) }
+    let(:t2) { e_lte(e_bar, e_quux) }
+    let(:t3) { e_gt(e_quux, e_foo) }
+    let(:t4) { e_gte(e_quux, e_quux) }
 
-    let(:f1) { e_gt(:foo, :bar) }
-    let(:f2) { e_gt(:foo, :foo) }
-    let(:f3) { e_lt(:quux, :bar) }
-    let(:f4) { e_lte(:bar, :foo) }
+    let(:f1) { e_gt(e_foo, e_bar) }
+    let(:f2) { e_gt(e_foo, e_foo) }
+    let(:f3) { e_lt(e_quux, e_bar) }
+    let(:f4) { e_lte(e_bar, e_foo) }
 
     it "Basic Exprs" do
       t(t1, "(foo < bar)", true)
@@ -189,7 +194,7 @@ describe "ExprBool" do
       bar: 2.0,
       quux: 2.0,
       str: "non numeric string",
-      emptystr: nil
+      empty: nil
     } }
 
     def t_err(e, str_exp, exception_exp)
@@ -198,15 +203,15 @@ describe "ExprBool" do
     end
 
     it "Missing Value" do
-      t_err(e_lt(:foo, :xxx), "(foo < xxx)", "Missing value for symbol 'xxx'")
+      t_err(e_lt(e_foo, e_lookup("xxx")), "(foo < xxx)", "Missing value for id 'xxx'")
     end
 
     it "Non-numeric Value" do
-      t_err(e_lt(:foo, :str), "(foo < str)", "Value for 'str' is not numeric ('non numeric string')")
+      t_err(e_lt(e_foo, e_str), "(foo < str)", "Value for expression 'str' is not numeric ('non numeric string')")
     end
 
     it "Non-numeric Value" do
-      t_err(e_lt(:foo, :emptystr), "(foo < emptystr)", "Value for 'emptystr' is nil")
+      t_err(e_lt(e_foo, e_empty), "(foo < empty)", "Value for expression 'empty' is nil")
     end
   end
 
@@ -221,7 +226,7 @@ describe "ExprBool" do
 
     it ".short_class_name" do
       expect(e_true.short_class_name).to eq("True")
-      expect(e_gt(:foo, :foo).short_class_name).to eq("GT")
+      expect(e_gt(e_foo, e_foo).short_class_name).to eq("GT")
       expect(e_and(e_true).short_class_name).to eq("And")
     end
 
@@ -253,27 +258,27 @@ describe "ExprBool" do
     end
 
     it "NumCmp classes" do
-      t_marshal(e_equal(:foo, :bar), {t: "Equal", v: {l: :foo, r: :bar}})
-      t_marshal(e_lt(:foo, :bar), {t: "LT", v: {l: :foo, r: :bar}})
-      t_marshal(e_lte(:foo, :bar), {t: "LTE", v: {l: :foo, r: :bar}})
-      t_marshal(e_gt(:bar, :foo), {t: "GT", v: {l: :bar, r: :foo}})
-      t_marshal(e_gte(:bar, :foo), {t: "GTE", v: {l: :bar, r: :foo}})
+      t_marshal(e_equal(e_foo, e_bar), {t: "Equal", v: {l: e_foo.marshal, r: e_bar.marshal}})
+      t_marshal(e_lt(e_foo, e_bar), {t: "LT", v: {l: e_foo.marshal, r: e_bar.marshal}})
+      t_marshal(e_lte(e_foo, e_bar), {t: "LTE", v: {l: e_foo.marshal, r: e_bar.marshal}})
+      t_marshal(e_gt(e_bar, e_foo), {t: "GT", v: {l: e_bar.marshal, r: e_foo.marshal}})
+      t_marshal(e_gte(e_bar, e_foo), {t: "GTE", v: {l: e_bar.marshal, r: e_foo.marshal}})
     end
 
     it "Combined logic & NumCmp" do
       expr = e_or(
-        e_and(e_lt(:foo, :bar), e_lte(:bar, :quux)),
-        e_and(e_gt(:foo, :bar), e_gte(:foo, :quux))
+        e_and(e_lt(e_foo, e_bar), e_lte(e_bar, e_quux)),
+        e_and(e_gt(e_foo, e_bar), e_gte(e_foo, e_quux))
       )
 
       t_marshal(expr, {t: "Or", v: 
         [
           {:t => "And", :v => [
-            {:t => "LT", :v => {:l => :foo, :r => :bar}}, 
-            {:t => "LTE", :v => {:l => :bar, :r => :quux}}]},
+            {:t => "LT", :v => {l: e_foo.marshal, r: e_bar.marshal}}, 
+            {:t => "LTE", :v => {l: e_bar.marshal, r: e_quux.marshal}}]},
           {:t => "And", :v => [
-            {:t => "GT", :v => {:l => :foo, :r => :bar}}, 
-            {:t => "GTE", :v => {:l => :foo, :r => :quux}}]}
+            {:t => "GT", :v => {l: e_foo.marshal, r: e_bar.marshal}}, 
+            {:t => "GTE", :v => {l: e_foo.marshal, r: e_quux.marshal}}]}
         ]})
     end
   end

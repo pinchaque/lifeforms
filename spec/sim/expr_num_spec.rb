@@ -30,6 +30,10 @@ describe "ExprNum" do
       t(e_lookup("bar"), "bar", 5.67, {t: "Lookup", v: "bar"})
     end
 
+    it "raises error for missing id" do
+      e = e_lookup("quux")
+      expect{e.eval(ctx)}.to raise_error("Missing value for id 'quux'")
+    end
   end
 
   context "Marshaling" do

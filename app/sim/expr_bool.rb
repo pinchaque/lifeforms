@@ -114,7 +114,8 @@ module ExprBool
     end
   end
 
-  # Base class for numeric comparisons
+  # Base class for numeric comparisons; the component numeric expressions
+  # should be of type ExprNum.
   class NumCmp < Base
     def initialize(e1, e2, op_s)
       @e1 = e1
@@ -123,21 +124,20 @@ module ExprBool
     end
     
     def to_s
-      "(#{@e1} #{@op_s} #{@e2})"
+      "(#{@e1.to_s} #{@op_s} #{@e2.to_s})"
     end
 
-    def get_val(ctx, str)
-      sym = str.to_sym
-      raise "Missing value for symbol '#{sym}'" unless ctx.has_key?(sym)
-      val = ctx.fetch(sym)
+    def get_val(ctx, expr_num)
+      val = expr_num.eval(ctx)
+
       begin
         Kernel.Float(val)
       rescue ArgumentError
         # Float("123.0_badstring") #=> ArgumentError: invalid value for Float(): "123.0_badstring"
-        raise "Value for '#{sym}' is not numeric ('#{val}')"
+        raise "Value for expression '#{expr_num.to_s}' is not numeric ('#{val}')"
       rescue TypeError
         # Float(nil) => TypeError: can't convert nil into Float
-        raise "Value for '#{sym}' is nil"
+        raise "Value for expression '#{expr_num.to_s}' is nil"
       end
     end
 
@@ -146,11 +146,11 @@ module ExprBool
     end
 
     def marshal
-      marshal_value({l: @e1, r: @e2})
+      marshal_value({l: @e1.marshal, r: @e2.marshal})
     end
 
     def self.unmarshal_value(v)
-      self.new(v[:l], v[:r])
+      self.new(ExprNum::Base.unmarshal(v[:l]), ExprNum::Base.unmarshal(v[:r]))
     end
   end
 
