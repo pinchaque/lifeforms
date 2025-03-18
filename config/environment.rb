@@ -14,8 +14,9 @@ DB = db_conn()
 
 Dir["#{APPDIR}/core/*.rb"].each {|file| require file }
 Dir["#{APPDIR}/models/*.rb"].each {|file| require file }
-Dir["#{APPDIR}/zoo/*.rb"].each {|file| require file }
-Dir["#{APPDIR}/sim/*.rb"].each {|file| require file }
+# XXX Dir["#{APPDIR}/zoo/*.rb"].each {|file| require file }
+#Dir["#{APPDIR}/sim/*.rb"].each {|file| require file }
+Dir["#{APPDIR}/sim/**/*.rb"].each {|file| require file }
 Dir["#{APPDIR}/controllers/*.rb"].each {|file| require file }
 
 Log = MyLogger.new(MyLogger::INFO, $stderr)

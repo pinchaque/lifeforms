@@ -1,15 +1,21 @@
 require 'json'
 
 class Lifeform < Sequel::Model
-  plugin :single_table_inheritance, :class_name
   plugin :after_initialize
   plugin :timestamps, :force => true, :update_on_create => true
 
+  attr_reader :skills, :params
+  attr_accessor :program
+
   def after_initialize
-    # marshal this objects data from obj_data if it exists
+    @skills = SkillSet.new if @skills.nil?
+    @params = ParamSet.new if @params.nil?
+    @program = Statement::Noop.new if @program.nil?
+
+    # marshal this object's data from obj_data if it exists
     unless obj_data.nil?
       h = JSON.parse(obj_data, {symbolize_names: true})
-      marshal_from_h(h)
+      objdata_from_h(h)
     end
     super
   end
@@ -17,32 +23,85 @@ class Lifeform < Sequel::Model
   def before_save
     # set the obj_data string to be JSON representation of this lifeform
     # object's data
-    set(obj_data: JSON.generate(marshal_to_h))
+    set(obj_data: JSON.generate(objdata_to_h))
     super
   end
 
+  # Returns the Environment of which this lifeform is a part
+  def env
+    Environment.where(id: environment_id).first  
+  end
+
+  def species
+    Species.where(id: species_id).first
+  end
+
+  # Returns the parent Lifeform of this one, or nil if none
+  def parent
+    return nil if self.parent_id.nil?
+    Lifeform.where(id: self.parent_id).first  
+  end
+
+  # Returns the Lifeforms that are children of this one, i.e. their parent_id
+  # is set to this id. Returns empty array if none.
+  def children
+    Lifeform.where(parent_id: self.id).all
+  end
+
+  # Returns radius of the circle for this lifeform
+  def radius
+    self.size / 2.0
+  end
+  
+  # Returns area of the lifeform assuming circle of diameter "size"
+  def area
+    Math::PI * (radius ** 2.0)
+  end
+
   # Converts this lifeform object's extra data into a hash
-  def marshal_to_h
-    Hash.new
+  def objdata_to_h
+    {
+      params: @params.marshal,
+      skills: @skills.marshal,
+      program: @program.marshal
+    }
   end
 
   # Populates this lifeform object's extra data from a hash
-  def marshal_from_h(h)
-    # do nothing - only used in child classes
+  def objdata_from_h(h)
+    @params = ParamSet.unmarshal(h[:params])
+    @skills = SkillSet.unmarshal(h[:skills])
+    @program = Statement.unmarshal(h[:program])
   end
 
-  # Copies the attributes of another lifeform into this one
-  def copy_from(other)      
-    set(environment_id: other.environment_id,
-      species_id: other.species_id,
-      energy: other.energy,
-      size: other.size,
-      initial_size: other.initial_size,
-      name: other.name,
-      x: other.x,
-      y: other.y
-    )
-    marshal_from_h(other.marshal_to_h)
+  # Creates and returns a new Lifeform object that is the child of this one.
+  # Attriutes are inherited from the parent where that makes sense. No genetic
+  # mutations take place - those must be done afterwards.
+  def create_child
+    c = Lifeform.new
+
+    # basic attributes that get inherited as is
+    c.environment_id = self.environment_id
+    c.species_id = self.species_id
+    c.initial_size = self.initial_size
+    c.x = self.x
+    c.y = self.y
+    c.energy_base = self.energy_base
+    c.energy_exp = self.energy_exp
+
+    # copy params, skills, program
+    c.objdata_from_h(self.objdata_to_h)
+
+    # these data are updated for new children
+    c.parent_id = self.id
+    c.created_step = env.time_step
+    c.size = self.initial_size
+    c.energy = 0.0
+    c.set_random_name
+    c.died_step = nil
+    c.generation = self.generation + 1
+
+    c
   end
 
   # Mark that this lifeform has been born, adjusting data members as needed
@@ -67,22 +126,13 @@ class Lifeform < Sequel::Model
     !is_alive?
   end
 
-  def run_step
-    # nothing to do in base class
-    self
-  end
-
-  def species
-    Species.where(id: species_id).first
-  end
-
-  def env
-    Environment.where(id: environment_id).first
-  end
-
   def to_s
     loc_str = "(" + [x, y].map{ |a| sprintf("%.2f", a)}.join(", ") + ")"
     sprintf("%s %s %s energy:%.2f size:%.2f loc:%s", id, species.name, name, energy, size, loc_str)
+  end
+
+  def to_s_debug
+    [to_s, @skills.to_s, @params.to_s, @program.to_s].join("\n") + "\n"
   end
 
   # Selects a random name for this lifeform.
@@ -134,5 +184,87 @@ class Lifeform < Sequel::Model
       energy: self.energy,
       generation: self.generation
     }
+  end
+
+  def register_skill(s)
+    s.generate_params do |prm|
+      @params.add(prm)
+    end
+    @skills.add(s)
+  end
+
+  def clear_skills
+    @skills.clear
+    @params.clear
+  end
+
+  def context
+    Context.new(self)
+  end
+
+  # Returns instance of the function to use for energy calculations
+  def energy_fn
+    EnergyFn.new(self.energy_exp, self.energy_base)
+  end
+
+  # Returns the total metabolic energy needed for a timestep based on the 
+  # current lifeform size.
+  def metabolic_energy
+    energy_fn.energy(self.size)
+  end
+
+  # Returns the bounding box (square) around this lifeform
+  def bounding_box
+    r = self.radius
+    return x - r, y - r, x + r, y + r
+  end
+
+  # Returns all other lifeforms in this environment that are potentially
+  # overlapping with this one. We are guaranteed that there are no overlaps
+  # that aren't in the return value. However, some of the returned Lifeforms
+  # might not be actual overlaps. This function uses heuristics within a 
+  # DB query to get the list, which should then be compared in more detail.
+  def find_potential_overlaps
+    # we identify potential overlaps by seeing if the bounding boxes of the
+    # lifeforms are overlapping
+    x0, y0, x1, y1 = bounding_box
+    ds = Lifeform.
+      where(Sequel.lit('lifeforms.environment_id = ?', [environment_id])).
+      where(Sequel.lit('lifeforms.species_id = ?', [species_id])).
+      where(Sequel.lit('lifeforms.id != ?', [id])).
+      where(Sequel.lit('lifeforms.x <= ? + (lifeforms.size / 2.0)', [x1])).
+      where(Sequel.lit('lifeforms.x >= ? - (lifeforms.size / 2.0)', [x0])).
+      where(Sequel.lit('lifeforms.y <= ? + (lifeforms.size / 2.0)', [y1])).
+      where(Sequel.lit('lifeforms.y >= ? - (lifeforms.size / 2.0)', [y0]))
+    ds.all
+  end
+
+  # Returns all other lifeforms in this environment that overlap this one.
+  # Only returns lifeforms of the SAME SPECIES. Assumes all lifeforms are 
+  # CIRCULAR.
+  def find_overlaps
+    find_potential_overlaps.select do |o|
+      # we have a real overlap if the actual distance between the centers
+      # is <= the sum of the radii of the two lifeforms
+      dx = o.x - self.x
+      dy = o.y - self.y
+      dist = Math.sqrt(dx * dx + dy * dy)
+      dist <= (self.size + o.size) / 2.0
+    end
+  end
+
+  def run_step
+    Log.debug(to_s_debug)
+
+    # execute our program
+    program.exec(context)
+
+    # deduct our metabolic energy
+    self.energy = [self.energy - metabolic_energy, 0.0].max
+
+    # Marks this organism as dead if it is out of energy
+    mark_dead if self.energy <= 0.0
+
+    self
   end
 end

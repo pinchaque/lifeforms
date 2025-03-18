@@ -19,4 +19,60 @@ describe "Helpers" do
       end
     end
   end
+
+  context "camel_to_snake" do
+    def t(s, exp)
+      expect(camel_to_snake(s)).to eq(exp)
+    end
+
+    it "converts as expected" do
+      t("CamelCase", "camel_case")
+      t("FooBarQuux", "foo_bar_quux")
+      t("FooBarQQuux", "foo_bar_q_quux")
+      t("Foo123Bar456", "foo123_bar456")
+      t("Skill::Base", "skill_base")
+    end
+  end
+
+  context "class_from_name" do
+    class Bar
+      def self.print
+        "bare class"
+      end  
+    end
+
+    module Foo
+      class Bar
+        def self.print
+          "nested class"
+        end  
+      end
+
+      class Quux
+        class Bar
+          def self.print
+            "double nested class"
+          end  
+        end
+      end
+    end
+
+    it "handles bare class" do
+      klass = class_from_name("Bar")
+      expect(klass.name).to eq("Bar")
+      expect(klass.print).to eq("bare class")
+    end
+
+    it "handles nested class" do
+      klass = class_from_name("Foo::Bar")
+      expect(klass.name).to eq("Foo::Bar")
+      expect(klass.print).to eq("nested class")
+    end
+
+    it "handles double-nested class" do
+      klass = class_from_name("Foo::Quux::Bar")
+      expect(klass.name).to eq("Foo::Quux::Bar")
+      expect(klass.print).to eq("double nested class")
+    end
+  end
 end
