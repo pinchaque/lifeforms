@@ -12,8 +12,7 @@ describe "ParamDef" do
   let(:pd) { 
     p = ParamDef.new(id) 
     p.distrib = dist
-    p.value_min = min
-    p.value_max = max
+    p.constraints << ConstraintMinMax.new(min, max)
     p.desc = desc
     p
   }
@@ -90,8 +89,11 @@ describe "ParamDef" do
         pd = Skill.ParamDefLinear(id: id, min: min, max: max)
         expect(pd.id).to eq(id)
         expect(pd.desc).to be_nil
-        expect(pd.value_min).to eq(min)
-        expect(pd.value_max).to eq(max)
+        expect(pd.constraints.count).to eq(1)
+        c = pd.constraints[0]
+        expect(c.class.name).to eq("Skill::ConstraintMinMax")
+        expect(c.min).to eq(min)
+        expect(c.max).to eq(max)
         expect(pd.distrib.class.to_s).to eq("Skill::DistribLinear")
         expect(pd.distrib.min).to eq(min)
         expect(pd.distrib.max).to eq(max)
@@ -101,8 +103,11 @@ describe "ParamDef" do
         pd = Skill.ParamDefLinear(id: id, min: min, max: max, desc: desc)
         expect(pd.id).to eq(id)
         expect(pd.desc).to eq(desc)
-        expect(pd.value_min).to eq(min)
-        expect(pd.value_max).to eq(max)
+        expect(pd.constraints.count).to eq(1)
+        c = pd.constraints[0]
+        expect(c.class.name).to eq("Skill::ConstraintMinMax")
+        expect(c.min).to eq(min)
+        expect(c.max).to eq(max)
         expect(pd.distrib.class.to_s).to eq("Skill::DistribLinear")
         expect(pd.distrib.min).to eq(min)
         expect(pd.distrib.max).to eq(max)
@@ -118,8 +123,11 @@ describe "ParamDef" do
         pd = Skill.ParamDefNormal(id: id, mean: mean, stddev: stddev)
         expect(pd.id).to eq(id)
         expect(pd.desc).to be_nil
-        expect(pd.value_min).to be_nil
-        expect(pd.value_max).to be_nil
+        expect(pd.constraints.count).to eq(1)
+        c = pd.constraints[0]
+        expect(c.class.name).to eq("Skill::ConstraintMinMax")
+        expect(c.min).to be_nil
+        expect(c.max).to be_nil
         expect(pd.distrib.class.to_s).to eq("Skill::DistribNormal")
         expect(pd.distrib.mean).to eq(mean)
         expect(pd.distrib.stddev).to eq(stddev)
@@ -129,8 +137,11 @@ describe "ParamDef" do
         pd = Skill.ParamDefNormal(id: id, mean: mean, stddev: stddev, min: min, desc: desc)
         expect(pd.id).to eq(id)
         expect(pd.desc).to eq(desc)
-        expect(pd.value_min).to eq(min)
-        expect(pd.value_max).to be_nil
+        expect(pd.constraints.count).to eq(1)
+        c = pd.constraints[0]
+        expect(c.class.name).to eq("Skill::ConstraintMinMax")
+        expect(c.min).to eq(min)
+        expect(c.max).to be_nil
         expect(pd.distrib.class.to_s).to eq("Skill::DistribNormal")
         expect(pd.distrib.mean).to eq(mean)
         expect(pd.distrib.stddev).to eq(stddev)
@@ -146,8 +157,14 @@ describe "ParamDef" do
         pd = Skill.ParamDefNormalInt(id: id, mean: mean, stddev: stddev)
         expect(pd.id).to eq(id)
         expect(pd.desc).to be_nil
-        expect(pd.value_min).to be_nil
-        expect(pd.value_max).to be_nil
+
+        expect(pd.constraints.count).to eq(2)
+        c0 = pd.constraints[0]
+        expect(c0.class.name).to eq("Skill::ConstraintMinMax")
+        expect(c0.min).to be_nil
+        expect(c0.max).to be_nil
+        c1 = pd.constraints[1]
+        expect(c1.class.name).to eq("Skill::ConstraintInt")
         expect(pd.distrib.class.to_s).to eq("Skill::DistribNormal")
         expect(pd.distrib.mean).to eq(mean)
         expect(pd.distrib.stddev).to eq(stddev)
@@ -157,8 +174,12 @@ describe "ParamDef" do
         pd = Skill.ParamDefNormalInt(id: id, mean: mean, stddev: stddev, min: min, desc: desc)
         expect(pd.id).to eq(id)
         expect(pd.desc).to eq(desc)
-        expect(pd.value_min).to eq(min)
-        expect(pd.value_max).to be_nil
+        c0 = pd.constraints[0]
+        expect(c0.class.name).to eq("Skill::ConstraintMinMax")
+        expect(c0.min).to eq(min)
+        expect(c0.max).to be_nil
+        c1 = pd.constraints[1]
+        expect(c1.class.name).to eq("Skill::ConstraintInt")
         expect(pd.distrib.class.to_s).to eq("Skill::DistribNormal")
         expect(pd.distrib.mean).to eq(mean)
         expect(pd.distrib.stddev).to eq(stddev)
@@ -176,8 +197,11 @@ describe "ParamDef" do
         pd = Skill.ParamDefNormalPerc(id: id, mean: mean, stddev: stddev)
         expect(pd.id).to eq(id)
         expect(pd.desc).to be_nil
-        expect(pd.value_min).to eq(0.0)
-        expect(pd.value_max).to eq(1.0)
+        expect(pd.constraints.count).to eq(1)
+        c = pd.constraints[0]
+        expect(c.class.name).to eq("Skill::ConstraintMinMax")
+        expect(c.min).to eq(0.0)
+        expect(c.max).to eq(1.0)
         expect(pd.distrib.class.to_s).to eq("Skill::DistribNormal")
         expect(pd.distrib.mean).to eq(mean)
         expect(pd.distrib.stddev).to eq(stddev)
@@ -187,8 +211,11 @@ describe "ParamDef" do
         pd = Skill.ParamDefNormalPerc(id: id, mean: mean, stddev: stddev, min: 0.2, desc: desc)
         expect(pd.id).to eq(id)
         expect(pd.desc).to eq(desc)
-        expect(pd.value_min).to eq(0.2)
-        expect(pd.value_max).to eq(1.0)
+        expect(pd.constraints.count).to eq(1)
+        c = pd.constraints[0]
+        expect(c.class.name).to eq("Skill::ConstraintMinMax")
+        expect(c.min).to eq(0.2)
+        expect(c.max).to eq(1.0)
         expect(pd.distrib.class.to_s).to eq("Skill::DistribNormal")
         expect(pd.distrib.mean).to eq(mean)
         expect(pd.distrib.stddev).to eq(stddev)
@@ -206,14 +233,18 @@ describe "ParamDef" do
       pd = Skill.ParamDefNormalPerc(id: id, mean: mean, stddev: stddev, min: min, max: max, desc: desc)
       expect(pd.id).to eq(id)
       expect(pd.desc).to eq(desc)
-      expect(pd.value_min).to eq(min)
-      expect(pd.value_max).to eq(max)
+      expect(pd.constraints.count).to eq(1)
+      c = pd.constraints[0]
+      expect(c.class.name).to eq("Skill::ConstraintMinMax")
+      expect(c.min).to eq(min)
+      expect(c.max).to eq(max)
       expect(pd.distrib.class.to_s).to eq("Skill::DistribNormal")
       expect(pd.distrib.mean).to eq(mean)
       expect(pd.distrib.stddev).to eq(stddev)
 
       m_exp = { 
-        desc: desc, id: id, value_max: max, value_min: min,
+        desc: desc, id: id, 
+        constraints: [c.marshal],
         distrib: pd.distrib.marshal
       }
       m_act = pd.marshal
@@ -225,8 +256,11 @@ describe "ParamDef" do
       pd_new = ParamDef.unmarshal(m_act_json)
       expect(pd_new.id).to eq(id)
       expect(pd_new.desc).to eq(desc)
-      expect(pd_new.value_min).to eq(min)
-      expect(pd_new.value_max).to eq(max)
+      expect(pd.constraints.count).to eq(1)
+      c = pd.constraints[0]
+      expect(c.class.name).to eq("Skill::ConstraintMinMax")
+      expect(c.min).to eq(min)
+      expect(c.max).to eq(max)
       expect(pd_new.distrib.class.to_s).to eq("Skill::DistribNormal")
       expect(pd_new.distrib.mean).to eq(mean)
       expect(pd_new.distrib.stddev).to eq(stddev)
