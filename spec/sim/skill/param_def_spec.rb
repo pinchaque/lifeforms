@@ -40,60 +40,6 @@ describe "ParamDef" do
     end
   end
 
-  context "validity" do
-    def t_valid(v, exp_bool, exp_str)
-      expect(pd.valid?(v)).to be exp_bool
-      cv_act = pd.check_validity(v)
-      if exp_str.nil?
-        expect(cv_act).to be_nil
-      else
-        expect(cv_act).to eq(exp_str)
-      end
-    end
-
-    context "min and max" do
-      let(:min) { 50 }
-      let(:max) { 500 }
-        
-      it "validates with expected error message" do
-        t_valid(51, true, nil)
-        t_valid(50, true, nil)
-        t_valid(5, false, "5 is less than minimum value (50)")
-        t_valid(490, true, nil)
-        t_valid(500, true, nil)
-        t_valid(501, false, "501 is greater than maximum value (500)")
-      end 
-    end
-
-    context "min only" do
-      let(:min) { 50 }
-      let(:max) { nil }
-        
-      it "validates with expected error message" do
-        t_valid(51, true, nil)
-        t_valid(50, true, nil)
-        t_valid(5, false, "5 is less than minimum value (50)")
-        t_valid(490, true, nil)
-        t_valid(500, true, nil)
-        t_valid(501, true, nil)
-      end 
-    end
-
-    context "max only" do
-      let(:min) { nil }
-      let(:max) { 500 }
-        
-      it "validates with expected error message" do
-        t_valid(51, true, nil)
-        t_valid(50, true, nil)
-        t_valid(5, true, nil)
-        t_valid(490, true, nil)
-        t_valid(500, true, nil)
-        t_valid(501, false, "501 is greater than maximum value (500)")
-      end 
-    end
-  end
-
   context ".mutate" do
     let(:mean) { 50.0 }
     let(:stddev) { 10.0 }
@@ -181,6 +127,34 @@ describe "ParamDef" do
 
       it "optional args" do
         pd = Skill.ParamDefNormal(id: id, mean: mean, stddev: stddev, min: min, desc: desc)
+        expect(pd.id).to eq(id)
+        expect(pd.desc).to eq(desc)
+        expect(pd.value_min).to eq(min)
+        expect(pd.value_max).to be_nil
+        expect(pd.distrib.class.to_s).to eq("Skill::DistribNormal")
+        expect(pd.distrib.mean).to eq(mean)
+        expect(pd.distrib.stddev).to eq(stddev)
+      end
+    end
+
+    context "ParamDefNormalInt" do
+      it "exceptions" do
+        expect{Skill.ParamDefNormalInt(id: id)}.to raise_error(ArgumentError)
+      end
+
+      it "required args" do
+        pd = Skill.ParamDefNormalInt(id: id, mean: mean, stddev: stddev)
+        expect(pd.id).to eq(id)
+        expect(pd.desc).to be_nil
+        expect(pd.value_min).to be_nil
+        expect(pd.value_max).to be_nil
+        expect(pd.distrib.class.to_s).to eq("Skill::DistribNormal")
+        expect(pd.distrib.mean).to eq(mean)
+        expect(pd.distrib.stddev).to eq(stddev)
+      end
+
+      it "optional args" do
+        pd = Skill.ParamDefNormalInt(id: id, mean: mean, stddev: stddev, min: min, desc: desc)
         expect(pd.id).to eq(id)
         expect(pd.desc).to eq(desc)
         expect(pd.value_min).to eq(min)

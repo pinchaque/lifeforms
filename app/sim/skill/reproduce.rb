@@ -2,21 +2,15 @@ module Skill
   class Reproduce < Base
     def self.param_defs
       [
-        Skill.ParamDefNormalPerc(
-          id: :repro_threshold,
-          desc: "Energy level at which the lifeform reproduces",
-          mean: 60.0,
-          stddev: 0.5
-        ),
-        Skill.ParamDefNormalPerc(
+        Skill.ParamDefNormalInt(
           id: :repro_num_offspring,
           desc: "How many offspring the lifeform creates upon reproduction",
-          mean: 4.0,
-          stddev: 1.0
+          mean: 4,
+          stddev: 1
         ),
         Skill.ParamDefNormalPerc(
           id: :repro_energy_inherit_perc,
-          desc: " What percentage of this lifeform's energy reserves it gives to its offspring upon reproduction",
+          desc: "What percentage of this lifeform's energy reserves it gives to its offspring upon reproduction",
           mean: 0.95,
           stddev: 0.1
         ),
@@ -27,29 +21,34 @@ module Skill
     # calculated based on the current energy reserves multiplied by the 
     # percentage we give to offspring.
     def self.offspring_energy_tot(ctx)
-      perc(repro_energy_inherit_perc) * self.energy
+      perc(ctx.value(:repro_energy_inherit_perc)) * ctx.lifeform.energy
     end
 
     # The amount of energy each offspring will get. This is simply the total
     # divided by the number of offspring
     def self.offspring_energy_each(ctx)
-      offspring_energy_tot / repro_num_offspring
+      offspring_energy_tot(ctx) / ctx.value(:repro_num_offspring)
     end
     
     def self.exec(ctx)
-      # Subtract the energy we're giving to the offspring
-      self.energy -= offspring_energy_tot(ctx)
-      save
+      lf = ctx.lifeform
+      num_offspring = ctx.value(:repro_num_offspring)
+      child_egy = offspring_energy_each(ctx)
 
-      Log.trace("Creating #{repro_num_offspring} children...")
+      Log.trace("Creating #{num_offspring} children with #{child_egy} energy each...")
 
-      r = Reproduce.new(self)
-      r.generate(offspring_energy_each, repro_num_offspring) do |child|
-        child.set_loc_dist(self.x, self.y, self.radius)
+      # Create the children
+      (0...num_offspring).each do |i|
+        child = lf.create_child
+        child.energy = child_egy
+        child.set_loc_dist(lf.x, lf.y, lf.radius)
         child.save
         Log.trace("  - #{child.to_s}")
       end
-      Log.trace(sprintf("After reproducing energy:%f", energy))      
+
+      # Subtract the energy we gave to the offspring
+      lf.energy -= offspring_energy_tot(ctx)
+      lf.save
     end
   end
 end

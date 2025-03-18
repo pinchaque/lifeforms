@@ -150,6 +150,10 @@ describe "Lifeform" do
 
   context ".create_child" do
     it "copies all attributes" do
+      # no parent/child relationship yet
+      expect(lf.parent).to be_nil
+      expect(lf.children.count).to eq(0)
+
       lf_child = lf.create_child
 
       # these data should all be copied from the parent
@@ -184,6 +188,13 @@ describe "Lifeform" do
       # now we should have these set
       expect(lf_child.id).not_to be_nil
       expect(lf_child.obj_data).to eq("{\"params\":[],\"skills\":[],\"program\":{\"t\":\"Noop\"}}")
+
+      # now validate the children and parent helpers
+      parent_act = lf_child.parent
+      expect(parent_act.id).to eq(lf.id)
+      child_act = lf.children
+      expect(child_act.count).to eq(1)
+      expect(child_act[0].id).to eq(lf_child.id)
     end
   end
 

@@ -32,6 +32,22 @@ class Lifeform < Sequel::Model
     Environment.where(id: environment_id).first  
   end
 
+  def species
+    Species.where(id: species_id).first
+  end
+
+  # Returns the parent Lifeform of this one, or nil if none
+  def parent
+    return nil if self.parent_id.nil?
+    Lifeform.where(id: self.parent_id).first  
+  end
+
+  # Returns the Lifeforms that are children of this one, i.e. their parent_id
+  # is set to this id. Returns empty array if none.
+  def children
+    Lifeform.where(parent_id: self.id).all
+  end
+
   # Returns radius of the circle for this lifeform
   def radius
     self.size / 2.0
@@ -108,14 +124,6 @@ class Lifeform < Sequel::Model
   # True if this lifeform is dead
   def is_dead?
     !is_alive?
-  end
-
-  def species
-    Species.where(id: species_id).first
-  end
-
-  def env
-    Environment.where(id: environment_id).first
   end
 
   def to_s

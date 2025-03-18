@@ -6,16 +6,17 @@ module Skill
     # User-friendly description
     attr_accessor :desc
 
-    # Min and max allowable values
-    attr_accessor :value_min, :value_max
-
     # Distribution function to use
     attr_accessor :distrib
+
+    # Constraint functions to use; array that's executed in order
+    attr_accessor :constraints
 
     # Initialize the parameter definition with an id to use. This ID is used
     # to refer to this parameter throughout the project.
     def initialize(id)
       @id = id.to_sym
+      @constraints = Array.new
     end
 
     # Generates and returns a default value for the parameter given the
@@ -30,31 +31,23 @@ module Skill
 
     # Constrains the specified value to be within min..max, if available.
     def constrain(v)
-      if !@value_min.nil? && v < @value_min
-        @value_min
-      elsif !value_max.nil? && v > @value_max
-        @value_max
-      else
-        v
+      @constraints.each do |c|
+        v = c.constrain(v)
       end
+      v
     end
 
     # Validates the specified value to ensure it is within range. Returns an
     # error message if invalid and nil if valid.
     def check_validity(v)
-      if !@value_min.nil? && v < @value_min
-        "#{v} is less than minimum value (#{@value_min})"
-      elsif !value_max.nil? && v > @value_max
-        "#{v} is greater than maximum value (#{@value_max})"
-      else
-        nil
-      end
+      ret = @constraints.map { |c| c.check_validity(v) }
+      ret.empty? ? nil : ret.join(", ")
     end
 
     # Validates the specified value to ensure it is within range. Returns true
     # if valid and false otherwise.
     def valid?(v)
-      check_validity(v).nil?
+      @constraints.all? { |c| c.valid?(v) }
     end
 
     # Creates a mutation of the specified value using the assigned distirbution.
@@ -68,9 +61,8 @@ module Skill
       {
         id: @id,
         desc: @desc,
-        value_min: @value_min,
-        value_max: @value_max,
-        distrib: @distrib.marshal
+        distrib: @distrib.marshal,
+        constraints: @constraints.map { |c| c.marshal }
       }
     end
 
@@ -78,9 +70,8 @@ module Skill
     def self.unmarshal(obj)
       pd = ParamDef.new(obj[:id].to_sym)
       pd.desc = obj[:desc]
-      pd.value_min = obj[:value_min]
-      pd.value_max = obj[:value_max]
       pd.distrib = Distrib::unmarshal(obj[:distrib])
+      pd.constraints = obj[:constraints].map{ |c| Constraint.unmarshal(c) }
       pd
     end
   end
@@ -89,8 +80,7 @@ module Skill
   def self.ParamDefLinear(id:, min:, max:, **opts)
     pd = ParamDef.new(id)
     pd.desc = opts[:desc]
-    pd.value_min = min
-    pd.value_max = max
+    pd.constraints << ConstraintMinMax.new(min, max)
     pd.distrib = DistribLinear.new(min, max)
     pd
   end
@@ -99,8 +89,7 @@ module Skill
   def self.ParamDefNormal(id:, mean:, stddev:, **opts)
     pd = ParamDef.new(id)
     pd.desc = opts[:desc]
-    pd.value_min = opts[:min]
-    pd.value_max = opts[:max]
+    pd.constraints << ConstraintMinMax.new(opts[:min], opts[:max])
     pd.distrib = DistribNormal.new(mean, stddev)
     pd
   end
@@ -116,12 +105,23 @@ module Skill
 
     opts[:min] ||= 0.0
     raise(ArgumentError.new(msg)) unless (0.0..1.0) === opts[:min]
-    pd.value_min = opts[:min]
 
     opts[:max] ||= 1.0
     raise(ArgumentError.new(msg)) unless (0.0..1.0) === opts[:max]
-    pd.value_max = opts[:max]
 
+    pd.constraints << ConstraintMinMax.new(opts[:min], opts[:max])
+
+    pd.distrib = DistribNormal.new(mean, stddev)
+    pd
+  end
+
+
+  # Helper function to create a ParamDef with Normal distribution. 
+  def self.ParamDefNormalInt(id:, mean:, stddev:, **opts)
+    pd = ParamDef.new(id)
+    pd.desc = opts[:desc]
+    pd.constraints << ConstraintMinMax.new(opts[:min], opts[:max])
+    pd.constraints << ConstraintInt.new
     pd.distrib = DistribNormal.new(mean, stddev)
     pd
   end
