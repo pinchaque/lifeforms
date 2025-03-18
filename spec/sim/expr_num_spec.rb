@@ -36,6 +36,77 @@ describe "ExprNum" do
     end
   end
 
+  context "Add" do
+    it "20" do
+      t(e_add(e_const(20.0)), 
+        "20.0",
+        20.0, 
+        {t: "Add", v: [
+          {t: "Const", v: 20},
+        ]})
+    end
+
+    it "20 + 2 + 3.5" do
+      t(e_add(e_const(20.0), e_const(2.0), e_const(3.5)), 
+        "(20.0 + 2.0 + 3.5)",
+        25.5, 
+        {t: "Add", v: [
+          {t: "Const", v: 20},
+          {t: "Const", v: 2},
+          {t: "Const", v: 3.5},
+        ]})
+    end
+  end
+
+  context "Sub" do
+    it "20 - 5" do
+      t(e_sub(e_const(20.0), e_const(5.0)), 
+        "(20.0 - 5.0)",
+        15.0, 
+        {t: "Sub", v: {l: {t: "Const", v: 20.0},  r: {t: "Const", v: 5.0}}})
+    end
+  end
+
+  context "Mul" do
+    it "20" do
+      t(e_mul(e_const(20.0)), 
+        "20.0",
+        20.0, 
+        {t: "Mul", v: [
+          {t: "Const", v: 20},
+        ]})
+    end
+
+    it "20 * 2 * 1.5" do
+      t(e_mul(e_const(20.0), e_const(2.0), e_const(1.5)), 
+        "(20.0 * 2.0 * 1.5)",
+        60.0, 
+        {t: "Mul", v: [
+          {t: "Const", v: 20},
+          {t: "Const", v: 2},
+          {t: "Const", v: 1.5},
+        ]})
+    end
+  end
+
+  context "Div" do
+    it "20 / 5" do
+      t(e_div(e_const(20.0), e_const(5.0)), 
+        "(20.0 / 5.0)",
+        4.0, 
+        {t: "Div", v: {l: {t: "Const", v: 20.0},  r: {t: "Const", v: 5.0}}})
+    end
+  end
+
+  context "Pow" do
+    it "20 ^ 2" do
+      t(e_pow(e_const(20.0), e_const(2.0)), 
+        "(20.0 ^ 2.0)",
+        400.0, 
+        {t: "Pow", v: {l: {t: "Const", v: 20.0},  r: {t: "Const", v: 2.0}}})
+    end
+  end
+
   context "Marshaling" do
     def t_marshal(expr, exp)
       act = expr.marshal
