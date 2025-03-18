@@ -19,4 +19,15 @@ class Context
     # TODO Need to add observations
     default
   end
+
+  # Helps this object behave like a hash
+  def fetch(id, default = nil)
+    value(id, default)
+  end
+
+  # Returns true if this context has the specified key, false otherwise
+  def has_key?(id)
+    @params.include?(id) ||
+    @lifeform.attrs.include?(id)
+  end
 end

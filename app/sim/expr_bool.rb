@@ -26,7 +26,7 @@ module ExprBool
 
   # Expresssion that always returns true
   class True < Base
-    def eval(v)
+    def eval(ctx)
       true
     end
 
@@ -49,8 +49,8 @@ module ExprBool
       @expr = expr
     end
 
-    def eval(v)
-      !@expr.eval(v)
+    def eval(ctx)
+      !@expr.eval(ctx)
     end
     
     def to_s
@@ -72,8 +72,8 @@ module ExprBool
       @exprs = exprs
     end
 
-    def eval(v)
-      @exprs.all? { |expr| expr.eval(v) }
+    def eval(ctx)
+      @exprs.all? { |expr| expr.eval(ctx) }
     end
     
     def to_s
@@ -96,8 +96,8 @@ module ExprBool
       @exprs = exprs
     end
 
-    def eval(v)
-      @exprs.any? { |expr| expr.eval(v) }
+    def eval(ctx)
+      @exprs.any? { |expr| expr.eval(ctx) }
     end
     
     def to_s
@@ -126,10 +126,10 @@ module ExprBool
       "(#{@e1} #{@op_s} #{@e2})"
     end
 
-    def get_val(v, str)
+    def get_val(ctx, str)
       sym = str.to_sym
-      raise "Missing value for symbol '#{sym}'" unless v.has_key?(sym)
-      val = v[sym]
+      raise "Missing value for symbol '#{sym}'" unless ctx.has_key?(sym)
+      val = ctx.fetch(sym)
       begin
         Kernel.Float(val)
       rescue ArgumentError
@@ -141,8 +141,8 @@ module ExprBool
       end
     end
 
-    def eval(v)
-      cmp(get_val(v, @e1), get_val(v, @e2))
+    def eval(ctx)
+      cmp(get_val(ctx, @e1), get_val(ctx, @e2))
     end
 
     def marshal
