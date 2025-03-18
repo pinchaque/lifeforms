@@ -1,4 +1,8 @@
 module Expr
+  #####################################################################
+  # BASE CLASSES
+  #####################################################################
+
   # Base class for all expressions, which can return bool or float
   class Base
     KEY_CLASS = :c
@@ -87,6 +91,10 @@ module Expr
       self.new(*v.map{ |i| self.unmarshal(i)})
     end
   end
+
+  #####################################################################
+  # BOOLEAN EXPRESSIONS
+  #####################################################################
 
   # Expresssion that always returns true
   class True < Base
@@ -216,7 +224,120 @@ module Expr
       a >= b
     end
   end
+
+  #####################################################################
+  # NUMERIC EXPRESSIONS
+  #####################################################################
+  # Represents a constant numeric value
+  class Const < Base
+    def initialize(v)
+      @value = v.to_f
+    end
+
+    def eval(ctx)
+      @value
+    end
+
+    def to_s
+      @value.to_s
+    end
+
+    def marshal
+      marshal_value(@value)
+    end
+
+    def self.unmarshal_value(v)
+      self.new(v.to_f)
+    end
+  end
+
+  # Represents a value that is looked up from the Context
+  class Lookup < Base
+    def initialize(id)
+      @id = id.to_sym
+    end
+
+    def eval(ctx)
+      raise "Missing value for id '#{@id}'" unless ctx.has_key?(@id)
+      ctx.fetch(@id)
+    end
+
+    def to_s
+      @id.to_s
+    end
+
+    def marshal
+      marshal_value(@id.to_s)
+    end
+
+    def self.unmarshal_value(v)
+      self.new(v.to_sym)
+    end
+  end
+
+  # Adds any number of values together
+  class Add < BaseMultiple
+    def eval(ctx)
+      v = 0.0
+      @exprs.each { |expr| v += expr.eval(ctx) }
+      v
+    end
+
+    def op_s
+      "+"
+    end
+  end
+
+  # Subtracts one value from another
+  class Sub < BaseDuo
+    def eval(ctx)
+      @expr1.eval(ctx) - @expr2.eval(ctx)
+    end
+
+    def op_s
+      "-"
+    end
+  end
+
+  # Multiplies values together
+  class Mul < BaseMultiple
+    def eval(ctx)
+      v = 1.0
+      @exprs.each { |expr| v *= expr.eval(ctx) }
+      v
+    end
+    
+    def op_s
+      "+"
+    end
+  end
+
+  # Divs one value by another
+  class Div < BaseDuo
+    def eval(ctx)
+      @expr1.eval(ctx) / @expr2.eval(ctx)
+    end
+
+    def op_s
+      "/"
+    end
+  end
+
+  # Raises one value to the power of another
+  class Pow < BaseDuo
+    def eval(ctx)
+      @expr1.eval(ctx) ** @expr2.eval(ctx)
+    end
+
+    def op_s
+      "^"
+    end
+  end
 end
+
+#####################################################################
+# HELPER FUNCTIONS
+#####################################################################
 
 # The below functions are helpers to create the above classes. This is most
 # useful for testing and hard-coded behaviors.
@@ -264,4 +385,39 @@ end
 # Numeric greater than or equal to
 def e_gte(e1, e2)
   Expr::GTE.new(e1, e2)
+end
+
+# Constant value
+def e_const(v)
+  ExprNum::Const.new(v)
+end
+
+# Looks up given symbol in Context
+def e_lookup(sym)
+  ExprNum::Lookup.new(sym)
+end
+
+# Adds expressions together
+def e_add(*e)
+  ExprNum::Add.new(*e)
+end
+
+# Subtracts one expression from another
+def e_sub(e1, e2)
+  ExprNum::Sub.new(e1, e2)
+end
+
+# Multiplies expressions together
+def e_mul(*e)
+  ExprNum::Mul.new(*e)
+end
+
+# Divs one expression by another
+def e_div(e1, e2)
+  ExprNum::Div.new(e1, e2)
+end
+
+# Raises one expression to the power of another
+def e_pow(e_base, e_exp)
+  ExprNum::Pow.new(e_base, e_exp)
 end

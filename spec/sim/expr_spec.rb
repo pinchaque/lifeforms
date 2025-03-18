@@ -1,5 +1,6 @@
 describe "Expr" do
-  let(:h) { {} }
+  let(:tol) { 0.0001 }
+  let(:ctx) { {} }
   let(:e_foo) { e_lookup(:foo) }
   let(:e_bar) { e_lookup(:bar) }
   let(:e_quux) { e_lookup(:quux) }
@@ -8,7 +9,13 @@ describe "Expr" do
 
   def t(expr, str_exp, eval_exp)
     expect(expr.to_s).to eq(str_exp)
-    expect(expr.eval(h)).to be eval_exp      
+    expect(expr.eval(ctx)).to be eval_exp      
+  end
+
+  def t_num(expr, str_exp, eval_exp, marshal_exp)
+    expect(expr.to_s).to eq(str_exp)
+    expect(expr.eval(ctx)).to be_within(tol).of(eval_exp)
+    expect(expr.marshal).to eq(marshal_exp)
   end
 
   context "Logic Basics" do
@@ -76,7 +83,7 @@ describe "Expr" do
   end
   
   context "Numeric Cmp" do
-    let(:h) { {
+    let(:ctx) { {
       foo: 1.0,
       bar: 2.0,
       quux: 2.0 
@@ -123,7 +130,7 @@ describe "Expr" do
   end
 
   context "Complex Nested Expressions" do
-    let(:h) { {
+    let(:ctx) { {
       foo: 1.0,
       bar: 2.0,
       quux: 2.0 
@@ -188,8 +195,107 @@ describe "Expr" do
     end
   end
 
+  context "Constant" do
+    it "represents float 2.34" do
+      t_num(e_const(2.34), "2.34", 2.34, {c: "Const", v: 2.34})
+    end
+
+    it "represents integer 234" do
+      t_num(e_const(234), "234", 234, {c: "Const", v: 234})
+    end
+  end
+
+
+  context "Lookup" do
+    let(:ctx) { {foo: 2.34, bar: 5.67} }
+
+    it "foo = 2.34" do
+      t_num(e_lookup(:foo), "foo", 2.34, {c: "Lookup", v: "foo"})
+    end
+
+    it "bar = 5.67; handles string ids" do
+      t_num(e_lookup("bar"), "bar", 5.67, {c: "Lookup", v: "bar"})
+    end
+
+    it "raises error for missing id" do
+      e = e_lookup("quux")
+      expect{e.eval(ctx)}.to raise_error("Missing value for id 'quux'")
+    end
+  end
+
+  context "Add" do
+    it "20" do
+      t_num(e_add(e_const(20.0)), 
+        "20.0",
+        20.0, 
+        {c: "Add", v: [
+          {c: "Const", v: 20},
+        ]})
+    end
+
+    it "20 + 2 + 3.5" do
+      t_num(e_add(e_const(20.0), e_const(2.0), e_const(3.5)), 
+        "(20.0 + 2.0 + 3.5)",
+        25.5, 
+        {c: "Add", v: [
+          {c: "Const", v: 20},
+          {c: "Const", v: 2},
+          {c: "Const", v: 3.5},
+        ]})
+    end
+  end
+
+  context "Sub" do
+    it "20 - 5" do
+      t_num(e_sub(e_const(20.0), e_const(5.0)), 
+        "(20.0 - 5.0)",
+        15.0, 
+        {c: "Sub", v: {l: {c: "Const", v: 20.0},  r: {c: "Const", v: 5.0}}})
+    end
+  end
+
+  context "Mul" do
+    it "20" do
+      t_num(e_mul(e_const(20.0)), 
+        "20.0",
+        20.0, 
+        {c: "Mul", v: [
+          {c: "Const", v: 20},
+        ]})
+    end
+
+    it "20 * 2 * 1.5" do
+      t_num(e_mul(e_const(20.0), e_const(2.0), e_const(1.5)), 
+        "(20.0 * 2.0 * 1.5)",
+        60.0, 
+        {c: "Mul", v: [
+          {c: "Const", v: 20},
+          {c: "Const", v: 2},
+          {c: "Const", v: 1.5},
+        ]})
+    end
+  end
+
+  context "Div" do
+    it "20 / 5" do
+      t_num(e_div(e_const(20.0), e_const(5.0)), 
+        "(20.0 / 5.0)",
+        4.0, 
+        {c: "Div", v: {l: {c: "Const", v: 20.0},  r: {c: "Const", v: 5.0}}})
+    end
+  end
+
+  context "Pow" do
+    it "20 ^ 2" do
+      t_num(e_pow(e_const(20.0), e_const(2.0)), 
+        "(20.0 ^ 2.0)",
+        400.0, 
+        {c: "Pow", v: {l: {c: "Const", v: 20.0},  r: {c: "Const", v: 2.0}}})
+    end
+  end
+
   context "Exceptions" do
-    let(:h) { {
+    let(:ctx) { {
       foo: 1.0,
       bar: 2.0,
       quux: 2.0,
@@ -199,7 +305,7 @@ describe "Expr" do
 
     def t_err(e, str_exp, exception_exp)
       expect(e.to_s).to eq(str_exp)
-      expect{e.eval(h)}.to raise_error(exception_exp)
+      expect{e.eval(ctx)}.to raise_error(exception_exp)
     end
 
     it "Missing Value" do
@@ -219,8 +325,6 @@ describe "Expr" do
     def t_marshal(expr, exp)
       act = expr.marshal
       expect(act).to eq(exp)
-
-      pp(act)
 
       expr_new = Expr::Base.unmarshal(act)
       expect(expr_new.to_s).to eq(expr.to_s)
