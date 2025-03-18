@@ -31,7 +31,7 @@ describe "Logger" do
 
   context ".fmt_time" do
     it "formats time as YYYY-MM-DD HH:mm:ss" do
-      expect(logger.fmt_time).to match /^#{time_re}$/
+      expect(logger.fmt_time).to match(/^#{time_re}$/)
     end
   end
 

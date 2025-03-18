@@ -44,12 +44,12 @@ describe "Lifeform" do
   end
   
   context ".objdata_to_h" do
-    LifeformTestSkill1 = TestFactory.skill("skill1")
+    LifeformTestSkill2 = TestFactory.skill("skill1")
 
     let(:lf) { 
       l = TestFactory.lifeform(env, species)
-      l.register_skill(LifeformTestSkill1)
-      l.program = Program::s_seq(Program::s_noop, Program::s_skill(LifeformTestSkill1.id))
+      l.register_skill(LifeformTestSkill2)
+      l.program = Program::s_seq(Program::s_noop, Program::s_skill(LifeformTestSkill2.id))
       l
     }
 
