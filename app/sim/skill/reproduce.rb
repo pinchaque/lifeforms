@@ -30,7 +30,8 @@ module Skill
       offspring_energy_tot(ctx) / ctx.value(:repro_num_offspring)
     end
     
-    def self.exec(ctx)
+    # Creates offspring for a lifeform and returns the energy left in the lifeform.
+    def self.eval(ctx)
       lf = ctx.lifeform
       num_offspring = ctx.value(:repro_num_offspring)
       child_egy = offspring_energy_each(ctx)
@@ -49,6 +50,8 @@ module Skill
       # Subtract the energy we gave to the offspring
       lf.energy -= offspring_energy_tot(ctx)
       lf.save
+
+      lf.energy
     end
   end
 end

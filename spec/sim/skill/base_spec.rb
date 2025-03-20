@@ -34,7 +34,7 @@ describe "Base" do
       BaseTestSkill = TestFactory.skill(ret)
 
       expect(BaseTestSkill.id).to eq(:base_test_skill)
-      expect(BaseTestSkill.exec(ctx)).to eq(ret)
+      expect(BaseTestSkill.eval(ctx)).to eq(ret)
       pds = BaseTestSkill.param_defs
       expect(pds.count).to eq(2)
     end

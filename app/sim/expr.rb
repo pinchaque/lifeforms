@@ -31,6 +31,10 @@ module Expr
     end
   end
 
+  def self.unmarshal(obj)
+    Expr::Base.unmarshal(obj)
+  end
+
   # Base class for Expressions that have just one operand
   class BaseSingle < Base
     def initialize(expr)
@@ -89,6 +93,90 @@ module Expr
 
     def self.unmarshal_value(v)
       self.new(*v.map{ |i| self.unmarshal(i)})
+    end
+  end
+
+  #####################################################################
+  # PROGRAM FLOW EXPRESSIONS
+  #####################################################################
+
+  # Represents a sequence of expressions that are executed in order
+  class Sequence < BaseMultiple
+    def op_s
+      ","
+    end
+
+    # Executes sequence of expressions in order, returning the last one as the
+    # result
+    def eval(ctx)
+      @exprs.map { |st| st.eval(ctx) }.last
+    end
+  end
+
+  # Represents a conditional: one expression will execute if true, the other
+  # if false
+  class If < Base
+    # Conditional expression, expression to execute if true, expression to 
+    # execute if false.
+    def initialize(expr_bool, expr_true, expr_false)
+      @expr_bool = expr_bool
+      @expr_true = expr_true
+      @expr_false = expr_false
+    end
+
+    def to_s
+      "(IF #{@expr_bool.to_s} THEN #{@expr_true.to_s} ELSE #{@expr_false.to_s})"
+    end
+
+    # Evaluates the expression and executes the true or false expression
+    # accordingly, returning the result of the expression executed.
+    def eval(ctx)
+      if @expr_bool.eval(ctx)
+        @expr_true.eval(ctx)
+      else
+        @expr_false.eval(ctx)
+      end
+    end
+
+    def marshal
+      marshal_value(
+        if: @expr_bool.marshal,
+        then: @expr_true.marshal,
+        else: @expr_false.marshal
+      )
+    end
+
+    def self.unmarshal_value(v)
+      self.new(
+        Expr::Base.unmarshal(v[:if]), 
+        self.unmarshal(v[:then]), 
+        self.unmarshal(v[:else]))
+    end
+  end
+
+  # Expr wrapper around a Skill
+  class Skill < Base
+    # Initialise with the ID of the skill that will be executed
+    def initialize(id)
+      @id = id
+    end
+
+    def to_s
+      "SKILL(#{@id})"
+    end
+
+    # Executes the skill with the given Context
+    def eval(ctx)
+      skill = ctx.lifeform.skills.fetch(@id)
+      skill.nil? ? nil : skill.eval(ctx)
+    end
+
+    def marshal
+      marshal_value(@id)
+    end
+
+    def self.unmarshal_value(v)
+      self.new(v.to_sym)
     end
   end
 
@@ -263,7 +351,7 @@ module Expr
     end
 
     def to_s
-      @id.to_s
+      @id.to_s 
     end
 
     def marshal
@@ -341,6 +429,21 @@ end
 
 # The below functions are helpers to create the above classes. This is most
 # useful for testing and hard-coded behaviors.
+
+# Sequence of expressions
+def e_seq(*exprs)
+  Expr::Sequence.new(*exprs)
+end
+
+# Executes e_true or e_false depending on expr_bool
+def e_if(expr_bool, e_true, e_false)
+  Expr::If.new(expr_bool, e_true, e_false)
+end
+
+# Executes a Skill as an expression
+def e_skill(s)
+  Expr::Skill.new(s)
+end
 
 # Constant TRUE
 def e_true

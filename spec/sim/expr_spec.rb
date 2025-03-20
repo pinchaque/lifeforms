@@ -89,7 +89,6 @@ describe "Expr" do
       quux: 2.0 
     } }
 
-
     it "Equal" do
       t(e_equal(e_foo, e_foo), "(foo == foo)", true)
       t(e_equal(e_bar, e_quux), "(bar == quux)", true)
@@ -386,6 +385,143 @@ describe "Expr" do
             {c: "GT", :v => {l: e_foo.marshal, r: e_bar.marshal}}, 
             {c: "GTE", :v => {l: e_foo.marshal, r: e_quux.marshal}}]}
         ]})
+    end
+  end
+
+  context "Statements" do
+
+    TestSkillFoo = TestFactory.skill("foo")
+    TestSkillBar = TestFactory.skill("bar")
+    TestSkillQuux = TestFactory.skill("quux")
+
+    let(:lf) { 
+      l = MockLifeform.new 
+      l.register_skill(TestSkillFoo)
+      l.register_skill(TestSkillBar)
+      l.register_skill(TestSkillQuux)
+      l
+    }
+    let(:ctx) { Context.new(lf) }
+
+    let(:a1) { e_skill(TestSkillFoo.id) }
+    let(:a2) { e_skill(TestSkillBar.id) }
+    let(:a3) { e_skill(TestSkillQuux.id) }
+    let(:t1) { e_true }
+    let(:f1) { e_not(e_true) }
+
+    def t_eval(st, ctx, exp)
+      if exp.nil?
+        expect(st.eval(ctx)).to be_nil
+      else
+        expect(st.eval(ctx)).to eq(exp)
+      end
+    end
+  
+    def t_marshal(st, exp)
+      act = st.marshal
+      expect(act).to eq(exp)
+      st_new = Expr::Base.unmarshal(act)
+      expect(st_new.marshal).to eq(act)
+    end
+
+    context "Skill" do
+      let(:st) { e_skill(TestSkillFoo.id) }
+
+      it "executes action" do
+        t_eval(st, ctx, "foo")
+      end
+
+      it "marshals/unmarshals" do
+        t_marshal(st, {c: "Skill", v: :test_skill_foo})
+      end
+    end
+
+    context "Sequence" do
+      let(:st) { e_seq(a1, a2, a3) }
+
+      it "executes actions" do
+        t_eval(st, ctx, "quux")
+      end
+
+      it "marshals/unmarshals" do
+        exp = {c: "Sequence", v: [
+          {c: "Skill", v: :test_skill_foo}, 
+          {c: "Skill", v: :test_skill_bar}, 
+          {c: "Skill", v: :test_skill_quux}
+        ]}
+        t_marshal(st, exp)
+      end
+    end
+
+    context "If" do
+      it "executes true action" do
+        st = e_if(t1, a1, a2)
+        t_eval(st, ctx, "foo")
+      end
+
+      it "executes false action" do
+        st = e_if(f1, a1, a2)
+        t_eval(st, ctx, "bar")
+      end
+    
+      it "marshals/unmarshals - true" do
+        exp = {c: "If", v: {
+          if: {c: "True"},
+          then: {c: "Skill", v: :test_skill_foo},
+          else: {c: "Skill", v: :test_skill_bar}
+        }}
+        t_marshal(e_if(t1, a1, a2), exp)
+      end
+    
+      it "marshals/unmarshals - false" do
+        exp = {c: "If", v: {
+          if: {c: "Not", v: {c: "True"}},
+          then: {c: "Skill", v: :test_skill_foo},
+          else: {c: "Skill", v: :test_skill_bar}
+        }}
+        t_marshal(e_if(f1, a1, a2), exp)
+      end
+    end
+
+    context "Nested Sequence -> If" do
+      let(:if1) { e_if(t1, a2, a3) }
+      let(:if2) { e_if(f1, a2, a3) }
+      let(:st) { e_seq(a1, if1, if2) }
+
+      it "executes actions" do
+        t_eval(st, ctx, "quux")
+      end 
+
+      it "marshals/unmarshals" do
+        exp = {
+          c: "Sequence",
+          v: [
+            {c: "Skill", v: :test_skill_foo}, 
+            {c: "If", v: {
+              :if => {c: "True"}, 
+              :then => {c: "Skill", v: :test_skill_bar},
+              :else => {c: "Skill", v: :test_skill_quux}}}, 
+            {c: "If", v: {
+              :if => {c: "Not", v: {c: "True"}}, 
+              :then => {c: "Skill", v: :test_skill_bar},
+              :else => {c: "Skill", v: :test_skill_quux}}}
+            ]
+        }
+        t_marshal(st, exp)
+      end
+    end
+    
+    context "Nested If -> Sequence" do
+      let(:seq1) { e_seq(a1, a2, a3) }
+      let(:seq2) { e_seq(a3, a2, a1) }
+
+      it "executes true sequence" do
+        t_eval(e_if(t1, seq1, seq2), ctx, "quux")
+      end 
+
+      it "executes false sequence" do
+        t_eval(e_if(f1, seq1, seq2), ctx, "foo")
+      end
     end
   end
 end

@@ -48,14 +48,15 @@ module Skill
 
     # Adds our absorbable energy to the lifeform's energy stores. This is
     # the total provided by the environment, minus that excluded by overlaps,
-    # times the absorbtion percentage.
-    def self.exec(ctx)
+    # times the absorbtion percentage. Returns the new energy level.
+    def self.eval(ctx)
       lf = ctx.lifeform
       old_energy = lf.energy
       egy_absorb = energy_absorb(ctx)
       lf.energy += egy_absorb
       lf.save
       Log.trace(sprintf("[EnvEnergy] Energy changed from %.2f to %.2f (absorbed %.2f)", old_energy, lf.energy, egy_absorb))
+      lf.energy
     end
   end
 end

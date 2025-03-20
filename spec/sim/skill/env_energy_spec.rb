@@ -25,7 +25,7 @@ describe "EnvEnergy" do
       end
     end
 
-    context ".exec" do
+    context ".eval" do
       it "has correct energy calcs" do
         expect(lf.energy).to be_within(tol).of(10.0)
 
@@ -49,11 +49,12 @@ describe "EnvEnergy" do
         expect(absorb_perc).to be_within(tol).of(0.5)
         expect(klass.energy_absorb(ctx)).to be_within(tol).of(3.9269908169872414)
 
-        # run the action
-        klass.exec(ctx)
-
         # energy = old_energy + energy_absorb
-        expect(lf.energy).to be_within(tol).of(13.9269908169872414)
+        energy_exp = 13.9269908169872414
+
+        # run the action
+        expect(klass.eval(ctx)).to be_within(tol).of(energy_exp)
+        expect(lf.energy).to be_within(tol).of(energy_exp)
       end
     end
   end

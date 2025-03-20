@@ -10,7 +10,7 @@ class Lifeform < Sequel::Model
   def after_initialize
     @skills = SkillSet.new if @skills.nil?
     @params = ParamSet.new if @params.nil?
-    @program = Statement::Noop.new if @program.nil?
+    @program = Expr::True.new if @program.nil?
 
     # marshal this object's data from obj_data if it exists
     unless obj_data.nil?
@@ -71,7 +71,7 @@ class Lifeform < Sequel::Model
   def objdata_from_h(h)
     @params = ParamSet.unmarshal(h[:params])
     @skills = SkillSet.unmarshal(h[:skills])
-    @program = Statement.unmarshal(h[:program])
+    @program = Expr.unmarshal(h[:program])
   end
 
   # Creates and returns a new Lifeform object that is the child of this one.
@@ -272,7 +272,7 @@ class Lifeform < Sequel::Model
     Log.debug(to_s_debug)
 
     # execute our program
-    program.exec(context)
+    program.eval(context)
 
     # deduct our metabolic energy
     self.energy = [self.energy - metabolic_energy, 0.0].max

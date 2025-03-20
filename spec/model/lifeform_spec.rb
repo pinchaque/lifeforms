@@ -91,7 +91,7 @@ describe "Lifeform" do
       # shouldn't have any of these yet
       expect(lf_new.skills.count).to eq(0)
       expect(lf_new.params.count).to eq(0)
-      expect(lf_new.program.marshal).to eq(Statement::Noop.new.marshal)
+      expect(lf_new.program.marshal).to eq(Expr::True.new.marshal)
 
       # reconstitute from our marshaled data
       h = lf.objdata_to_h

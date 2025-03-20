@@ -32,7 +32,7 @@ describe "Reproduce" do
     end
   end
 
-  context ".exec" do
+  context ".eval" do
     context "single offspring" do
       let(:repro_num_offspring) { 1 }
 
@@ -43,11 +43,13 @@ describe "Reproduce" do
         expect(klass.offspring_energy_tot(ctx)).to eq(40.0)
         expect(klass.offspring_energy_each(ctx)).to eq(40.0)
 
-        # run the action
-        klass.exec(ctx)
-  
         # energy = old_energy * (1.0 - repro_energy_inherit_perc)
-        expect(lf.energy).to be_within(tol).of(10.0)
+        energy_exp = 10.0
+
+        # run the action
+        expect(klass.eval(ctx)).to be_within(tol).of(energy_exp)
+        expect(lf.energy).to be_within(tol).of(energy_exp)
+
         expect(lf.children.count).to eq(repro_num_offspring)
         lf.children.each do |c|
           expect(c.parent_id).to eq(lf.id)
@@ -70,11 +72,13 @@ describe "Reproduce" do
         expect(klass.offspring_energy_tot(ctx)).to eq(40.0)
         expect(klass.offspring_energy_each(ctx)).to eq(4.0)
 
-        # run the action
-        klass.exec(ctx)
-  
         # energy = old_energy * (1.0 - repro_energy_inherit_perc)
-        expect(lf.energy).to be_within(tol).of(10.0)
+        energy_exp = 10.0
+
+        # run the action
+        expect(klass.eval(ctx)).to be_within(tol).of(energy_exp)
+        expect(lf.energy).to be_within(tol).of(energy_exp)
+
         expect(lf.children.count).to eq(repro_num_offspring)
         lf.children.each do |c|
           expect(c.parent_id).to eq(lf.id)
