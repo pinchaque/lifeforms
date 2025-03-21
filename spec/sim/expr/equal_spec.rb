@@ -1,6 +1,8 @@
 require File.dirname(__FILE__) + '/test_helper.rb'
 
 describe "Expr::Equal" do
+  let(:ctx) { {} }
+
   context "2.34 == 2.34" do
     it_behaves_like "expr" do
       let(:expr) { e_equal(e_const(2.34), e_const(2.34)) }

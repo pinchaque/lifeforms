@@ -1,6 +1,8 @@
 require File.dirname(__FILE__) + '/test_helper.rb'
 
 describe "Expr::Const" do
+  let(:ctx) { {} }
+
   context "float 5.67" do
     it_behaves_like "expr" do
       let(:expr) { e_const(5.67) }

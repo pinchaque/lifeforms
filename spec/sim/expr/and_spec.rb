@@ -1,6 +1,8 @@
 require File.dirname(__FILE__) + '/test_helper.rb'
 
 describe "Expr::And" do
+  let(:ctx) { {} }
+  
   context "And(True)" do
     it_behaves_like "expr" do
       let(:expr) { e_and(e_true) }
@@ -25,6 +27,17 @@ describe "Expr::And" do
     end
   end
 
+  context "And(False, False)" do
+    it_behaves_like "expr" do
+      let(:expr) { e_and(e_false, e_false) }
+      let(:eval_exp) { false }
+      let(:str_exp) { "(false && false)" }
+      let(:marshal_exp) { {c: "And", v: [
+        {c: "False"},
+        {c: "False"},
+      ]} }
+    end
+  end
 
   context "And(True, True, False)" do
     it_behaves_like "expr" do

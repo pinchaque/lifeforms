@@ -1,6 +1,7 @@
 require File.dirname(__FILE__) + '/test_helper.rb'
 
 describe "Expr::Add" do
+  let(:ctx) { {} }
   context "20 + 2 + 3.5" do
     it_behaves_like "expr" do
       let(:expr) { e_add(e_const(20.0), e_const(2.0), e_const(3.5)) }

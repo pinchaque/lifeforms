@@ -1,6 +1,8 @@
 require File.dirname(__FILE__) + '/test_helper.rb'
 
 describe "Expr::Div" do
+  let(:ctx) { {} }
+
   context "20 / 5" do
     it_behaves_like "expr" do
       let(:expr) { e_div(e_const(20.0), e_const(5.0)) }

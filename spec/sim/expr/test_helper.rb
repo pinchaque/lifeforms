@@ -1,7 +1,5 @@
 RSpec.shared_examples "expr" do
   it ".eval" do
-    ctx = {} unless defined?(ctx)
-
     if eval_exp == true
       expect(expr.eval(ctx)).to be true
     elsif eval_exp == false
