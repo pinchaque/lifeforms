@@ -2,7 +2,7 @@ require File.dirname(__FILE__) + '/test_helper.rb'
 
 describe "Expr::Add" do
   context "20 + 2 + 3.5" do
-    it_behaves_like "expr_numeric" do
+    it_behaves_like "expr" do
       let(:expr) { e_add(e_const(20.0), e_const(2.0), e_const(3.5)) }
       let(:eval_exp) { 25.5 }
       let(:str_exp) { "(20.0 + 2.0 + 3.5)" }
@@ -15,21 +15,10 @@ describe "Expr::Add" do
   end
 
   context "20" do
-    it_behaves_like "expr_numeric" do
+    it_behaves_like "expr" do
       let(:expr) { e_add(e_const(20.0)) }
       let(:eval_exp) { 20.0 }
       let(:str_exp) { "20.0" }
-      let(:marshal_exp) { {c: "Add", v: [
-        {c: "Const", v: 20},
-      ]} }
-    end
-  end
-
-
-  context "21" do
-    it_behaves_like "expr_numeric" do
-      let(:expr) { e_add(e_const(20.0)) }
-      let(:eval_exp) { 20.0 }
       let(:marshal_exp) { {c: "Add", v: [
         {c: "Const", v: 20},
       ]} }

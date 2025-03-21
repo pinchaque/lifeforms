@@ -1,7 +1,14 @@
-RSpec.shared_examples "expr_numeric" do
+RSpec.shared_examples "expr" do
   it ".eval" do
     ctx = {} unless defined?(ctx)
-    expect(expr.eval(ctx)).to be_within(0.0001).of(eval_exp)
+
+    if eval_exp == true
+      expect(expr.eval(ctx)).to be true
+    elsif eval_exp == false
+      expect(expr.eval(ctx)).to be false
+    else
+      expect(expr.eval(ctx)).to be_within(0.0001).of(eval_exp)
+    end
   end
 
   it ".to_s" do
