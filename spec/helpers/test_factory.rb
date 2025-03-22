@@ -35,7 +35,7 @@ class TestFactory
   def self.skill(ret)
     Class.new(Skill::Base) do
       @ret = ret
-      def self.exec(ctx)
+      def self.eval(ctx)
         @ret
       end
 

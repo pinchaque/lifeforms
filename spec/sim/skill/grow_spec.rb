@@ -28,15 +28,16 @@ describe "Grow" do
       end
     end
 
-    context ".exec" do
+    context ".eval" do
       it "grows as expected" do
         expect(lf.size).to be_within(tol).of(init_size)
 
-        # run the action
-        klass.exec(ctx)
-
         # size = old_size * grow_perc
-        expect(lf.size).to be_within(tol).of(22.0)
+        size_exp = 22.0
+
+        # run the action
+        expect(klass.eval(ctx)).to be_within(tol).of(size_exp)
+        expect(lf.size).to be_within(tol).of(size_exp)
       end
     end
   end
