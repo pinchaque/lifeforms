@@ -2,7 +2,7 @@ module Expr
     # Represents a sequence of expressions that are executed in order
     class Sequence < BaseMultiple
       def op_s
-        ","
+        "->"
       end
   
       # Executes sequence of expressions in order, returning the last one as the

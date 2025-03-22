@@ -4,6 +4,7 @@ end
 
 class MockLifeform
   attr_accessor :env, :skills, :params
+  attr_accessor :size, :energy
 
   def initialize
     @skills = Hash.new
