@@ -6,7 +6,14 @@ describe "Context" do
   let(:height) { 100 }
   let(:time_step) { 3 }
   let(:env) { TestFactory.env(width, height, time_step) }
-  let(:lf) { TestFactory.lifeform(env, species) }
+  let(:obs_id) { :ctx_obs_id }
+  let(:obs_val) { 1.23 }
+  ContextTestObs1 = TestFactory.obs(1.23)
+  let(:lf) { 
+    l = TestFactory.lifeform(env, species) 
+    l.observations[obs_id] = ContextTestObs1
+    l
+  }
   let(:ctx) { Context.new(lf) }
 
   context ".value" do
@@ -36,10 +43,14 @@ describe "Context" do
       expect(ctx.value(:param3, dflt)).to eq(dflt)
     end
 
-    it "returns valuea from attrs" do
+    it "returns value from attrs" do
       # this doesn't test all the attrs as that's done in lifeform_spec
       expect(ctx.value(:lf_energy)).to be_within(tol).of(lf.energy)
       expect(ctx.value(:lf_x)).to be_within(tol).of(lf.x)
+    end
+
+    it "returns value from observations" do
+      expect(ctx.value(obs_id)).to be_within(tol).of(obs_val)
     end
   end
 end

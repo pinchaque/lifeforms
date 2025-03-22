@@ -51,16 +51,28 @@ describe "Lifeform" do
   end
 
   context ".register_skill" do
+    let(:obs_val) { 1.23 }
+    let(:obs_id) { :test_obs_1 }
     it "registers skill" do
-      LifeformTestSkill1 = TestFactory.skill("skill1")
+      LifeformTestObs1 = TestFactory.obs(obs_val)
+      obs = {obs_id => LifeformTestObs1}
+      LifeformTestSkill1 = TestFactory.skill("skill1", obs)
+
       expect(lf.skills.count).to eq(0)
       expect(lf.params.count).to eq(0)
+      expect(lf.observations.count).to eq(0)
       lf.register_skill(LifeformTestSkill1)
       expect(lf.skills.count).to eq(1)
       expect(lf.params.count).to eq(2)
+      expect(lf.observations.count).to eq(1)
+
+      # make sure observation registered as expected
+      expect(lf.context.value(obs_id)).to be_within(tol).of(obs_val)
+
       lf.clear_skills
       expect(lf.skills.count).to eq(0)
       expect(lf.params.count).to eq(0)
+      expect(lf.observations.count).to eq(0)
     end
   end
   

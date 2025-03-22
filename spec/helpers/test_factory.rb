@@ -28,15 +28,31 @@ class TestFactory
     l
   end
 
+  # Creates an Observation class that returns the specified value
+  def self.obs(ret)
+    Class.new(Obs::Base) do
+      @ret = ret
+      def self.calc(ctx)
+        @ret
+      end
+    end
+  end
+
   # Creates a Skill class that returns the specified string when exec is 
   # called. This returns an unnamed class, so for things to work you
   # need to assign the return of this function to a CamelCase class name
   # because that's how Skill.id is computed.
-  def self.skill(ret)
+  def self.skill(ret, obs = {})
     Class.new(Skill::Base) do
       @ret = ret
+      @obs = obs
+
       def self.eval(ctx)
         @ret
+      end
+
+      def self.observations
+        @obs
       end
 
       def self.param_defs

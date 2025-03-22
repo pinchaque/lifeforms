@@ -4,12 +4,13 @@ class Lifeform < Sequel::Model
   plugin :after_initialize
   plugin :timestamps, :force => true, :update_on_create => true
 
-  attr_reader :skills, :params
+  attr_reader :skills, :params, :observations
   attr_accessor :program
 
   def after_initialize
     @skills = SkillSet.new if @skills.nil?
     @params = ParamSet.new if @params.nil?
+    @observations = {} if @observations.nil?
     @program = Expr::True.new if @program.nil?
 
     # marshal this object's data from obj_data if it exists
@@ -191,11 +192,15 @@ class Lifeform < Sequel::Model
       @params.add(prm)
     end
     @skills.add(s)
+    s.observations.each do |id, klass|
+      @observations[id] = klass
+    end
   end
 
   def clear_skills
     @skills.clear
     @params.clear
+    @observations.clear
   end
 
   def context

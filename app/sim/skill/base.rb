@@ -14,6 +14,13 @@ module Skill
       [] # none by default
     end
 
+    # Returns hash of the observations a Skill provides. Key is the symbol ID
+    # to refer to it and value is the name of the function to call. The function
+    # will be called with a Context as the argument.
+    def self.observations
+      {} # none by default
+    end
+
     # Generates the Param objects for this skill. If a block is given then they
     # will be yielded, otherwise returned as an array.
     def self.generate_params
