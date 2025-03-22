@@ -1,6 +1,8 @@
 # Represents a set of Skills for a Lifeform. Each Skill must have a unique
 # ID.
 class SkillSet
+  attr_reader :skills
+  
   # Initialize empty SkillSet
   def initialize
     @skills = {}

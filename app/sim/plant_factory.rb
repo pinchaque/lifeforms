@@ -27,10 +27,12 @@ class PlantFactory
     e_seq(
       e_skill(Skill::EnvEnergy.id), # Absorb environmental energy
       e_if(
-        # We have reserves of at least 2x our metabolic energy
-        e_gte(e_lookup(:lf_energy), e_mul(e_const(2.0), e_lookup(:lf_metabolic_energy))),
-        e_skill(Skill::Grow.id), # Grow larger
-        e_true)) # No-op
+        # IF: Environmental energy is more than 2x metabolic
+        e_gt(e_lookup(:env_energy), e_mul(e_const(2.0), e_lookup(:lf_metabolic_energy))), 
+        # THEN: Grow larger
+        e_skill(Skill::Grow.id), 
+        # ELSE: Do nothing
+        e_true))
   end
 
   def gen

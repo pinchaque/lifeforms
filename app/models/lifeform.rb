@@ -73,6 +73,7 @@ class Lifeform < Sequel::Model
     @params = ParamSet.unmarshal(h[:params])
     @skills = SkillSet.unmarshal(h[:skills])
     @program = Expr.unmarshal(h[:program])
+    @skills.skills.each { |id, s| add_obs(s) } # add observations (they aren't marshaled)
   end
 
   # Creates and returns a new Lifeform object that is the child of this one.
@@ -133,7 +134,14 @@ class Lifeform < Sequel::Model
   end
 
   def to_s_debug
-    [to_s, @skills.to_s, @params.to_s, '[Program] ' + @program.to_s].join("\n") + "\n"
+    ctx = self.context    
+    [
+      to_s, 
+      @skills.to_s, 
+      @params.to_s, 
+      '[Program] ' + @program.to_s,
+      '[Observations] ' + @observations.keys.map { |id| "#{id}: #{@observations[id].calc(ctx)}"}.join(", ")
+    ].join("\n")
   end
 
   # Selects a random name for this lifeform.
@@ -188,19 +196,25 @@ class Lifeform < Sequel::Model
   end
 
   def register_skill(s)
+    Log.trace("Registering Skill #{s.id}")
     s.generate_params do |prm|
       @params.add(prm)
     end
+    add_obs(s)
     @skills.add(s)
-    s.observations.each do |id, klass|
-      @observations[id] = klass
-    end
   end
 
   def clear_skills
     @skills.clear
     @params.clear
     @observations.clear
+  end
+
+  # Adds observations from the specified Skill to this Lifeform
+  def add_obs(s)
+    s.observations.each do |id, klass|
+      @observations[id.to_sym] = klass
+    end
   end
 
   def context
