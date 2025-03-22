@@ -4,6 +4,8 @@ RSpec.shared_examples "expr" do
       expect(expr.eval(ctx)).to be true
     elsif eval_exp == false
       expect(expr.eval(ctx)).to be false
+    elsif eval_exp.nil?
+      expect(expr.eval(ctx)).to be_nil
     else
       expect(expr.eval(ctx)).to be_within(0.0001).of(eval_exp)
     end
