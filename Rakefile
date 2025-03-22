@@ -1,6 +1,6 @@
 require_relative './config/environment'
 
-Log.level = MyLogger::DEBUG
+Log.level = MyLogger::TRACE
 
 ######################################################################
 # Helper functions
@@ -22,12 +22,13 @@ end
 # sim - managing simulation environments
 #######################################################################
 namespace "sim" do
-    desc "Creates a simulation"
-    task :create do
+    desc "Creates a simulation with n lifeforms"
+    task :create, [:n] do |t, args|
+        num_lf = args[:n].to_i
         DB.transaction do
             env = EnvironmentFactory.new.gen.save
             pf = PlantFactory.new(env)
-            (0..5).each do
+            (0...num_lf).each do
                 pf.gen.save
             end
             Log.info("Created simulation: #{env.to_s}")

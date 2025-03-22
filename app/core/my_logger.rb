@@ -37,7 +37,7 @@ class MyLogger
     # Outputs log message string and context at the specified log level
     def log(level, str, context = {})
         return if level > @level
-        @outf << log_str(str, context)
+        @outf << log_str(str, context) + "\n"
     end
 
     # Outputs error log message with specified context

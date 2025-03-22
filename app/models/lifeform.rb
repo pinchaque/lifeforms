@@ -132,7 +132,7 @@ class Lifeform < Sequel::Model
   end
 
   def to_s_debug
-    [to_s, @skills.to_s, @params.to_s, @program.to_s].join("\n") + "\n"
+    [to_s, @skills.to_s, @params.to_s, '[Program] ' + @program.to_s].join("\n") + "\n"
   end
 
   # Selects a random name for this lifeform.
