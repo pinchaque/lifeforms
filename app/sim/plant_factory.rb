@@ -26,13 +26,27 @@ class PlantFactory
   def get_program
     e_seq(
       e_skill(Skill::EnvEnergy.id), # Absorb environmental energy
+
       e_if(
-        # IF: Environmental energy is more than 2x metabolic
-        e_gt(e_lookup(:env_energy), e_mul(e_const(2.0), e_lookup(:lf_metabolic_energy))), 
-        # THEN: Grow larger
-        e_skill(Skill::Grow.id), 
-        # ELSE: Do nothing
-        e_true))
+        # If we're net-positive on energy coming in...
+        e_gt(e_lookup(:env_energy), e_lookup(:lf_metabolic_energy)),
+        
+        # Then we are in a sustainable situation so we can grow and reproducce
+        e_seq(
+          e_if( # GROWTH
+            # IF: we have an environmental energy surplus
+            e_gt(e_lookup(:env_energy), e_mul(e_const(2.0), e_lookup(:lf_metabolic_energy))), 
+            # THEN: Grow larger
+            e_skill(Skill::Grow.id)),
+          
+          e_if( # REPRODUCTION
+            # IF: We have good energy reserves
+            e_gt(e_lookup(:lf_energy), e_mul(e_const(5.0), e_lookup(:lf_metabolic_energy))), 
+            # THEN: Reproduce
+            e_skill(Skill::Reproduce.id))
+          )
+        )
+      )
   end
 
   def gen

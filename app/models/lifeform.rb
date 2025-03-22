@@ -138,8 +138,9 @@ class Lifeform < Sequel::Model
     [
       to_s, 
       @skills.to_s, 
-      @params.to_s, 
       '[Program] ' + @program.to_s,
+      @params.to_s, 
+      '[Attrs] ' + attrs.to_s,
       '[Observations] ' + @observations.keys.map { |id| "#{id}: #{@observations[id].calc(ctx)}"}.join(", ")
     ].join("\n")
   end
