@@ -24,10 +24,13 @@ class PlantFactory
   end
 
   def get_program
-    s_seq(
-      s_skill(Skill::EnvEnergy.id), # Absorb environmental energy
-      s_skill(Skill::Grow.id), # Grow larger
-      )
+    e_seq(
+      e_skill(Skill::EnvEnergy.id), # Absorb environmental energy
+      e_if(
+        # We have reserves of at least 2x our metabolic energy
+        e_gte(e_lookup(:lf_energy), e_mul(e_const(2.0), e_lookup(:lf_metabolic_energy))),
+        e_skill(Skill::Grow.id), # Grow larger
+        e_true)) # No-op
   end
 
   def gen
