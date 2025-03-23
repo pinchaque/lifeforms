@@ -41,7 +41,7 @@ class PlantFactory
           
           e_if( # REPRODUCTION
             # IF: We have good energy reserves
-            e_gt(e_lookup(:lf_energy), e_mul(e_const(5.0), e_lookup(:lf_metabolic_energy))), 
+            e_gt(e_lookup(:lf_energy), e_mul(e_const(20.0), e_lookup(:lf_metabolic_energy))), 
             # THEN: Reproduce
             e_skill(Skill::Reproduce.id))
           )
