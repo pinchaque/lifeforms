@@ -43,6 +43,7 @@ module Skill
         child = lf.create_child
         child.energy = child_egy
         child.set_loc_dist(lf.x, lf.y, lf.radius)
+        child.mutate
         child.save
         Log.trace("[Reproduce]   - #{child.to_s}")
       end

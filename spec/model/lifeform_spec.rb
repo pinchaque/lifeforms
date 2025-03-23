@@ -30,12 +30,12 @@ describe "Lifeform" do
   end
 
   context ".attrs" do
-    let(:age) { 4 }
     it "returns attr hash" do
-      lf.created_step = env.time_step + age
+      lf.created_step = 1
       lf.save
+      expect(env.time_step).to eq(3)
       attr_exp = {
-        lf_age: age,
+        lf_age: 2,
         lf_energy: 10.0,
         lf_metabolic_energy: lf.metabolic_energy,
         lf_size: 1.0,

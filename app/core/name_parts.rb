@@ -180,7 +180,9 @@ class NameParts
   attractive
   balanced
   bold
+  bubbly
   calm
+  capricious
   careless
   casual
   cautious
@@ -248,6 +250,7 @@ class NameParts
   imaginative
   impatient
   imposing
+  impulsive
   inconsiderate
   indecisive
   independent
@@ -260,6 +263,7 @@ class NameParts
   inspirational
   inspired
   inspiring
+  intrepid
   intriguing
   intuitive
   inventive
@@ -309,6 +313,7 @@ class NameParts
   quick-witted
   quiet
   quirky
+  quixotic
   radiant
   rational
   ravishing

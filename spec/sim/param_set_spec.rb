@@ -45,6 +45,19 @@ describe "ParamSet" do
     end
   end
 
+  context ".mutate" do
+    it "mutates param value" do
+      # include the param
+      pset.add(prm)
+      expect(pset.count).to eq(1)
+      expect(pset.include?(id)).to be true
+      old_value = prm.value
+      expect(pset.fetch(id).value).to eq(old_value)
+      pset.mutate
+      expect(pset.fetch(id).value).not_to eq(old_value)
+    end
+  end
+
   context "exceptions" do
     it "rejects duplicate params" do
       pset.add(prm)

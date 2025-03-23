@@ -106,6 +106,13 @@ class Lifeform < Sequel::Model
     c
   end
 
+  # Mutates this lifeform as part of the evolutionary process
+  def mutate
+    @params.mutate
+
+    # TODO: need to mutate skills and/or program
+  end
+
   # Mark that this lifeform has been born, adjusting data members as needed
   def mark_born
     self.created_step = env.time_step
