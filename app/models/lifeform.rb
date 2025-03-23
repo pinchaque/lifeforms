@@ -232,7 +232,7 @@ class Lifeform < Sequel::Model
   def attrs
     {
       lf_energy: self.energy,
-      lf_age: self.created_step - env.time_step,
+      lf_age: env.time_step - self.created_step,
       lf_metabolic_energy: self.metabolic_energy,
       lf_size: self.size,
       lf_generation: self.generation,
@@ -304,7 +304,7 @@ class Lifeform < Sequel::Model
     Log.trace("Energy after program execution: #{self.energy}")
 
     # Marks this organism as dead if it is out of energy
-    mark_dead if self.energy <= 0.0
+    mark_dead if ((self.energy <= 0.0) || (self.size < self.initial_size))
 
     self
   end
