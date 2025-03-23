@@ -138,8 +138,9 @@ class Lifeform < Sequel::Model
     [
       to_s, 
       @skills.to_s, 
-      @params.to_s, 
       '[Program] ' + @program.to_s,
+      @params.to_s, 
+      '[Attrs] ' + attrs.to_s,
       '[Observations] ' + @observations.keys.map { |id| "#{id}: #{@observations[id].calc(ctx)}"}.join(", ")
     ].join("\n")
   end
@@ -290,11 +291,17 @@ class Lifeform < Sequel::Model
   def run_step
     Log.debug(to_s_debug)
 
+    # deduct our metabolic energy
+    egy_before = self.energy
+    meta = metabolic_energy
+    self.energy = [self.energy - metabolic_energy, 0.0].max
+    save
+    Log.trace("[Metabolic] Deduct #{meta} metabolic energy; energy goes from #{egy_before} to #{self.energy}")
+
     # execute our program
     program.eval(context)
 
-    # deduct our metabolic energy
-    self.energy = [self.energy - metabolic_energy, 0.0].max
+    Log.trace("Energy after program execution: #{self.energy}")
 
     # Marks this organism as dead if it is out of energy
     mark_dead if self.energy <= 0.0

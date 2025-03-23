@@ -5,13 +5,13 @@ module Skill
         ParamDefNormalInt(
           id: :repro_num_offspring,
           desc: "How many offspring the lifeform creates upon reproduction",
-          mean: 4,
+          mean: 3,
           stddev: 1
         ),
         ParamDefNormalPerc(
           id: :repro_energy_inherit_perc,
           desc: "What percentage of this lifeform's energy reserves it gives to its offspring upon reproduction",
-          mean: 0.95,
+          mean: 0.8,
           stddev: 0.1
         ),
       ]
@@ -36,7 +36,7 @@ module Skill
       num_offspring = ctx.value(:repro_num_offspring)
       child_egy = offspring_energy_each(ctx)
 
-      Log.trace("Creating #{num_offspring} children with #{child_egy} energy each...")
+      Log.trace("[Reproduce] Creating #{num_offspring} children with #{child_egy} energy each...")
 
       # Create the children
       (0...num_offspring).each do |i|
@@ -44,12 +44,15 @@ module Skill
         child.energy = child_egy
         child.set_loc_dist(lf.x, lf.y, lf.radius)
         child.save
-        Log.trace("  - #{child.to_s}")
+        Log.trace("[Reproduce]   - #{child.to_s}")
       end
 
       # Subtract the energy we gave to the offspring
+      egy_before = lf.energy
       lf.energy -= offspring_energy_tot(ctx)
       lf.save
+
+      Log.trace("[Reproduce] Parent energy dropped from #{egy_before} to #{lf.energy}")
 
       lf.energy
     end

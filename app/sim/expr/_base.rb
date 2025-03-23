@@ -23,7 +23,11 @@ module Expr
 
     # Unmarshals the passed-in object into an Expr of the correct type.
     def self.unmarshal(obj)
-      class_from_name(full_class_name(obj[KEY_CLASS])).unmarshal_value(obj[KEY_VALUE])
+      if obj.nil?
+        nil
+      else
+        class_from_name(full_class_name(obj[KEY_CLASS])).unmarshal_value(obj[KEY_VALUE])
+      end
     end
   end
 

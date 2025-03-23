@@ -3,12 +3,14 @@ class MockEnv
 end
 
 class MockLifeform
-  attr_accessor :env, :skills, :params
+  attr_accessor :env, :skills, :params, :attrs, :observations
   attr_accessor :size, :energy
 
   def initialize
     @skills = Hash.new
     @params = Hash.new
+    @attrs = Hash.new
+    @observations = Hash.new
     @env = MockEnv.new
   end
 
