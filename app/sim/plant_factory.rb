@@ -19,6 +19,7 @@ class PlantFactory
     [
       Skill::EnvEnergy,
       Skill::Grow,
+      Skill::Shrink,
       Skill::Reproduce
     ]
   end
@@ -28,10 +29,10 @@ class PlantFactory
       e_skill(Skill::EnvEnergy.id), # Absorb environmental energy
 
       e_if(
-        # If we're net-positive on energy coming in...
+        # IF we're net-positive on energy coming in...
         e_gt(e_lookup(:env_energy), e_lookup(:lf_metabolic_energy)),
         
-        # Then we are in a sustainable situation so we can grow and reproducce
+        # THEN we are in a sustainable situation so we can grow and reproducce
         e_seq(
           e_if( # GROWTH
             # IF: we have an environmental energy surplus
@@ -44,7 +45,10 @@ class PlantFactory
             e_gt(e_lookup(:lf_energy), e_mul(e_const(20.0), e_lookup(:lf_metabolic_energy))), 
             # THEN: Reproduce
             e_skill(Skill::Reproduce.id))
-          )
+          ),
+
+          # ELSE we are not sustainable and need to shrink
+          e_skill(Skill::Shrink.id)
         )
       )
   end
