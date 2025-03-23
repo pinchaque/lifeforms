@@ -23,6 +23,11 @@ class ParamSet
     @params[id] = p
   end
 
+  # Returns IDs of all parameters
+  def ids
+    @params.keys
+  end
+
   # Clears all Params from this object
   def clear
     @params.clear
@@ -36,6 +41,11 @@ class ParamSet
   # Fetches the Param with the given ID, returning default if it is not found
   def fetch(id, default = nil)
     @params.fetch(id.to_sym, default)
+  end
+
+  # Runs mutate on all Params
+  def mutate
+    @params.values.each { |p| p.mutate }
   end
 
   # Marshals this ParamSet to built-in objects that can be later converted to JSON

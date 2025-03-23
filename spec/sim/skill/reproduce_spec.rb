@@ -87,6 +87,13 @@ describe "Reproduce" do
           expect(c.generation).to eq(lf.generation + 1)
           expect(c.created_step).to eq(env.time_step)
           expect(c.id).not_to be_nil # saved
+
+          # child should have same params
+          expect(c.params.ids.sort).to eq(lf.params.ids.sort)
+
+          # check that the float parameter has been mutated
+          # note that :repro_num_offspring is an int and may be the same
+          expect(c.params.fetch(:repro_energy_inherit_perc).value).not_to eq(lf.params.fetch(:repro_energy_inherit_perc).value)
         end
       end
     end
