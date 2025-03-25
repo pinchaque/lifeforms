@@ -22,6 +22,7 @@ module Scribe
     def format(msg)
       s = "[#{fmt_time(msg.time)}] #{msg.msg}"
       s += " [#{fmt_context(msg.context)}]" unless msg.context.empty?
+      s += "\n"
       s
     end
   end

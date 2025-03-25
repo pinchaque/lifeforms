@@ -1,6 +1,6 @@
 require_relative './config/environment'
 
-Log.level = MyLogger::TRACE
+LogRouter.max_level = Scribe::Level::TRACE
 
 ######################################################################
 # Helper functions
