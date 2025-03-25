@@ -1,5 +1,5 @@
 module Scribe
-  class Msg
+  class Message
     attr_accessor :msg, :context, :level, :time
 
     def initialize(level, msg, **context)

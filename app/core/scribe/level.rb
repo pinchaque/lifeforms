@@ -1,4 +1,5 @@
 module Scribe
+  # Levels that a Message can be.
   module Level
     ERROR = 1
     WARNING = 2

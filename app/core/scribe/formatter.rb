@@ -1,5 +1,11 @@
 module Scribe
+  # Class that takes the data from the Message (i.e. timestamp, level, string, 
+  # context) and formats it into a string for outputting.
   class Formatter
+
+    def initialize
+      # nothing to do (yet)
+    end
 
     # Helper function for formatting time in log message output
     def fmt_time(time)

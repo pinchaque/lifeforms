@@ -7,7 +7,7 @@ describe "Scribe::Formatter" do
   let(:ctx) { {} }
   let(:str) { 'test log messsage' }
   let(:msg) { 
-    m = Scribe::Msg.new(level, str, **ctx)
+    m = Scribe::Message.new(level, str, **ctx)
     m.time = time
     m
   }
