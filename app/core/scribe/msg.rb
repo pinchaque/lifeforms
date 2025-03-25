@@ -1,11 +1,12 @@
 module Scribe
   class Msg
-    attr_accessor :msg, :context, :level
+    attr_accessor :msg, :context, :level, :time
 
     def initialize(level, msg, **context)
       @level = level
       @msg = msg
       @context = context
+      @time = DateTime.now
     end
 
     def self.error(msg, **context)
