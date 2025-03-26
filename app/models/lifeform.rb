@@ -141,6 +141,11 @@ class Lifeform < Sequel::Model
   end
 
   def log_self(level = Scribe::Level::TRACE)
+    parent = self.parent
+    parent_str = parent.nil? ? 'NONE' : "#{parent.id} #{parent.name}"
+    log(level, '[Data]', id: self.id, created_step: self.created_step, 
+      parent: parent_str, energy_base: self.energy_base, 
+      energy_exp: self.energy_exp)      
     log(level, @skills.to_s)
     log(level, @params.to_s)
     log(level, '[Program] ' + @program.to_s)

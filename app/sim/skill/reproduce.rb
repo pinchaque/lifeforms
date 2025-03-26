@@ -36,7 +36,7 @@ module Skill
       num_offspring = ctx.value(:repro_num_offspring)
       child_egy = offspring_energy_each(ctx)
 
-      Log.trace("[Reproduce] Creating #{num_offspring} children with #{child_egy} energy each...")
+      Log.trace("[Reproduce] Creating offspring...", lf: lf, num_offspring: num_offspring, offspring_egy: child_egy)
 
       # Create the children
       (0...num_offspring).each do |i|
@@ -45,7 +45,7 @@ module Skill
         child.set_loc_dist(lf.x, lf.y, lf.radius)
         child.mutate
         child.save
-        Log.trace("[Reproduce]   - #{child.to_s}")
+        Log.trace("[Reproduce]   - #{child.to_s}", lf: lf)
       end
 
       # Subtract the energy we gave to the offspring
@@ -53,7 +53,7 @@ module Skill
       lf.energy -= offspring_energy_tot(ctx)
       lf.save
 
-      Log.trace("[Reproduce] Parent energy dropped from #{egy_before} to #{lf.energy}")
+      Log.trace("[Reproduce] Parent energy reduced", lf: lf, egy_before: egy_before, egy_after: lf.energy)
 
       lf.energy
     end

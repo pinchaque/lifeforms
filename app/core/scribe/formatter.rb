@@ -14,7 +14,7 @@ module Scribe
 
     # Helper function for formatting log message context
     def fmt_context(h)
-      h.keys.sort.map { |k| "#{k}:#{h[k]}" }.join(", ")
+      h.keys.map { |k| "#{k}:#{h[k]}" }.join(", ")
     end
 
     # Returns the color to use for the specified level
@@ -39,7 +39,7 @@ module Scribe
       ret = {}
       ctx.each do |k, v|
         if k == :lf && v.class == Lifeform
-          id = "#{v.id} #{v.name}"
+          id = "#{v.id[0..5]} #{v.name}"
         else
           ret[k] = v
         end

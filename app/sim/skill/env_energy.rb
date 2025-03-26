@@ -31,7 +31,7 @@ module Skill
       egy_absorb = self.energy_absorb(ctx)
       lf.energy += egy_absorb
       lf.save
-      Log.trace(sprintf("[EnvEnergy] Energy changed from %.2f to %.2f (absorbed %.2f)", old_energy, lf.energy, egy_absorb))
+      Log.trace("[EnvEnergy] Absorbed env energy", lf: lf, absorb: egy_absorb, egy_before: old_energy, egy_after: lf.energy)
       lf.energy
     end
   end
