@@ -140,16 +140,15 @@ class Lifeform < Sequel::Model
     sprintf("%s %s %s energy:%.2f size:%.2f loc:%s", id, species.name, name, energy, size, loc_str)
   end
 
-  def to_s_debug
-    ctx = self.context    
-    [
-      to_s, 
-      @skills.to_s, 
-      '[Program] ' + @program.to_s,
-      @params.to_s, 
-      '[Attrs] ' + attrs.to_s,
-      '[Observations] ' + @observations.keys.map { |id| "#{id}: #{@observations[id].calc(ctx)}"}.join(", ")
-    ].join("\n")
+  def log_self(level = Scribe::Level::TRACE)
+    log(level, @skills.to_s)
+    log(level, @params.to_s)
+    log(level, '[Program] ' + @program.to_s)
+    log(level, '[Attrs]', **attrs)
+
+    ctx = self.context
+    obs_h = @observations.to_h { |id, o| [id, o.calc(ctx)] }
+    log(level, '[Observations]', **obs_h)
   end
 
   # Selects a random name for this lifeform.
@@ -204,7 +203,6 @@ class Lifeform < Sequel::Model
   end
 
   def register_skill(s)
-    Log.trace("Registering Skill #{s.id}")
     s.generate_params do |prm|
       @params.add(prm)
     end
@@ -295,23 +293,39 @@ class Lifeform < Sequel::Model
     end
   end
 
+  # outputs trace log message with this lifeform and additional context
+  def log(level, msg, **ctx)
+    Log.log(level, msg, lf: self, **ctx)
+  end
+  
+  # outputs trace log message with this lifeform and additional context
+  def log_trace(msg, **ctx)
+    log(Scribe::Level::TRACE, msg, lf: self, **ctx)
+  end
+
   def run_step
-    Log.debug(to_s_debug)
+    log_trace("Step #{env.time_step} starting...")
+    log_self
 
     # deduct our metabolic energy
     egy_before = self.energy
     meta = metabolic_energy
     self.energy = [self.energy - metabolic_energy, 0.0].max
     save
-    Log.trace("[Metabolic] Deduct #{meta} metabolic energy; energy goes from #{egy_before} to #{self.energy}")
+    log_trace("Deducted metabolic energy", metabolic: meta, egy_before: egy_before, egy_after: self.energy)
 
     # execute our program
+    log_trace("Program execution starting...")
     program.eval(context)
-
-    Log.trace("Energy after program execution: #{self.energy}")
+    log_trace("Program execution done", energy: self.energy, size: self.size)
 
     # Marks this organism as dead if it is out of energy
-    mark_dead if ((self.energy <= 0.0) || (self.size < self.initial_size))
+    if ((self.energy <= 0.0) || (self.size < self.initial_size))
+      mark_dead
+      log_trace("DIED", energy: self.energy, size: self.size, initial_size: self.initial_size)
+    end
+
+    log_trace("Step #{env.time_step} complete")
 
     self
   end
