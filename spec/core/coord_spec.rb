@@ -3,50 +3,49 @@ describe "Coord" do
 
 
   context "construction" do
-    def t(c, x_exp, y_exp, r_exp, ang_exp)
-      expect(c.x).to be_within(tol).of(x_exp)
-      expect(c.y).to be_within(tol).of(y_exp)
-      expect(c.r).to be_within(tol).of(r_exp)
-      expect(c.ang).to be_within(tol).of(ang_exp)
+    def t(x, y, r, ang)
+      [Coord.xy(x, y), Coord.polar(r, ang)].each do |c|
+        expect(c.x).to be_within(tol).of(x)
+        expect(c.y).to be_within(tol).of(y)
+        expect(c.r).to be_within(tol).of(r)
+        expect(c.ang).to be_within(tol).of(ang)
+      end
     end
 
-    context "#xy" do
+    it "cartesian 0, 0" do
+      t(0.0, 0.0, 0.0, 0.0)
+    end
 
-      it "cartesian 0, 0" do
-        t(Coord.xy(0.0, 0.0), 0.0, 0.0, 0.0, 0.0)
-      end
+    it "cartesian 1, 0" do
+      t(1.0, 0.0, 1.0, 0.0)
+    end
 
-      it "cartesian 1, 0" do
-        t(Coord.xy(1.0, 0.0), 1.0, 0.0, 1.0, 0.0)
-      end
+    it "cartesian 1, 1" do
+      t(1.0, 1.0, Math.sqrt(2), 0.25 * Math::PI)
+    end
 
-      it "cartesian 1, 1" do
-        t(Coord.xy(1.0, 1.0), 1.0, 1.0, Math.sqrt(2), 0.25 * Math::PI)
-      end
+    it "cartesian 0, 1" do
+      t(0.0, 1.0, 1.0, 0.5 * Math::PI)
+    end
 
-      it "cartesian 0, 1" do
-        t(Coord.xy(0.0, 1.0), 0.0, 1.0, 1.0, 0.5 * Math::PI)
-      end
+    it "cartesian -1, 1" do
+      t(-1.0, 1.0, Math.sqrt(2), 0.75 * Math::PI)
+    end
 
-      it "cartesian -1, 1" do
-        t(Coord.xy(-1.0, 1.0), -1.0, 1.0, Math.sqrt(2), 0.75 * Math::PI)
-      end
+    it "cartesian -1, 0" do
+      t(-1.0, 0.0, 1.0, Math::PI)
+    end
 
-      it "cartesian -1, 0" do
-        t(Coord.xy(-1.0, 0.0), -1.0, 0.0, 1.0, Math::PI)
-      end
+    it "cartesian -1, -1" do
+      t(-1.0, -1.0, Math.sqrt(2), -0.75 * Math::PI)
+    end
 
-      it "cartesian -1, -1" do
-        t(Coord.xy(-1.0, -1.0), -1.0, -1.0, Math.sqrt(2), -0.75 * Math::PI)
-      end
+    it "cartesian 0, -1" do
+      t(0.0, -1.0, 1.0, -0.5 * Math::PI)
+    end
 
-      it "cartesian 0, -1" do
-        t(Coord.xy(0.0, -1.0), 0.0, -1.0, 1.0, -0.5 * Math::PI)
-      end
-
-      it "cartesian 1, -1" do
-        t(Coord.xy(1.0, -1.0), 1.0, -1.0, Math.sqrt(2), -0.25 * Math::PI)
-      end
+    it "cartesian 1, -1" do
+      t(1.0, -1.0, Math.sqrt(2), -0.25 * Math::PI)
     end
   end
 

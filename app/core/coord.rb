@@ -2,26 +2,50 @@
 # arithemetic and conversion between cartesian and polar.
 class Coord
 
-  attr_accessor :x, :y
+  attr_reader :x, :y, :r, :ang
   
   def initialize
     @x = 0.0
     @y = 0.0
+    @r = 0.0
+    @ang = 0.0
   end
 
+  # Construct a new object from cartesian coordinates
   def self.xy(x, y)
-    c = self.new
-    c.x = x
-    c.y = y
-    c
+    self.new.set_xy(x, y)
   end
 
-  def r
-    Math.sqrt(@x ** 2 + @y ** 2)
+  # Construct a new object from polar coordinates
+  def self.polar(r, ang)
+    self.new.set_polar(r, ang)
   end
 
-  def ang
-    Math.atan2(@y, @x)
+  # Sets the cartesian coordinates for the object (and recomputes polar)
+  def set_xy(x, y)
+    @x = x
+    @y = y
+    compute_polar
+    self
+  end
+
+  # Sets the polar coordinates for the object (and recomputes cartesian)
+  def set_polar(r, ang)
+    @r = r
+    @ang = ang
+    compute_cartesian
+    self 
+  end
+
+  private
+  def compute_polar
+    @r = Math.sqrt(@x ** 2 + @y ** 2)
+    @ang = Math.atan2(@y, @x)
+  end
+
+  def compute_cartesian
+    @x = @r * Math.cos(@ang)
+    @y = @r * Math.sin(@ang)
   end
 end
 
