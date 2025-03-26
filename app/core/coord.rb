@@ -37,6 +37,28 @@ class Coord
     self 
   end
 
+  def to_s
+    "(#{@x}, #{@y})"
+  end
+
+  # Adds another Coord to this one and returns a new Coord
+  def +(o)
+    Coord.xy(@x + o.x, @y + o.y)
+  end
+
+  # Subtracts another Coord from this one and returns a new Coord
+  def -(o)
+    Coord.xy(@x - o.x, @y - o.y)
+  end
+
+  def ==(o)
+    (@x == o.x) && (@y == o.y)
+  end
+
+  def !=(o)
+    !(self == o)
+  end
+
   private
   def compute_polar
     @r = Math.sqrt(@x ** 2 + @y ** 2)
