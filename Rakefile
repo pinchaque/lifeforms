@@ -27,7 +27,7 @@ namespace "sim" do
         num_lf = args[:n].to_i
         DB.transaction do
             env = EnvironmentFactory.new.gen.save
-            pf = PlantFactory.new(env)
+            pf = Zoo::Plant.new(env)
             (0...num_lf).each do
                 pf.gen.save
             end
