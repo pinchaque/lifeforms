@@ -2,9 +2,10 @@ module Scribe
   # Class that takes the data from the Message (i.e. timestamp, level, string, 
   # context) and formats it into a string for outputting.
   class Formatter
+    attr_accessor :colorize
 
-    def initialize
-      # nothing to do (yet)
+    def initialize(colorize = true)
+      @colorize = colorize
     end
 
     # Helper function for formatting time in log message output
@@ -17,19 +18,34 @@ module Scribe
       h.keys.map { |k| "#{k}:#{h[k]}" }.join(", ")
     end
 
+    class TermColorDummy
+      def to_s
+        ""
+      end
+
+      def method_missing(method_name, *args)
+        # do nothing
+        self
+      end
+    end
+
+    def color_class
+      @colorize ? TermColor : TermColorDummy
+    end
+
     # Returns the color to use for the specified level
     def level_color(level)
       case level
       when Scribe::Level::ERROR
-        TermColor.new.red
+        color_class.new.red
       when Scribe::Level::WARNING
-        TermColor.new.yellow
+        color_class.new.yellow
       when Scribe::Level::INFO
-        TermColor.new.blue
+        color_class.new.blue
       when Scribe::Level::DEBUG
-        TermColor.new.cyan
+        color_class.new.cyan
       when Scribe::Level::TRACE
-        TermColor.new.cyan
+        color_class.new.cyan
       end
     end
 
@@ -50,10 +66,10 @@ module Scribe
     # Formats the given message for output to a log and returns the formatted
     # string.
     def format(msg)
-      grey = TermColor.new.reset.grey
-      magenta = TermColor.new.magenta
-      white = TermColor.new.white
-      reset = TermColor.new.reset
+      grey = color_class.new.reset.grey
+      magenta = color_class.new.magenta
+      white = color_class.new.white
+      reset = color_class.new.reset
 
       id, ctx = extract_id(msg.context)
 
