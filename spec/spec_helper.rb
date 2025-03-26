@@ -107,4 +107,4 @@ HELPERSDIR = File.expand_path('./helpers', File.dirname(__FILE__))
 Dir["#{HELPERSDIR}/*.rb"].each {|file| require file }
 
 # log level to use while running tets
-Log.level = MyLogger::INFO
+LogRouter.max_level = Scribe::Level::INFO

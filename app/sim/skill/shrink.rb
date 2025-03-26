@@ -21,8 +21,10 @@ module Skill
       old_size = lf.size
       lf.size *= shrink_perc
       lf.save
-      Log.trace(sprintf("[Shrink] Shrinking from %.2f to %.2f (%0.2f%%); metabolic energy went from %.2f to %.2f", 
-        old_size, lf.size, shrink_perc * 100.0, old_meta, lf.metabolic_energy))
+      Log.trace(sprintf("[Shrink] Size has decreased by %0.2f%%", shrink_perc * 100.0),
+        lf: lf, size_before: old_size, size_after: lf.size, 
+        meta_before: old_meta, meta_after: lf.metabolic_energy)
+
       lf.size
     end
   end
