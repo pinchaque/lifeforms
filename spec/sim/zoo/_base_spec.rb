@@ -1,6 +1,6 @@
 describe "Zoo::Base" do
   class TestAnimal < Zoo::Base
-    def set_params(ta)
+    def set_attrs(ta)
       ta.energy = 1.23
     end
   end
