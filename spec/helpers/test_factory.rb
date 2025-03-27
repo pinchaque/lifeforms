@@ -1,8 +1,8 @@
 # Contains several helper functions to generate saved objects in the db useful
 # for unit tests.
 class TestFactory
-  def self.species
-    Species.new(name: "Test Lifeform").save
+  def self.species(name = "Test Lifeform")
+    Species.new(name: name).save
   end
 
   def self.env(width = 100, height = 100, time_step = 0, energy_rate = 5.0)
