@@ -136,13 +136,18 @@ class Lifeform < Sequel::Model
   end
 
   # Finds all other lifeforms within the specified distance that also match
-  # the specified filters. Returns all results in ascending order by distance.
-  def find_within_dist(dist, **filters)
+  # the specified filters. Returns dataset with results in ascending order by distance.
+  def find_within_dist_ds(dist, **filters)
     ds = find_others_ds
     ds = filter_lte_dist(ds, dist)
     ds = ds.where(**filters) unless filters.empty?
-    ds = order_dist_asc(ds)
-    ds.all
+    order_dist_asc(ds)
+  end
+
+  # Finds all other lifeforms within the specified distance that also match
+  # the specified filters. Returns all results in ascending order by distance.
+  def find_within_dist(dist, **filters)
+    find_within_dist_ds(dist, **filters).all
   end
 
   # Orders dataset in ascending order by distance from this lifeform

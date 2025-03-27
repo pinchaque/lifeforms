@@ -25,12 +25,11 @@ module Skill
         return 0.0
       end
 
-      # TODO use a different query that doesn't look through whole environment, 
-      # can use bounding box
-      lf_prey = lf.find_closest(species_id: species.id)
+      # get closest prey within our eating distance (radius)
+      lf_prey = lf.find_within_dist_ds(lf.radius, species_id: species.id).first
 
       if lf_prey.nil?
-        Log.trace("[Eat] Couldn't find any prey", lf: lf)
+        Log.trace("[Eat] Couldn't find any prey within eating range", lf: lf, distance: lf.radius)
         return 0.0
       end
 
@@ -40,6 +39,7 @@ module Skill
       dist_to_prey = vector_to_prey.r
 
       if dist_to_prey > lf.radius
+        # shouldn't hit this given above find_within_dist, but just in case...
         Log.trace("[Eat] Nearest prey was too far away", lf: lf, prey: lf_prey.to_s, dist: dist_to_prey)
         return 0.0        
       end
