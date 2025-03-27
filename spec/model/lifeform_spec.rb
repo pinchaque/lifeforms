@@ -12,7 +12,7 @@ describe "Lifeform" do
   let(:env) { TestFactory.env(width, height, time_step) }
   let(:lf) { TestFactory.lifeform(env, species) }
 
-  def add_lf(x, y, size, energy)
+  def add_lf(x, y, size = 1.0, energy = 10.0)
     lf = Lifeform.new
     lf.environment_id = env.id
     lf.created_step = 1
@@ -535,6 +535,54 @@ describe "Lifeform" do
       test_overlaps(lf4, [lf2, lf3, lf5])
       test_overlaps(lf5, [lf4, lf2, lf3, lf6])
       test_overlaps(lf6, [lf3, lf5])
+    end
+  end
+
+  context ".find_closest" do
+    it "no other lifeforms" do
+      lf = add_lf(1.0, 1.0)
+      expect(lf.find_closest).to be_nil
+    end
+
+    it "one other lifeform" do
+      lf = add_lf(1.0, 1.0)
+      lf0 = add_lf(3.0, 3.0)
+      expect(lf.find_closest.id).to eq(lf0.id)
+    end
+
+    it "several other lifeforms" do
+      lf = add_lf(1.0, 1.0)
+      add_lf(0, 13.1)
+      add_lf(13.1, 0)
+      lf0 = add_lf(3.0, 3.0)
+      add_lf(3.1, 3.1)
+      add_lf(13.1, 13.1)
+      expect(lf.find_closest.id).to eq(lf0.id)
+    end
+
+    it "filters" do
+      s0 = TestFactory.species("species 0")
+      s1 = TestFactory.species("species 1")
+
+      lf = add_lf(1.0, 1.0)
+
+      lf0 = add_lf(3.0, 3.0)
+      lf0.species_id = s0.id
+      lf0.save
+
+      lf1 = add_lf(3.1, 3.1)
+      lf1.species_id = s1.id
+      lf1.save
+
+      lf2 = add_lf(13.1, 13.1)
+      lf2.species_id = s0.id
+      lf2.generation = 123
+      lf2.save
+
+      expect(lf.find_closest.id).to eq(lf0.id)
+      expect(lf.find_closest(species_id: s0.id).id).to eq(lf0.id)
+      expect(lf.find_closest(species_id: s1.id).id).to eq(lf1.id)
+      expect(lf.find_closest(generation: 123).id).to eq(lf2.id)
     end
   end
 

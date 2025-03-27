@@ -48,6 +48,18 @@ class Lifeform < Sequel::Model
   def children
     Lifeform.where(parent_id: self.id).all
   end
+  
+  # Returns the closest other lifeform that matches the given filters, e.g. 
+  # of species_id
+  def find_closest(**filters)
+    ds = filters.empty? ? Lifeform : Lifeform.where(**filters)
+    ds = ds.where(environment_id: self.environment_id).
+      exclude(id: self.id).
+      order(Sequel.lit("((? - lifeforms.x) ^ 2) + ((? - lifeforms.y) ^ 2)", self.x, self.y))
+      # order by distance but don't bother taking the sqrt because it doesn't
+      # change the sorting
+    ds.first
+  end
 
   # Returns radius of the circle for this lifeform
   def radius
@@ -57,6 +69,11 @@ class Lifeform < Sequel::Model
   # Returns area of the lifeform assuming circle of diameter "size"
   def area
     Math::PI * (radius ** 2.0)
+  end
+
+  # Returns Coord object representing location of this lifeform
+  def coord
+    Coord.xy(self.x, self.y)
   end
 
   # Converts this lifeform object's extra data into a hash
