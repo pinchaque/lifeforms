@@ -27,7 +27,7 @@ module Skill
     # calculates the max distance the lifeform can move as limited by its 
     # available energy and how much it uses to move
     def self.max_dist_energy_limited(ctx)
-      ctx.lf.energy / ctx.value(:move_energy)
+      ctx.lifeform.energy / ctx.value(:move_energy)
     end
 
     # The max distance this lifeform can move in a turn. This is the lesser of
@@ -42,7 +42,14 @@ module Skill
     def self.eval(ctx)
       lf = ctx.lifeform
 
-      lf_prey = lf.find_closest("Plant")
+      species_name = "Plant"
+      species = Species.where(name: species_name).first
+      if species.nil?
+        Log.error("[MoveToFood] Couldn't find species", lf: lf, name: species_name)
+        return 0.0
+      end
+
+      lf_prey = lf.find_closest(species_id: species.id)
 
       if lf_prey.nil?
         Log.trace("[MoveToFood] Couldn't find any prey", lf: lf)

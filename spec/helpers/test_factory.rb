@@ -2,7 +2,9 @@
 # for unit tests.
 class TestFactory
   def self.species(name = "Test Lifeform")
-    Species.new(name: name).save
+    s = Species.where(name: name).first    
+    s = Species.new(name: name).save if s.nil?
+    s
   end
 
   def self.env(width = 100, height = 100, time_step = 0, energy_rate = 5.0)
@@ -18,7 +20,8 @@ class TestFactory
     l.size = 1.0
     l.generation = 2
     l.initial_size = 0.2
-    l.name = "Incredible Juniper"
+    #l.name = "Incredible Juniper"
+    l.set_random_name
     l.x = 2.22
     l.y = 3.33
     l.energy_base = 1.0
