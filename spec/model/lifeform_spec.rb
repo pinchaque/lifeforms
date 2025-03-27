@@ -116,7 +116,7 @@ describe "Lifeform" do
 
   context ".to_s" do
     it "with location" do
-      expect(lf.to_s).to eq("#{lf.id} Test Lifeform Incredible Juniper energy:10.00 size:1.00 loc:(2.22, 3.33)")
+      expect(lf.to_s).to eq("#{lf.id} Test Lifeform #{lf.name} energy:10.00 size:1.00 loc:(2.22, 3.33)")
     end
   end
 

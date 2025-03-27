@@ -4,7 +4,7 @@ module Zoo
     def get_skills
       [
         Skill::MoveToFood,
-        #Skill::Eat,
+        Skill::Eat,
         Skill::Grow,
         Skill::Reproduce
       ]
