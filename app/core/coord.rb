@@ -51,29 +51,26 @@ class Coord
     Coord.xy(@x - o.x, @y - o.y)
   end
 
+  # Returns true if self is equal to o, false otherwise. 
   def ==(o)
     (@x == o.x) && (@y == o.y)
   end
 
+  # Returns true if self is inequal to o, false otherwise. 
   def !=(o)
     !(self == o)
   end
 
   private
+  # Computes polar coordinate data members from cartesian
   def compute_polar
     @r = Math.sqrt(@x ** 2 + @y ** 2)
     @ang = Math.atan2(@y, @x)
   end
 
+  # Computes cartesian coordinate data members from polar
   def compute_cartesian
     @x = @r * Math.cos(@ang)
     @y = @r * Math.sin(@ang)
   end
-end
-
-
-
-# Returns distance between two points
-def xy_dist(x0, y0, x1, y1)
-  Math.sqrt((x1 - x0) ** 2 + (y1 - y0) ** 2)
 end
