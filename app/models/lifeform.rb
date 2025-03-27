@@ -116,7 +116,7 @@ class Lifeform < Sequel::Model
 
   # Returns dataset filtering clauses that limit results to having their
   # coordinates <= the specified distance from this lifeform.
-  def where_lte_dist(dist)
+  def filter_lte_dist(ds, dist)
     # the bounding box that includes all lifeforms within dist of self
     x0 = self.x - dist
     x1 = self.x + dist
@@ -124,6 +124,7 @@ class Lifeform < Sequel::Model
     y1 = self.y + dist
     
     # these clauses leverage the indexes on x and y
+    ds.
     where(Sequel.lit('lifeforms.x <= ?', x1)).
     where(Sequel.lit('lifeforms.x >= ?', x0)).
     where(Sequel.lit('lifeforms.y <= ?', y1)).
@@ -134,8 +135,14 @@ class Lifeform < Sequel::Model
       self.x, self.y, dist))
   end
 
+  # Finds all other lifeforms within the specified distance that also match
+  # the specified filters. Returns all results in ascending order by distance.
   def find_within_dist(dist, **filters)
-    
+    ds = find_others_ds
+    ds = filter_lte_dist(ds, dist)
+    ds = ds.where(**filters) unless filters.empty?
+    ds = order_dist_asc(ds)
+    ds.all
   end
 
   # Orders dataset in ascending order by distance from this lifeform

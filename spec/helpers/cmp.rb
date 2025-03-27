@@ -6,3 +6,10 @@ def cmp_hash_vals(act, exp, tol)
         expect(v).to be_within(tol).of(exp[k])
     end
 end
+
+def cmp_objects(act, exp)
+  expect(act.count).to eq(exp.count)
+  act_ids = act.map { |o| o.id }.sort
+  exp_ids = exp.map { |o| o.id }.sort
+  expect(act_ids).to eq(exp_ids)
+end
