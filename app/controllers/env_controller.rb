@@ -21,9 +21,12 @@ class EnvController < AppController
     energy_rate = params['energy_rate'].to_f
     DB.transaction do
       env = Environment.new(width: width, height: height, energy_rate: energy_rate).save
-      pf = PlantFactory.new(env)
-      (0...num_lf).each do
-        pf.gen.save
+
+      [Zoo::Plant, Zoo::Grazer].each do |fact_class|
+        pf = fact_class.new(env)
+        (0...num_lf).each do
+            pf.gen.save
+        end
       end
       redirect to("/env/#{env.id}")
     end

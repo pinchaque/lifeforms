@@ -12,7 +12,7 @@ describe "Lifeform" do
   let(:env) { TestFactory.env(width, height, time_step) }
   let(:lf) { TestFactory.lifeform(env, species) }
 
-  def add_lf(x, y, size, energy)
+  def add_lf(x, y, size = 1.0, energy = 10.0)
     lf = Lifeform.new
     lf.environment_id = env.id
     lf.created_step = 1
@@ -116,7 +116,7 @@ describe "Lifeform" do
 
   context ".to_s" do
     it "with location" do
-      expect(lf.to_s).to eq("#{lf.id} Test Lifeform Incredible Juniper energy:10.00 size:1.00 loc:(2.22, 3.33)")
+      expect(lf.to_s).to eq("#{lf.id} Test Lifeform #{lf.name} energy:10.00 size:1.00 loc:(2.22, 3.33)")
     end
   end
 
@@ -535,6 +535,124 @@ describe "Lifeform" do
       test_overlaps(lf4, [lf2, lf3, lf5])
       test_overlaps(lf5, [lf4, lf2, lf3, lf6])
       test_overlaps(lf6, [lf3, lf5])
+    end
+  end
+
+  context ".find_closest" do
+    it "no other lifeforms" do
+      lf = add_lf(1.0, 1.0)
+      expect(lf.find_closest).to be_nil
+    end
+
+    it "one other lifeform" do
+      lf = add_lf(1.0, 1.0)
+      lf0 = add_lf(3.0, 3.0)
+      expect(lf.find_closest.id).to eq(lf0.id)
+    end
+
+    it "several other lifeforms" do
+      lf = add_lf(1.0, 1.0)
+      add_lf(0, 13.1)
+      add_lf(13.1, 0)
+      lf0 = add_lf(3.0, 3.0)
+      add_lf(3.1, 3.1)
+      add_lf(13.1, 13.1)
+      expect(lf.find_closest.id).to eq(lf0.id)
+    end
+
+    it "filters" do
+      s0 = TestFactory.species("species 0")
+      s1 = TestFactory.species("species 1")
+
+      lf = add_lf(1.0, 1.0)
+
+      lf0 = add_lf(3.0, 3.0)
+      lf0.species_id = s0.id
+      lf0.save
+
+      lf1 = add_lf(3.1, 3.1)
+      lf1.species_id = s1.id
+      lf1.save
+
+      lf2 = add_lf(13.1, 13.1)
+      lf2.species_id = s0.id
+      lf2.generation = 123
+      lf2.save
+
+      expect(lf.find_closest.id).to eq(lf0.id)
+      expect(lf.find_closest(species_id: s0.id).id).to eq(lf0.id)
+      expect(lf.find_closest(species_id: s1.id).id).to eq(lf1.id)
+      expect(lf.find_closest(generation: 123).id).to eq(lf2.id)
+    end
+  end
+
+  context ".find_within_dist" do
+    def t(lf, dist, lfs_exp, **filters)
+      lfs_act = lf.find_within_dist(dist, **filters)
+      cmp_objects(lfs_act, lfs_exp)
+    end
+
+    it "no other lifeforms" do
+      lf = add_lf(1.0, 1.0)
+      t(lf, 100.0, [])
+    end
+
+    it "one other lifeform on x axis" do
+      lf = add_lf(1.0, 1.0)
+      lf0 = add_lf(3.0, 1.0)
+      t(lf, 100.0, [lf0])
+      t(lf, 2.001, [lf0])
+      t(lf, 1.999, [])
+    end
+
+    it "one other lifeform diagonal" do
+      lf = add_lf(1.0, 1.0)
+      lf0 = add_lf(2.0, 2.0)
+      # actual dist is 1.414...
+      t(lf, 100.0, [lf0])
+      t(lf, 1.5, [lf0])
+      t(lf, 1.3, []) # tests bounding box and distance calc
+      t(lf, 0.99, [])
+    end
+
+    it "several other lifeforms" do
+      lf = add_lf(1.0, 1.0)
+      lf0 = add_lf(1.0, 13.0)
+      lf1 = add_lf(13.0, 1.0)
+      lf2 = add_lf(3.0, 3.0) # dist 2.828...
+      lf3 = add_lf(3.1, 3.1) # dist 2.969...
+      lf4 = add_lf(13.0, 13.0) # dist 16.97...
+      t(lf, 2.8, [])
+      t(lf, 2.9, [lf2])
+      t(lf, 3.0, [lf2, lf3])
+      t(lf, 12.1, [lf0, lf1, lf2, lf3])
+      t(lf, 17.0, [lf0, lf1, lf2, lf3, lf4])
+    end
+
+    it "filters" do
+      s0 = TestFactory.species("species 0")
+      s1 = TestFactory.species("species 1")
+
+      lf = add_lf(1.0, 1.0)
+
+      lf0 = add_lf(3.0, 3.0) # dist 2.828...
+      lf0.species_id = s0.id
+      lf0.save
+
+      lf1 = add_lf(3.1, 3.1)
+      lf1.species_id = s1.id
+      lf1.save
+
+      lf2 = add_lf(13.1, 13.1)
+      lf2.species_id = s0.id
+      lf2.generation = 123
+      lf2.save
+
+      t(lf, 100.0, [lf0, lf1, lf2]) # no filters
+      t(lf, 100.0, [lf2], generation: 123)
+      t(lf, 100.0, [lf0, lf2], species_id: s0.id)
+      t(lf, 100.0, [lf1], species_id: s1.id)
+      t(lf, 3.0, [lf0], species_id: s0.id)
     end
   end
 

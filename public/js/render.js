@@ -22,12 +22,26 @@ class Render {
     }
   }
 
+  lfColor(lf) {
+    switch(lf.species) {
+      case 'Plant':
+        return 'green'
+        break;
+      case 'Grazer':
+        return 'blue'
+        break;
+      default:
+        return 'black'
+        break;
+    }
+  }
+
   addLifeform(lf) {
     var circle = new Konva.Circle({
       x: lf.x * this.zf,
       y: lf.y * this.zf,
       radius: lf.size / 2.0 * this.zf,
-      fill: 'green',
+      fill: this.lfColor(lf),
       stroke: 'black',
       opacity: 0.5,
       strokeWidth: 1

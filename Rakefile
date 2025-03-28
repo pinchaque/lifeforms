@@ -27,9 +27,12 @@ namespace "sim" do
         num_lf = args[:n].to_i
         DB.transaction do
             env = EnvironmentFactory.new.gen.save
-            pf = PlantFactory.new(env)
-            (0...num_lf).each do
-                pf.gen.save
+
+            [Zoo::Plant, Zoo::Grazer].each do |fact_class|
+                pf = fact_class.new(env)
+                (0...num_lf).each do
+                    pf.gen.save
+                end
             end
             Log.info("Created simulation: #{env.to_s}")
         end
