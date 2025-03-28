@@ -5,15 +5,21 @@ module Zoo
       [
         Skill::MoveToFood,
         Skill::Eat,
-        Skill::Grow,
         Skill::Reproduce
       ]
     end
 
     def get_program
-      e_seq(
-        e_skill(Skill::MoveToFood.id),
-        e_skill(Skill::Eat.id)
+      e_if( # REPRODUCTION
+        # IF: We have good energy reserves
+        e_gt(e_lookup(:lf_energy), e_mul(e_const(100.0), e_lookup(:lf_metabolic_energy))), 
+        # THEN: Reproduce
+        e_skill(Skill::Reproduce.id),
+        # ELSE: Try to get food
+        e_seq(
+          e_skill(Skill::MoveToFood.id),
+          e_skill(Skill::Eat.id),
+        )
       )
     end
 
