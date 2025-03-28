@@ -48,9 +48,6 @@ module Skill
       # consume in a turn; and (b) the prey's current energy level
       energy_consumed = [ctx.value(:eat_max_energy), lf_prey.energy].min
 
-      # Log.trace("debug", lf: lf, eat_max_energy: ctx.value(:eat_max_energy),
-      #   prey_energy: lf_prey.energy, energy_consumed: energy_consumed)
-
       old_energy = lf.energy
 
       lf.energy += energy_consumed

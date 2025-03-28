@@ -12,8 +12,9 @@ module Zoo
 
     def get_program
       e_seq(
-        e_true
-        )
+        e_skill(Skill::MoveToFood.id),
+        e_skill(Skill::Eat.id)
+      )
     end
 
     def set_attrs(lf)

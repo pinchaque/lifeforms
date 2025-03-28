@@ -117,12 +117,36 @@ describe "MoveToFood" do
       end      
     end
 
+    context "prey within range, starts at 1,1" do
+      it_behaves_like "MoveToFood.eval" do
+        let(:lf) { add_lf(1.0, 1.0, energy, species_grazer) }
+        let(:other_lfs) { [
+          add_lf(2.0, 1.0, energy, species_plant)
+        ] }
+        let(:coord_exp) { Coord.xy(2.0, 1.0) }
+        let(:ret_exp) { 1.0 }
+        let(:egy_exp) { 4.5 }
+      end      
+    end
+
     context "prey outside of range, limited by max_dist" do
       it_behaves_like "MoveToFood.eval" do
         let(:other_lfs) { [
           add_lf(6.0, 0.0, energy, species_plant)
         ] }
         let(:coord_exp) { Coord.xy(2.0, 0.0) }
+        let(:ret_exp) { 2.0 }
+        let(:egy_exp) { 3.0 }
+      end            
+    end
+
+    context "prey outside of range, limited by max_dist, starts at 1,1" do
+      it_behaves_like "MoveToFood.eval" do
+        let(:lf) { add_lf(1.0, 1.0, energy, species_grazer) }
+        let(:other_lfs) { [
+          add_lf(7.0, 1.0, energy, species_plant)
+        ] }
+        let(:coord_exp) { Coord.xy(3.0, 1.0) }
         let(:ret_exp) { 2.0 }
         let(:egy_exp) { 3.0 }
       end            
