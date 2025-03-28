@@ -57,9 +57,8 @@ module Skill
         return 0.0
       end
       
-
-      Log.trace("[MoveToFood] My Location", lf: lf, x: lf.x, y: lf.y)
-      Log.trace("[MoveToFood] Prey Found", lf: lf, name: lf_prey.name, x: lf_prey.x, y: lf_prey.y)
+      #Log.trace("[MoveToFood] My Location", lf: lf, x: lf.x, y: lf.y)
+      #Log.trace("[MoveToFood] Prey Found", lf: lf, name: lf_prey.name, x: lf_prey.x, y: lf_prey.y)
 
 
       coord_lf = lf.coord
@@ -68,7 +67,7 @@ module Skill
       # figure out the angle and distance to the prey
       vec_to_prey = coord_prey - coord_lf
 
-      Log.trace("[MoveToFood] vec_to_prey", lf: lf, x: vec_to_prey.x, y: vec_to_prey.y, r: vec_to_prey.r, ang: vec_to_prey.ang)
+      #Log.trace("[MoveToFood] vec_to_prey", lf: lf, x: vec_to_prey.x, y: vec_to_prey.y, r: vec_to_prey.r, ang: vec_to_prey.ang)
 
       # max amount we can move this turn
       max_move_dist = max_dist(ctx)
@@ -76,13 +75,13 @@ module Skill
       # actual move distance is lesser of where the prey is and our max dist
       actual_move_dist = [vec_to_prey.r, max_move_dist].min
 
-      Log.trace("[MoveToFood] Dist calc", lf: lf, max_move_dist: max_move_dist, prey_dist: vec_to_prey.r, actual_move_dist: actual_move_dist)
+      #Log.trace("[MoveToFood] Dist calc", lf: lf, max_move_dist: max_move_dist, prey_dist: vec_to_prey.r, actual_move_dist: actual_move_dist)
 
       # this is the coord we're moving to - same angle as the vector but the
       # distance is tempered by our limitations
       coord_lf_new = coord_lf + Coord.polar(actual_move_dist, vec_to_prey.ang)
 
-      Log.trace("[MoveToFood] coord_lf_new", lf: lf, x: coord_lf_new.x, y: coord_lf_new.y, r: coord_lf_new.r, ang: coord_lf_new.ang)
+      #Log.trace("[MoveToFood] coord_lf_new", lf: lf, x: coord_lf_new.x, y: coord_lf_new.y, r: coord_lf_new.r, ang: coord_lf_new.ang)
 
       energy_used = actual_move_dist * ctx.value(:move_energy)
 
