@@ -27,7 +27,7 @@ module Zoo
       lf.energy = 100.0
       lf.size = 1.0
       lf.initial_size = 1.0
-      lf.energy_base = 1.0
+      lf.energy_base = 10.0
       lf.energy_exp = 3.0      
     end
   end

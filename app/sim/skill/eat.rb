@@ -6,8 +6,8 @@ module Skill
         ParamDefNormal(
           id: :eat_max_energy,
           desc: "Max energy lifeform can consume in a turn",
-          mean: 40.0,
-          stddev: 10.0,
+          mean: 60.0,
+          stddev: 12.0,
           min: 1.0
         ),
       ]
