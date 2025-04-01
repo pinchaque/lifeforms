@@ -23,7 +23,7 @@ class Render {
   }
 
   addDefaultShape(lf) {
-    shape = new Konva.Circle({
+    let shape = new Konva.Circle({
       x: lf.x * this.zf,
       y: lf.y * this.zf,
       radius: lf.size / 2.0 * this.zf,
@@ -41,8 +41,8 @@ class Render {
     const imageObj = new Image();
     imageObj.onload = function () {
       const kImg = new Konva.Image({
-        x: lf.x * zf,
-        y: lf.y * zf,
+        x: (lf.x - (lf.size / 2.0)) * zf,
+        y: (lf.y - (lf.size / 2.0)) * zf,
         image: imageObj,
         width: lf.size * zf,
         height: lf.size * zf,
@@ -59,7 +59,7 @@ class Render {
       case 'Plant':
         return this.addImage(lf, "/images/tree.png")
         break;
-      case 'Grazer':
+      case 'Grazerx':
         return this.addImage(lf, "/images/cow.png")
         break;
       default:
