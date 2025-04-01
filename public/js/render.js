@@ -22,8 +22,8 @@ class Render {
     }
   }
 
-  defaultShape(lf) {
-    new Konva.Circle({
+  addDefaultShape(lf) {
+    shape = new Konva.Circle({
       x: lf.x * this.zf,
       y: lf.y * this.zf,
       radius: lf.size / 2.0 * this.zf,
@@ -32,38 +32,40 @@ class Render {
       opacity: 0.5,
       strokeWidth: 1
     });
+    this.layer.add(shape)
   }
 
-  getShape(lf) {
-    switch(lf.species) {
-      case 'Plant':
-        return Konva.Image.fromURL("/images/tree.png", function(image){});
-        break;
-      case 'Grazer':
-        return Konva.Image.fromURL("/images/cow.png", function(image){});
-        break;
-      default:
-        return this.defaultShape(lf)
-        break;
-    }
+  addImage(lf, imgURL) {
+    let layer = this.layer
+    let zf = this.zf
+    const imageObj = new Image();
+    imageObj.onload = function () {
+      const kImg = new Konva.Image({
+        x: lf.x * zf,
+        y: lf.y * zf,
+        image: imageObj,
+        width: lf.size * zf,
+        height: lf.size * zf,
+        opacity: 0.5
+      });
+    
+      layer.add(kImg);
+    };
+    imageObj.src = imgURL;
   }
 
   addLifeform(lf) {
-    let imgURL = "/images/tree.png"
-    let layer = this.layer
-    const imageObj = new Image();
-    imageObj.onload = function () {
-      const tree = new Konva.Image({
-        x: 50,
-        y: 50,
-        image: imageObj,
-        width: 100,
-        height: 100
-      });
-    
-      layer.add(tree);
-    };
-    imageObj.src = imgURL;
+    switch(lf.species) {
+      case 'Plant':
+        return this.addImage(lf, "/images/tree.png")
+        break;
+      case 'Grazer':
+        return this.addImage(lf, "/images/cow.png")
+        break;
+      default:
+        return this.addDefaultShape(lf)
+        break;
+    }
   }
 
   render() {
