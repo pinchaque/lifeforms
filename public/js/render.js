@@ -22,32 +22,48 @@ class Render {
     }
   }
 
-  lfColor(lf) {
+  defaultShape(lf) {
+    new Konva.Circle({
+      x: lf.x * this.zf,
+      y: lf.y * this.zf,
+      radius: lf.size / 2.0 * this.zf,
+      fill: 'blue',
+      stroke: 'black',
+      opacity: 0.5,
+      strokeWidth: 1
+    });
+  }
+
+  getShape(lf) {
     switch(lf.species) {
       case 'Plant':
-        return 'green'
+        return Konva.Image.fromURL("/images/tree.png", function(image){});
         break;
       case 'Grazer':
-        return 'blue'
+        return Konva.Image.fromURL("/images/cow.png", function(image){});
         break;
       default:
-        return 'black'
+        return this.defaultShape(lf)
         break;
     }
   }
 
   addLifeform(lf) {
-    var circle = new Konva.Circle({
-      x: lf.x * this.zf,
-      y: lf.y * this.zf,
-      radius: lf.size / 2.0 * this.zf,
-      fill: this.lfColor(lf),
-      stroke: 'black',
-      opacity: 0.5,
-      strokeWidth: 1
-    });
-
-    this.layer.add(circle);
+    let imgURL = "/images/tree.png"
+    let layer = this.layer
+    const imageObj = new Image();
+    imageObj.onload = function () {
+      const tree = new Konva.Image({
+        x: 50,
+        y: 50,
+        image: imageObj,
+        width: 100,
+        height: 100
+      });
+    
+      layer.add(tree);
+    };
+    imageObj.src = imgURL;
   }
 
   render() {
