@@ -59,7 +59,7 @@ class Render {
       case 'Plant':
         return this.addImage(lf, "/images/tree.png")
         break;
-      case 'Grazerx':
+      case 'Grazer':
         return this.addImage(lf, "/images/cow.png")
         break;
       default:
