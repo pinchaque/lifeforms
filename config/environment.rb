@@ -5,9 +5,10 @@ APPDIR = File.expand_path('../app', File.dirname(__FILE__))
 TMPDIR = File.expand_path('../tmp', File.dirname(__FILE__))
 DBDIR = File.expand_path('../db', File.dirname(__FILE__))
 CFGDIR = File.expand_path('../config', File.dirname(__FILE__))
+LOGDIR = File.expand_path('../log', File.dirname(__FILE__))
 
 def db_conn
-    Sequel.connect(YAML.load_file("#{CFGDIR}/database.yml"))
+  Sequel.connect(YAML.load_file("#{CFGDIR}/database.yml"))
 end
 
 DB = db_conn()
@@ -17,5 +18,8 @@ Dir["#{APPDIR}/models/*.rb"].each {|file| require file }
 Dir["#{APPDIR}/sim/**/*.rb"].each {|file| require file }
 Dir["#{APPDIR}/controllers/*.rb"].each {|file| require file }
 
-LogRouter = Scribe::Router.new(Scribe::Level::INFO, Scribe::Formatter.new, $stderr)
-Log = Scribe::Logger.new(LogRouter)
+Log = Scribe::Logger.new(
+  Scribe::Router.new(
+    Scribe::Level::TRACE, 
+    Scribe::Formatter.new, 
+    Scribe::Outputter::File.new(LOGDIR, "app")))

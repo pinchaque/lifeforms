@@ -1,6 +1,7 @@
 require_relative './config/environment'
 
-LogRouter.max_level = Scribe::Level::TRACE
+# Write all the output to stderr
+Log.routers << Scribe::Router.new(Scribe::Level::TRACE, Scribe::Formatter.new, Scribe::Outputter::Stderr.new)
 
 ######################################################################
 # Helper functions
