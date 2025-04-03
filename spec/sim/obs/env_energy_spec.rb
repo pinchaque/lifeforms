@@ -1,6 +1,5 @@
 describe "EnvEnergyAbsorb" do
   let(:tol) { 0.0001 }
-  let(:species) { TestFactory.species }
   let(:env_energy_rate) { 10.0 }
   let(:env) { TestFactory.env(energy_rate: env_energy_rate) }
   let(:klass) { Obs::EnvEnergy }
@@ -8,7 +7,7 @@ describe "EnvEnergyAbsorb" do
   context "energy calcs" do
 
     def add_lf(**attrs)
-      TestFactory.lifeform(env, species, **attrs) 
+      TestFactory.lifeform(environment_id: env.id, **attrs) 
     end
 
     it "single lifeform" do

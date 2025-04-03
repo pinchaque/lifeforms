@@ -10,7 +10,11 @@ describe "Eat" do
   let(:eat_max_energy) { 3.0 }
 
   def add_lf(x, y, energy, species)
-    l = TestFactory.lifeform(env, species, x: x, y: y, energy: energy) 
+    l = TestFactory.lifeform(environment_id: env.id, 
+      species_id: species.id, 
+      x: x, 
+      y: y, 
+      energy: energy) 
     l.register_skill(klass)
     l.params.fetch(:eat_max_energy).set(eat_max_energy)
     l.save

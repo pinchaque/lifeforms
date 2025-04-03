@@ -1,13 +1,12 @@
 describe "Context" do
   let(:tol) { 0.0001 }
   let(:ret) { "Context return value" }
-  let(:species) { TestFactory.species }
   let(:env) { TestFactory.env }
   let(:obs_id) { :ctx_obs_id }
   let(:obs_val) { 1.23 }
   ContextTestObs1 = TestFactory.obs(1.23)
   let(:lf) { 
-    l = TestFactory.lifeform(env, species) 
+    l = TestFactory.lifeform(environment_id: env.id) 
     l.observations[obs_id] = ContextTestObs1
     l
   }

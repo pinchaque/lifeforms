@@ -1,6 +1,5 @@
 describe "Shrink" do
   let(:tol) { 0.0001 }
-  let(:species) { TestFactory.species }
   let(:env_energy_rate) { 10.0 }
   let(:env) { TestFactory.env(energy_rate: env_energy_rate) }
   let(:klass) { Skill::Shrink }
@@ -10,10 +9,9 @@ describe "Shrink" do
 
   context "Generic Lifeform" do
     let(:lf) { 
-      l = TestFactory.lifeform(env, species) 
+      l = TestFactory.lifeform(environment_id: env.id, size: init_size)
       l.register_skill(klass)
       l.params.fetch(:shrink_perc).set(shrink_perc)
-      l.size = init_size
       l.save
       l
     }

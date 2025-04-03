@@ -1,6 +1,5 @@
 describe "Reproduce" do
   let(:tol) { 0.0001 }
-  let(:species) { TestFactory.species }
   let(:env_energy_rate) { 10.0 }
   let(:time_step) { 5 }
   let(:env) { TestFactory.env(time_step: time_step, energy_rate: env_energy_rate) }
@@ -12,12 +11,10 @@ describe "Reproduce" do
   let(:repro_energy_inherit_perc) { 0.8 }
 
   let(:lf) { 
-    l = TestFactory.lifeform(env, species) 
+    l = TestFactory.lifeform(environment_id: env.id, size: size_parent, energy: energy_parent)
     l.register_skill(klass)
     l.params.fetch(:repro_num_offspring).set(repro_num_offspring)
     l.params.fetch(:repro_energy_inherit_perc).set(repro_energy_inherit_perc)
-    l.size = size_parent
-    l.energy = energy_parent
     l.save
     l
   }
