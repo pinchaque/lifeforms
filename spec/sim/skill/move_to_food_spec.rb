@@ -10,11 +10,7 @@ describe "MoveToFood" do
   let(:move_energy) { 3.0 }
 
   def add_lf(x, y, energy, species)
-    l = TestFactory.lifeform(env, species) 
-    l.x = x
-    l.y = y
-    l.size = 1.0
-    l.energy = energy
+    l = TestFactory.lifeform(env, species, x: x, y: y, energy: energy) 
     l.register_skill(klass)
     l.params.fetch(:move_dist).set(move_dist)
     l.params.fetch(:move_energy).set(move_energy)

@@ -7,18 +7,12 @@ describe "EnvEnergyAbsorb" do
 
   context "energy calcs" do
 
-    def add_lf(x, y, size, energy)
-      l = TestFactory.lifeform(env, species) 
-      l.x = x
-      l.y = y
-      l.size = size
-      l.energy = energy
-      l.save
-      l
+    def add_lf(**attrs)
+      TestFactory.lifeform(env, species, **attrs) 
     end
 
     it "single lifeform" do
-      lf = add_lf(10.0, 10.0, 1.0, 20.0)
+      lf = add_lf(x: 10.0, y: 10.0, size: 1.0, energy: 20.0)
       ctx = lf.context
 
       # sanity-check
@@ -37,8 +31,8 @@ describe "EnvEnergyAbsorb" do
     end
 
     it "two lifeforms, no overlap" do
-      lf0 = add_lf(10.0, 10.0, 1.0, 20.0)
-      lf1 = add_lf(20.0, 10.0, 1.0, 20.0)
+      lf0 = add_lf(x: 10.0, y: 10.0, size: 1.0, energy: 20.0)
+      lf1 = add_lf(x: 20.0, y: 10.0, size: 1.0, energy: 20.0)
       ctx0 = lf0.context
       ctx1 = lf1.context
 
@@ -57,8 +51,8 @@ describe "EnvEnergyAbsorb" do
     end
 
     it "two lifeforms, overlap" do
-      lf0 = add_lf(0.0, 0.0, 2.0, 20.0)
-      lf1 = add_lf(1.0, 0.0, 2.0, 20.0)
+      lf0 = add_lf(x: 0.0, y: 0.0, size: 2.0, energy: 20.0)
+      lf1 = add_lf(x: 1.0, y: 0.0, size: 2.0, energy: 20.0)
       ctx0 = lf0.context
       ctx1 = lf1.context
       
@@ -91,11 +85,11 @@ describe "EnvEnergyAbsorb" do
     end
 
     it "many lifeforms with overlap" do
-      lf0 = add_lf(0.0, 0.0, 2.0, 20.0)
-      lf1 = add_lf(1.0, 0.0, 2.0, 20.0)
-      lf2 = add_lf(0.5, 0.5, 2.0, 20.0)
-      lf3 = add_lf(0.6, 0.6, 2.0, 20.0)
-      lf4 = add_lf(0.4, 0.4, 2.0, 20.0)
+      lf0 = add_lf(x: 0.0, y: 0.0, size: 2.0, energy: 20.0)
+      lf1 = add_lf(x: 1.0, y: 0.0, size: 2.0, energy: 20.0)
+      lf2 = add_lf(x: 0.5, y: 0.5, size: 2.0, energy: 20.0)
+      lf3 = add_lf(x: 0.6, y: 0.6, size: 2.0, energy: 20.0)
+      lf4 = add_lf(x: 0.4, y: 0.4, size: 2.0, energy: 20.0)
     
       exp_egy = Math::PI * env_energy_rate
 
