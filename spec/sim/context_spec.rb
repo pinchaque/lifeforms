@@ -2,10 +2,7 @@ describe "Context" do
   let(:tol) { 0.0001 }
   let(:ret) { "Context return value" }
   let(:species) { TestFactory.species }
-  let(:width) { 100 }
-  let(:height) { 100 }
-  let(:time_step) { 3 }
-  let(:env) { TestFactory.env(width, height, time_step) }
+  let(:env) { TestFactory.env }
   let(:obs_id) { :ctx_obs_id }
   let(:obs_val) { 1.23 }
   ContextTestObs1 = TestFactory.obs(1.23)

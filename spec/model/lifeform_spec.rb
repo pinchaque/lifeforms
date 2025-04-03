@@ -9,7 +9,7 @@ describe "Lifeform" do
   let(:width) { 100 }
   let(:height) { 100 }
   let(:time_step) { 3 }
-  let(:env) { TestFactory.env(width, height, time_step) }
+  let(:env) { TestFactory.env(width: width, height: height, time_step: time_step) }
   let(:lf) { TestFactory.lifeform(env, species) }
 
   def add_lf(x, y, size = 1.0, energy = 10.0)

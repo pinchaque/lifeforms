@@ -1,6 +1,6 @@
 describe "MoveToFood" do
   let(:tol) { 0.0001 }
-  let(:env) { TestFactory.env(100, 100, 3, 10) }
+  let(:env) { TestFactory.env }
   let(:klass) { Skill::MoveToFood }
   let(:skill_id) { klass.id }
   let(:energy) { 10.0 }

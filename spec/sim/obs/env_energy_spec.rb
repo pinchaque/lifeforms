@@ -2,7 +2,7 @@ describe "EnvEnergyAbsorb" do
   let(:tol) { 0.0001 }
   let(:species) { TestFactory.species }
   let(:env_energy_rate) { 10.0 }
-  let(:env) { TestFactory.env(100, 100, 3, env_energy_rate) }
+  let(:env) { TestFactory.env(energy_rate: env_energy_rate) }
   let(:klass) { Obs::EnvEnergy }
 
   context "energy calcs" do
