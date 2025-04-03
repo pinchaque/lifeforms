@@ -17,11 +17,12 @@ class TestFactory
     Environment.new(**(defaults.merge(attrs))).save
   end
 
-  def self.lifeform(e, s, **attrs)
+  def self.lifeform(environment_id:, **attrs)
+    # use our test species if none specified
+    attrs[:species_id] = TestFactory.species.id unless attrs.key?(:species_id)
     defaults = {
-      environment_id: e.id,
-      species_id: s.id,
-      created_step: e.time_step,
+      environment_id: environment_id,
+      created_step: 0,
       energy: 10.0,
       size: 1.0,
       generation: 2,
@@ -33,7 +34,6 @@ class TestFactory
     }
     l = Lifeform.new(**(defaults.merge(attrs)))
     l.set_random_name
-    l.mark_born
     l.save
     l
   end

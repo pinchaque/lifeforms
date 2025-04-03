@@ -7,14 +7,8 @@ describe "EnvStat" do
 
 
 
-  def add_lf(x, y, size = 1.0, energy = 10.0)
-    TestFactory.lifeform(env, species, 
-      created_step: 1,
-      energy: energy,
-      size: size,
-      x: x,
-      y: y,
-      )
+  def add_lf(species_id:, **attrs)
+    TestFactory.lifeform(environment_id: env.id, **attrs)
   end
 
   context "#snapshot_from_env" do
