@@ -24,3 +24,17 @@ end
 def class_from_name(name)
   Object.const_get(name)
 end
+
+# Returns true if val is numeric and false otherwise
+def is_numeric?(val)
+  begin
+    Kernel.Float(val)
+    return true
+  rescue ArgumentError
+    # Float("123.0_badstring") #=> ArgumentError: invalid value for Float(): "123.0_badstring"
+    return false
+  rescue TypeError
+    # Float(nil) => TypeError: can't convert nil into Float
+    return false
+  end
+end

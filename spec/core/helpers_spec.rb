@@ -75,4 +75,21 @@ describe "Helpers" do
       expect(klass.print).to eq("double nested class")
     end
   end
+
+  context "is_numeric?" do
+    [
+      [1, true],
+      [1.234, true],
+      [-1.234, true],
+      [nil, false],
+      ["", false],
+      ["foobar", false],
+      ["123.0badbad", false],
+      ["123", true],
+    ].each do |ex|
+      it "is_numeric?(#{ex[0]})" do
+        expect(is_numeric?(ex[0])).to be ex[1]
+      end
+    end
+  end
 end
