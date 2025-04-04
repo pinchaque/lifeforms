@@ -35,7 +35,7 @@ class EnvStat  < Sequel::Model
           sum(case when lf.died_step is null then lf.energy else 0.0 end) as sum_energy,
           max(lf.generation) as max_generation,
           avg((coalesce(lf.died_step, e.time_step) - lf.created_step)::float) as avg_age, 
-          avg(case when lf.died_step is null then (e.time_step - lf.created_step)::float else null end) as avg_age_living)
+          avg(case when lf.died_step is null then (e.time_step - lf.created_step)::float else null end) as avg_age_living
         from environments e
         inner join lifeforms lf on lf.environment_id = e.id
         where e.id = ?
