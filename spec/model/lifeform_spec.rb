@@ -33,7 +33,7 @@ describe "Lifeform" do
       }
 
       attr_act = lf.attrs
-      cmp_hash_vals(attr_act, attr_exp, tol)
+      cmp_hash(attr_act, attr_exp, tol)
     end
   end
 

@@ -1,14 +1,28 @@
-# Compares two hashes with arbitary keys and numeric values
-def cmp_hash_vals(act, exp, tol)
-    expect(act.keys.sort).to eq(exp.keys.sort)
-    expect(act.values.sum).to be_within(tol).of(exp.values.sum)
-    act.each do |k, v|
-      expect(v).to be_within(tol).of(exp[k])
+# Compares two hashes with arbitary keys and a mix of value types. If the 
+# expected values are numeric then they are compared with a tolerance
+# to allow for small floating point differences.
+def cmp_hash(act, exp, tol = 0.00001)
+  expect(act).to satisfy("have the keys #{exp.keys.sort}") do |act_keys|
+    act.keys.all? { |k| exp.key?(k) } &&
+    exp.keys.all? { |k| act.key?(k) }
+  end
+
+  act.each do |k, v_act|
+    v_exp = exp[k]
+
+    if is_numeric?(v_exp)
+      expect("actual[#{k}] = #{v_act}").to satisfy("be within #{tol} of #{v_exp}") do |str|
+        (v_exp - v_act).abs <= tol
+      end
+    else
+      expect("actual[#{k}] = #{v_act}").to satisfy("be #{v_exp}") do |str|
+        v_act == v_exp
+      end
     end
-    # TODO it would be really helpful if this printed out the details of which
-    # key didn't match
+  end
 end
 
+# Compares two lists of objects with IDs.
 def cmp_objects(act, exp)
   expect(act.count).to eq(exp.count)
   act_ids = act.map { |o| o.id }.sort
