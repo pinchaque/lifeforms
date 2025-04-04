@@ -11,7 +11,8 @@ def cmp_hash(act, exp, tol = 0.00001)
     v_exp = exp[k]
 
     if is_numeric?(v_exp)
-      expect("actual[#{k}] = #{v_act}").to satisfy("be within #{tol} of #{v_exp}") do |str|
+      s = sprintf("be within %f of #{v_exp}", tol)
+      expect("actual[#{k}] = #{v_act}").to satisfy(s) do |str|
         (v_exp - v_act).abs <= tol
       end
     else

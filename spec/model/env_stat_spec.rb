@@ -1,6 +1,5 @@
 
 describe "EnvStat" do
-  let(:tol) { 0.0001 }
   let(:time_step) { 3 }
   let(:env) { TestFactory.env(time_step: time_step) }
   let(:plant) { TestFactory.species('Plant') }
@@ -49,7 +48,7 @@ describe "EnvStat" do
       stats_act = ess[0].values
       stats_act.keep_if { |k, v| stats_exp.key?(k) }
 
-      expect(stats_act).to eq(stats_exp)
+      cmp_hash(stats_act, stats_exp)
     end
   end
 end
