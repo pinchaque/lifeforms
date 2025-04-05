@@ -10,13 +10,19 @@ def cmp_hash(act, exp, tol = 0.00001)
   act.each do |k, v_act|
     v_exp = exp[k]
 
-    if is_numeric?(v_exp)
+    v_act_str = v_act.nil? ? "<nil>" : ((v_act == "") ? "<empty>" : v_act.to_s)
+
+    if v_exp.nil?
+      expect("actual[#{k}] = #{v_act_str}").to satisfy("be nil") do |str|
+        v_exp.nil?
+      end
+    elsif is_numeric?(v_exp)
       s = sprintf("be within %f of #{v_exp}", tol)
-      expect("actual[#{k}] = #{v_act}").to satisfy(s) do |str|
-        (v_exp - v_act).abs <= tol
+      expect("actual[#{k}] = #{v_act_str}").to satisfy(s) do |str|
+        !v_act.nil? && ((v_exp - v_act).abs <= tol)
       end
     else
-      expect("actual[#{k}] = #{v_act}").to satisfy("be #{v_exp}") do |str|
+      expect("actual[#{k}] = #{v_act_str}").to satisfy("be #{v_exp}") do |str|
         v_act == v_exp
       end
     end

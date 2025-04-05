@@ -10,6 +10,12 @@ describe "EnvStat" do
   end
 
   context "#snapshot_from_env" do
+
+    def t(stats_act, stats_exp)
+      stats_act.keep_if { |k, v| stats_exp.key?(k) }
+      cmp_hash(stats_act, stats_exp)
+    end
+
     it "no lifeforms" do
       ess = EnvStat.where(environment_id: env.id).all
       expect(ess.count).to eq(0)
@@ -45,10 +51,88 @@ describe "EnvStat" do
         avg_age: 1.0,
         avg_age_living: 0.5
       }
-      stats_act = ess[0].values
-      stats_act.keep_if { |k, v| stats_exp.key?(k) }
+      t(ess[0].values, stats_exp)
+    end
 
-      cmp_hash(stats_act, stats_exp)
+    it "two species, living and dead" do
+      ess = EnvStat.where(environment_id: env.id).all
+      expect(ess.count).to eq(0)
+
+      add_lf(species_id: plant.id, created_step: 2, energy: 10.0, generation: 1)
+      add_lf(species_id: plant.id, created_step: 3, energy: 10.0, generation: 3)
+      add_lf(species_id: grazer.id, created_step: 1, died_step: 2, energy: 10.0, generation: 1)
+      add_lf(species_id: grazer.id, created_step: 1, energy: 10.0, generation: 1)
+      
+      EnvStat.snapshot_from_env(env)
+
+      plant_ds = EnvStat.where(environment_id: env.id, time_step: time_step, species_id: plant.id)
+      grazer_ds = EnvStat.where(environment_id: env.id, time_step: time_step, species_id: grazer.id)
+
+      expect(plant_ds.count).to eq(1)
+      expect(grazer_ds.count).to eq(1)
+
+      plant_stats_exp = { 
+        environment_id: env.id,
+        time_step: 3,
+        species_id: plant.id,
+        count_living: 2,
+        count_dead: 0,
+        count_born: 1,
+        count_died: 0,
+        sum_energy: 20.0,
+        max_generation: 3,
+        avg_age: 0.5,
+        avg_age_living: 0.5
+      }
+
+      grazer_stats_exp = { 
+        environment_id: env.id,
+        time_step: 3,
+        species_id: grazer.id,
+        count_living: 1,
+        count_dead: 1,
+        count_born: 0,
+        count_died: 0,
+        sum_energy: 10.0,
+        max_generation: 1,
+        avg_age: 1.5,
+        avg_age_living: 2.0
+      }
+
+      t(plant_ds.first.values, plant_stats_exp)
+      t(grazer_ds.first.values, grazer_stats_exp)
+    end
+
+    it "single species, all dead" do
+      ess = EnvStat.where(environment_id: env.id).all
+      expect(ess.count).to eq(0)
+
+      add_lf(species_id: plant.id, created_step: 1, died_step: 2, energy: 10.0, generation: 2)
+      add_lf(species_id: plant.id, created_step: 1, died_step: 3, energy: 10.0, generation: 1)
+      
+      EnvStat.snapshot_from_env(env)
+      ess = EnvStat.where(environment_id: env.id).all
+
+      expect(ess.count).to eq(1)
+
+      stats_exp = { 
+        environment_id: env.id,
+        time_step: 3,
+        species_id: plant.id,
+        count_living: 0,
+        count_dead: 2,
+        count_born: 0,
+        count_died: 1,
+        sum_energy: nil,
+        max_generation: 2,
+        avg_age: 1.5,
+        avg_age_living: nil
+      }
+      t(ess[0].values, stats_exp)
+    end
+
+    it "multiple time_step snapshots" do
+      expect(true).to eq(4)
     end
   end
 end
