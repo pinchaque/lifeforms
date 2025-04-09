@@ -198,6 +198,22 @@ describe "EnvStat" do
       }
       t(ess4.values, stats4_exp)
     end
+
+    it "handles duplicate snapshots" do
+      ess = EnvStat.where(environment_id: env.id).all
+      expect(ess.count).to eq(0)
+
+      add_lf(species_id: plant.id, created_step: 2, energy: 10.0, generation: 1)
+      
+      EnvStat.snapshot_from_env(env)
+      ess = EnvStat.where(environment_id: env.id).all
+      expect(ess.count).to eq(1)
+
+      # duplicate
+      EnvStat.snapshot_from_env(env)
+      ess = EnvStat.where(environment_id: env.id).all
+      expect(ess.count).to eq(1)
+    end
   end
 
   context ".to_s" do

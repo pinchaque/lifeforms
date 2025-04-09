@@ -1,22 +1,27 @@
 class EnvStat  < Sequel::Model
   plugin :timestamps, :force => true, :update_on_create => true
 
+  # Returns the Species associated with this EnvStat
   def species
     Species.where(id: self.species_id).first
   end
 
+  # Returns the total number of Lifeforms (living + dead)
   def count_lifeforms
     self.count_dead + self.count_living
   end
 
+  # Returns the ratio of Lifeforms that are alive
   def perc_alive
     self.count_living.to_f / self.count_lifeforms
   end
 
+  # Returns the ratio of Lifeforms that are dead
   def perc_dead
     1.0 - self.perc_alive
   end
 
+  # Formats this EnvStat as a string for user display
   def to_s
     sprintf("[%s] Alive: %d (+%d -%d) | Egy: %.1f | Age: %.1f | Dead: %d (%.1f%%)",
       self.species.name,
