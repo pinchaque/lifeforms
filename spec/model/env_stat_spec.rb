@@ -132,8 +132,70 @@ describe "EnvStat" do
     end
 
     it "multiple time_step snapshots" do
-      expect(true).to eq(4)
+      ess = EnvStat.where(environment_id: env.id).all
+      expect(ess.count).to eq(0)
+
+
+      lf0 = add_lf(species_id: plant.id, created_step: 1, energy: 10.0, generation: 2)
+      lf1 = add_lf(species_id: plant.id, created_step: 1, energy: 10.0, generation: 1)
+      env.time_step = 3
+      env.save
+
+      # Snapshot 1
+      EnvStat.snapshot_from_env(env)
+
+      lf0.died_step = 4
+      lf0.energy = 0.0
+      lf0.save
+
+      lf1.energy = 15.0
+      lf1.save
+
+      add_lf(species_id: plant.id, created_step: 4, energy: 16.0, generation: 3)
+
+      env.time_step = 4
+      env.save
+
+      # Snapshot 2
+      EnvStat.snapshot_from_env(env)
+
+      # 2 plant snapshots at different steps
+      expect(EnvStat.where(environment_id: env.id).count).to eq(2)
+
+      ess3 = EnvStat.where(environment_id: env.id, time_step: 3).first
+      expect(ess3).not_to be_nil
+
+      stats3_exp = { 
+        environment_id: env.id,
+        time_step: 3,
+        species_id: plant.id,
+        count_living: 2,
+        count_dead: 0,
+        count_born: 0,
+        count_died: 0,
+        sum_energy: 20.0,
+        max_generation: 2,
+        avg_age: 2.0,
+        avg_age_living: 2.0
+      }
+      t(ess3.values, stats3_exp)
+
+      ess4 = EnvStat.where(environment_id: env.id, time_step: 4).first
+      expect(ess4).not_to be_nil
+      stats4_exp = { 
+        environment_id: env.id,
+        time_step: 4,
+        species_id: plant.id,
+        count_living: 2,
+        count_dead: 1,
+        count_born: 1,
+        count_died: 1,
+        sum_energy: 31.0,
+        max_generation: 3,
+        avg_age: (3.0 + 3.0 + 0.0) / 3.0,
+        avg_age_living: (3.0 + 0.0) / 2.0
+      }
+      t(ess4.values, stats4_exp)
     end
   end
 end
-
