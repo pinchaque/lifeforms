@@ -1,6 +1,34 @@
 class EnvStat  < Sequel::Model
   plugin :timestamps, :force => true, :update_on_create => true
 
+  def species
+    Species.where(id: self.species_id).first
+  end
+
+  def count_lifeforms
+    self.count_dead + self.count_living
+  end
+
+  def perc_alive
+    self.count_living.to_f / self.count_lifeforms
+  end
+
+  def perc_dead
+    1.0 - self.perc_alive
+  end
+
+  def to_s
+    sprintf("[%s] Alive: %d (+%d -%d) | Egy: %.1f | Age: %.1f | Dead: %d (%.1f%%)",
+      self.species.name,
+      self.count_living,
+      self.count_born,
+      self.count_died,
+      self.sum_energy,
+      self.avg_age_living,
+      self.count_dead,
+      self.perc_dead * 100.0
+      )
+  end
 
   # Takes a snapshot of the current stats in the specified environment and 
   # stores them into env_stats. Will remove existing stats for the current

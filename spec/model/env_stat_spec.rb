@@ -1,5 +1,6 @@
 
 describe "EnvStat" do
+  let(:tol) { 0.0001 }
   let(:time_step) { 3 }
   let(:env) { TestFactory.env(time_step: time_step) }
   let(:plant) { TestFactory.species('Plant') }
@@ -196,6 +197,42 @@ describe "EnvStat" do
         avg_age_living: (3.0 + 0.0) / 2.0
       }
       t(ess4.values, stats4_exp)
+    end
+  end
+
+  context ".to_s" do
+    
+    it "formats user-friendly string" do
+      ess = EnvStat.where(environment_id: env.id).all
+      add_lf(species_id: plant.id, created_step: 2, energy: 10.0, generation: 1)
+      add_lf(species_id: plant.id, created_step: 3, energy: 10.0, generation: 3)
+      add_lf(species_id: plant.id, created_step: 1, died_step: 2, energy: 10.0, generation: 2)
+      add_lf(species_id: plant.id, created_step: 1, died_step: 3, energy: 10.0, generation: 1)
+      
+      EnvStat.snapshot_from_env(env)
+      # stats_exp = { 
+      #   environment_id: env.id,
+      #   time_step: 3,
+      #   species_id: plant.id,
+      #   count_living: 2,
+      #   count_dead: 2,
+      #   count_born: 1,
+      #   count_died: 1,
+      #   sum_energy: 20.0,
+      #   max_generation: 3,
+      #   avg_age: 1.0,
+      #   avg_age_living: 0.5
+      # }
+
+      
+      ess = EnvStat.where(environment_id: env.id).first
+
+      expect(ess.count_lifeforms).to be_within(tol).of(4)
+      expect(ess.perc_alive).to be_within(tol).of(0.5)
+      expect(ess.perc_dead).to be_within(tol).of(0.5)
+
+      str_exp = "[Plant] Alive: 2 (+1 -1) | Egy: 20.0 | Age: 0.5 | Dead: 2 (50.0%)"
+      expect(ess.to_s).to eq(str_exp)
     end
   end
 end
