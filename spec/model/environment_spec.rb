@@ -1,13 +1,13 @@
 
 describe "Environment" do
   let(:tol) { 0.0001 }
-  let(:species) { TestFactory.species }
   let(:env) { TestFactory.env }
-  let(:lf) { TestFactory.lifeform(env, species) }
+  let(:lf) { TestFactory.lifeform(environment_id: env.id) }
 
   context ".lifeforms" do
     it "returns all lifeforms" do
-      lf.save
+      expect(env.lifeforms.count).to eq(0) # none yet
+      lf.save # instantiate
       lfs = env.lifeforms
       expect(lfs.count).to eq(1)
       expect(lfs[0].id).to eq(lf.id)

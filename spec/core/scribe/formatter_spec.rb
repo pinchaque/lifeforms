@@ -59,4 +59,40 @@ describe "Scribe::Formatter" do
       end
     end
   end
+
+  context ".extract_id" do
+    let(:ctx) { {foo: "bar", quack: "duck 123", moo: ""} }
+    let(:env) { TestFactory.env }
+    let(:lf) { TestFactory.lifeform(environment_id: env.id) }
+
+    it "nothing to extract" do
+      id, ret = fmt.extract_id(ctx)
+      expect(id).to be_nil
+      expect(ret).to eq(ctx)
+    end
+
+    it "lifeform id only" do
+      ctx2 = ctx.merge({lf: lf})
+      id, ret = fmt.extract_id(ctx2)
+      expect(id).to eq(fmt.obj_name(lf))
+      expect(ret).to eq(ctx)
+    end
+
+    it "env id only" do
+      ctx2 = ctx.merge({env: env})
+      id, ret = fmt.extract_id(ctx2)
+      expect(id).to eq(fmt.obj_name(env))
+      expect(ret).to eq(ctx)      
+    end
+
+    it "multiple ids" do
+      ctx2 = ctx.merge({lf: lf, env: env})
+      id, ret = fmt.extract_id(ctx2)
+
+      id_exp = fmt.obj_name(env) + " > " + fmt.obj_name(lf)
+
+      expect(id).to eq(id_exp)
+      expect(ret).to eq(ctx)
+    end
+  end
 end

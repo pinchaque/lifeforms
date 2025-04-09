@@ -334,12 +334,12 @@ class Lifeform < Sequel::Model
 
   # outputs trace log message with this lifeform and additional context
   def log(level, msg, **ctx)
-    Log.log(level, msg, lf: self, **ctx)
+    Log.log(level, msg, lf: self, env: self.env, **ctx)
   end
   
   # outputs trace log message with this lifeform and additional context
   def log_trace(msg, **ctx)
-    log(Scribe::Level::TRACE, msg, lf: self, **ctx)
+    log(Scribe::Level::TRACE, msg, **ctx)
   end
 
   #####################################################################
@@ -403,7 +403,6 @@ class Lifeform < Sequel::Model
       lf_y: self.y,
   }
   end
-
 
   def run_step
     log_trace("Step #{env.time_step} starting...")

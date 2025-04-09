@@ -9,30 +9,17 @@ describe "Lifeform" do
   let(:width) { 100 }
   let(:height) { 100 }
   let(:time_step) { 3 }
-  let(:env) { TestFactory.env(width, height, time_step) }
-  let(:lf) { TestFactory.lifeform(env, species) }
+  let(:env) { TestFactory.env(width: width, height: height, time_step: time_step) }
 
-  def add_lf(x, y, size = 1.0, energy = 10.0)
-    lf = Lifeform.new
-    lf.environment_id = env.id
-    lf.created_step = 1
-    lf.species_id = species.id
-    lf.energy = energy
-    lf.size = size
-    lf.initial_size = 0.2
-    lf.x = x
-    lf.y = y
-    lf.name = sprintf("add_lf(%f, %f, %f, %f)", x, y, size, energy)
-    lf.energy_base = 1.0
-    lf.energy_exp = 3.0
-    lf.save
-    lf
+  def add_lf(**attrs)
+    defaults = { environment_id: env.id, species_id: species.id, size: 1.0, energy: 10.0, created_step: 1 }
+    TestFactory.lifeform(**(defaults.merge(attrs)))
   end
+
+  let(:lf) { add_lf }
 
   context ".attrs" do
     it "returns attr hash" do
-      lf.created_step = 1
-      lf.save
       expect(env.time_step).to eq(3)
       attr_exp = {
         lf_age: 2,
@@ -46,7 +33,7 @@ describe "Lifeform" do
       }
 
       attr_act = lf.attrs
-      cmp_hash_vals(attr_act, attr_exp, tol)
+      cmp_hash(attr_act, attr_exp, tol)
     end
   end
 
@@ -80,7 +67,7 @@ describe "Lifeform" do
     LifeformTestSkill2 = TestFactory.skill("skill1")
 
     let(:lf) { 
-      l = TestFactory.lifeform(env, species)
+      l = add_lf
       l.register_skill(LifeformTestSkill2)
       l.program = e_seq(e_true, e_skill(LifeformTestSkill2.id))
       l
@@ -98,7 +85,7 @@ describe "Lifeform" do
 
   context ".objdata_from_h" do
     it "populates object from hash" do
-      lf_new = TestFactory.lifeform(env, species)
+      lf_new = add_lf
 
       # shouldn't have any of these yet
       expect(lf_new.skills.count).to eq(0)
@@ -149,7 +136,7 @@ describe "Lifeform" do
       expect(row[:species_id]).to eq(species.id)
       expect(row[:parent_id]).to be_nil
       expect(row[:died_step]).to be_nil
-      expect(row[:created_step]).to eq(3)
+      expect(row[:created_step]).to eq(1)
       expect(row[:energy]).to be_within(tol).of(lf.energy)
       expect(row[:size]).to be_within(tol).of(lf.size)
       expect(row[:name]).to eq(lf.name)
@@ -306,14 +293,14 @@ describe "Lifeform" do
 
   context ".mark_dead" do
     it "sets died_step" do
-      expect(lf.created_step).to eq(3)
+      expect(lf.created_step).to eq(1)
       expect(lf.died_step).to be_nil
       expect(lf.is_alive?).to be_truthy
       expect(lf.is_dead?).to be_falsey
       env.time_step = 5
       env.save
       lf.mark_dead
-      expect(lf.created_step).to eq(3)
+      expect(lf.created_step).to eq(1)
       expect(lf.died_step).to eq(5)
       expect(lf.is_alive?).to be_falsey
       expect(lf.is_dead?).to be_truthy
@@ -375,7 +362,7 @@ describe "Lifeform" do
 
   context ".bounding_box" do
     def test_bb(x, y, size, exp_x0, exp_y0, exp_x1, exp_y1)
-      lf = add_lf(x, y, size, 1.0)
+      lf = add_lf(x: x, y: y, size: size)
       act_x0, act_y0, act_x1, act_y1 = lf.bounding_box
       expect(act_x0).to be_within(tol).of(exp_x0)
       expect(act_y0).to be_within(tol).of(exp_y0)
@@ -409,14 +396,14 @@ describe "Lifeform" do
     end
 
     it "single lifeform" do
-      lf0 = add_lf(10.0, 10.0, 1.0, 20.0)
+      lf0 = add_lf(x: 10.0, y: 10.0, size: 1.0)
       test_pot_overlaps(lf0, [])
       test_overlaps(lf0, [])
     end
 
     it "two lifeforms, no overlap" do
-      lf0 = add_lf(0.0, 0.0, 1.0, 20.0)
-      lf1 = add_lf(1.01, 1.01, 1.0, 20.0)
+      lf0 = add_lf(x: 0.0, y: 0.0, size: 1.0)
+      lf1 = add_lf(x: 1.01, y: 1.01, size: 1.0)
       test_pot_overlaps(lf0, [])
       test_pot_overlaps(lf1, [])
       test_overlaps(lf0, [])
@@ -424,8 +411,8 @@ describe "Lifeform" do
     end
 
     it "two lifeforms, potential overlap only" do
-      lf0 = add_lf(0.0, 0.0, 1.0, 20.0)
-      lf1 = add_lf(0.99, 0.99, 1.0, 20.0)
+      lf0 = add_lf(x: 0.0, y: 0.0, size: 1.0)
+      lf1 = add_lf(x: 0.99, y: 0.99, size: 1.0)
       test_pot_overlaps(lf0, [lf1])
       test_pot_overlaps(lf1, [lf0])
       test_overlaps(lf0, [])
@@ -433,8 +420,8 @@ describe "Lifeform" do
     end
 
     it "two lifeforms, partial horizontal overlap" do
-      lf0 = add_lf(0.0, 0.0, 1.0, 20.0)
-      lf1 = add_lf(0.99, 0.0, 1.0, 20.0)
+      lf0 = add_lf(x: 0.0, y: 0.0, size: 1.0)
+      lf1 = add_lf(x: 0.99, y: 0.0, size: 1.0)
       test_pot_overlaps(lf0, [lf1])
       test_pot_overlaps(lf1, [lf0])
       test_overlaps(lf0, [lf1])
@@ -442,8 +429,8 @@ describe "Lifeform" do
     end
 
     it "two lifeforms, partial vertical overlap" do
-      lf0 = add_lf(0.0, 0.0, 1.0, 20.0)
-      lf1 = add_lf(0.0, 0.99, 1.0, 20.0)
+      lf0 = add_lf(x: 0.0, y: 0.0, size: 1.0)
+      lf1 = add_lf(x: 0.0, y: 0.99, size: 1.0)
       test_pot_overlaps(lf0, [lf1])
       test_pot_overlaps(lf1, [lf0])
       test_overlaps(lf0, [lf1])
@@ -451,8 +438,8 @@ describe "Lifeform" do
     end
 
     it "two lifeforms, partial diagonal overlap" do
-      lf0 = add_lf(0.0, 0.0, 1.0, 20.0)
-      lf1 = add_lf(0.7, 0.7, 1.0, 20.0)
+      lf0 = add_lf(x: 0.0, y: 0.0, size: 1.0)
+      lf1 = add_lf(x: 0.7, y: 0.7, size: 1.0)
       test_pot_overlaps(lf0, [lf1])
       test_pot_overlaps(lf1, [lf0])
       test_overlaps(lf0, [lf1])
@@ -460,8 +447,8 @@ describe "Lifeform" do
     end
 
     it "two lifeforms, full overlap (identical)" do
-      lf0 = add_lf(0.7, 0.7, 1.0, 20.0)
-      lf1 = add_lf(0.7, 0.7, 1.0, 20.0)
+      lf0 = add_lf(x: 0.7, y: 0.7, size: 1.0)
+      lf1 = add_lf(x: 0.7, y: 0.7, size: 1.0)
       test_pot_overlaps(lf0, [lf1])
       test_pot_overlaps(lf1, [lf0])
       test_overlaps(lf0, [lf1])
@@ -469,8 +456,8 @@ describe "Lifeform" do
     end
 
     it "two lifeforms, containment" do
-      lf0 = add_lf(0.7, 0.7, 1.0, 20.0)
-      lf1 = add_lf(1.0, 1.0, 10.0, 20.0)
+      lf0 = add_lf(x: 0.7, y: 0.7, size: 1.0)
+      lf1 = add_lf(x: 1.0, y: 1.0, size: 10.0)
       test_pot_overlaps(lf0, [lf1])
       test_pot_overlaps(lf1, [lf0])
       test_overlaps(lf0, [lf1])
@@ -486,13 +473,13 @@ describe "Lifeform" do
     # Size would need to be >=1.415 to be actual for the diagonals.
     it "multiple lifeforms, potential overlap only" do
       size = 1.05
-      lf0 = add_lf(0.0, 0.0, size, 20.0)
-      lf1 = add_lf(2.0, 0.0, size, 20.0)
-      lf2 = add_lf(0.0, 1.0, size, 20.0)
-      lf3 = add_lf(1.0, 1.0, size, 20.0)
-      lf4 = add_lf(0.0, 2.0, size, 20.0)
-      lf5 = add_lf(1.0, 2.0, size, 20.0)
-      lf6 = add_lf(2.0, 2.0, size, 20.0)
+      lf0 = add_lf(x: 0.0, y: 0.0, size: size)
+      lf1 = add_lf(x: 2.0, y: 0.0, size: size)
+      lf2 = add_lf(x: 0.0, y: 1.0, size: size)
+      lf3 = add_lf(x: 1.0, y: 1.0, size: size)
+      lf4 = add_lf(x: 0.0, y: 2.0, size: size)
+      lf5 = add_lf(x: 1.0, y: 2.0, size: size)
+      lf6 = add_lf(x: 2.0, y: 2.0, size: size)
       test_pot_overlaps(lf0, [lf2, lf3])
       test_pot_overlaps(lf1, [lf3])
       test_pot_overlaps(lf2, [lf0, lf3, lf4, lf5])
@@ -513,13 +500,13 @@ describe "Lifeform" do
     # Then also increase size ot 1.415 to get all overlaps
     it "multiple lifeforms, actual overlaps" do
       size = 1.415
-      lf0 = add_lf(0.0, 0.0, size, 20.0)
-      lf1 = add_lf(2.0, 0.0, size, 20.0)
-      lf2 = add_lf(0.0, 1.0, size, 20.0)
-      lf3 = add_lf(1.0, 1.0, size, 20.0)
-      lf4 = add_lf(0.0, 2.0, size, 20.0)
-      lf5 = add_lf(1.0, 2.0, size, 20.0)
-      lf6 = add_lf(2.0, 2.0, size, 20.0)
+      lf0 = add_lf(x: 0.0, y: 0.0, size: size)
+      lf1 = add_lf(x: 2.0, y: 0.0, size: size)
+      lf2 = add_lf(x: 0.0, y: 1.0, size: size)
+      lf3 = add_lf(x: 1.0, y: 1.0, size: size)
+      lf4 = add_lf(x: 0.0, y: 2.0, size: size)
+      lf5 = add_lf(x: 1.0, y: 2.0, size: size)
+      lf6 = add_lf(x: 2.0, y: 2.0, size: size)
       test_pot_overlaps(lf0, [lf2, lf3])
       test_pot_overlaps(lf1, [lf3])
       test_pot_overlaps(lf2, [lf0, lf3, lf4, lf5])
@@ -540,23 +527,23 @@ describe "Lifeform" do
 
   context ".find_closest" do
     it "no other lifeforms" do
-      lf = add_lf(1.0, 1.0)
+      lf = add_lf(x: 1.0, y: 1.0)
       expect(lf.find_closest).to be_nil
     end
 
     it "one other lifeform" do
-      lf = add_lf(1.0, 1.0)
-      lf0 = add_lf(3.0, 3.0)
+      lf = add_lf(x: 1.0, y: 1.0)
+      lf0 = add_lf(x: 3.0, y: 3.0)
       expect(lf.find_closest.id).to eq(lf0.id)
     end
 
     it "several other lifeforms" do
-      lf = add_lf(1.0, 1.0)
-      add_lf(0, 13.1)
-      add_lf(13.1, 0)
-      lf0 = add_lf(3.0, 3.0)
-      add_lf(3.1, 3.1)
-      add_lf(13.1, 13.1)
+      lf = add_lf(x: 1.0, y: 1.0)
+      add_lf(x: 0, y: 13.1)
+      add_lf(x: 13.1, y: 0)
+      lf0 = add_lf(x: 3.0, y: 3.0)
+      add_lf(x: 3.1, y: 3.1)
+      add_lf(x: 13.1, y: 13.1)
       expect(lf.find_closest.id).to eq(lf0.id)
     end
 
@@ -564,20 +551,10 @@ describe "Lifeform" do
       s0 = TestFactory.species("species 0")
       s1 = TestFactory.species("species 1")
 
-      lf = add_lf(1.0, 1.0)
-
-      lf0 = add_lf(3.0, 3.0)
-      lf0.species_id = s0.id
-      lf0.save
-
-      lf1 = add_lf(3.1, 3.1)
-      lf1.species_id = s1.id
-      lf1.save
-
-      lf2 = add_lf(13.1, 13.1)
-      lf2.species_id = s0.id
-      lf2.generation = 123
-      lf2.save
+      lf = add_lf(x: 1.0, y: 1.0, species_id: species.id)
+      lf0 = add_lf(x: 3.0, y: 3.0, species_id: s0.id)
+      lf1 = add_lf(x: 3.1, y: 3.1, species_id: s1.id)
+      lf2 = add_lf(x: 13.1, y: 13.1, species_id: s0.id, generation: 123)
 
       expect(lf.find_closest.id).to eq(lf0.id)
       expect(lf.find_closest(species_id: s0.id).id).to eq(lf0.id)
@@ -593,21 +570,21 @@ describe "Lifeform" do
     end
 
     it "no other lifeforms" do
-      lf = add_lf(1.0, 1.0)
+      lf = add_lf(x: 1.0, y: 1.0)
       t(lf, 100.0, [])
     end
 
     it "one other lifeform on x axis" do
-      lf = add_lf(1.0, 1.0)
-      lf0 = add_lf(3.0, 1.0)
+      lf = add_lf(x: 1.0, y: 1.0)
+      lf0 = add_lf(x: 3.0, y: 1.0)
       t(lf, 100.0, [lf0])
       t(lf, 2.001, [lf0])
       t(lf, 1.999, [])
     end
 
     it "one other lifeform diagonal" do
-      lf = add_lf(1.0, 1.0)
-      lf0 = add_lf(2.0, 2.0)
+      lf = add_lf(x: 1.0, y: 1.0)
+      lf0 = add_lf(x: 2.0, y: 2.0)
       # actual dist is 1.414...
       t(lf, 100.0, [lf0])
       t(lf, 1.5, [lf0])
@@ -616,12 +593,12 @@ describe "Lifeform" do
     end
 
     it "several other lifeforms" do
-      lf = add_lf(1.0, 1.0)
-      lf0 = add_lf(1.0, 13.0)
-      lf1 = add_lf(13.0, 1.0)
-      lf2 = add_lf(3.0, 3.0) # dist 2.828...
-      lf3 = add_lf(3.1, 3.1) # dist 2.969...
-      lf4 = add_lf(13.0, 13.0) # dist 16.97...
+      lf = add_lf(x: 1.0, y: 1.0)
+      lf0 = add_lf(x: 1.0, y: 13.0)
+      lf1 = add_lf(x: 13.0, y: 1.0)
+      lf2 = add_lf(x: 3.0, y: 3.0) # dist 2.828...
+      lf3 = add_lf(x: 3.1, y: 3.1) # dist 2.969...
+      lf4 = add_lf(x: 13.0, y: 13.0) # dist 16.97...
       t(lf, 2.8, [])
       t(lf, 2.9, [lf2])
       t(lf, 3.0, [lf2, lf3])
@@ -633,17 +610,17 @@ describe "Lifeform" do
       s0 = TestFactory.species("species 0")
       s1 = TestFactory.species("species 1")
 
-      lf = add_lf(1.0, 1.0)
+      lf = add_lf(x: 1.0, y: 1.0)
 
-      lf0 = add_lf(3.0, 3.0) # dist 2.828...
+      lf0 = add_lf(x: 3.0, y: 3.0) # dist 2.828...
       lf0.species_id = s0.id
       lf0.save
 
-      lf1 = add_lf(3.1, 3.1)
+      lf1 = add_lf(x: 3.1, y: 3.1)
       lf1.species_id = s1.id
       lf1.save
 
-      lf2 = add_lf(13.1, 13.1)
+      lf2 = add_lf(x: 13.1, y: 13.1)
       lf2.species_id = s0.id
       lf2.generation = 123
       lf2.save

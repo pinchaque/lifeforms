@@ -1,15 +1,14 @@
 describe "EnvEnergy" do
   let(:tol) { 0.0001 }
-  let(:species) { TestFactory.species }
   let(:env_energy_rate) { 10.0 }
-  let(:env) { TestFactory.env(100, 100, 3, env_energy_rate) }
+  let(:env) { TestFactory.env(energy_rate: env_energy_rate) }
   let(:klass) { Skill::EnvEnergy }
   let(:skill_id) { klass.id }
   let(:energy_absorb_perc) { 0.50 }
 
   context "Generic Lifeform" do
     let(:lf) { 
-      l = TestFactory.lifeform(env, species) 
+      l = TestFactory.lifeform(environment_id: env.id)
       l.register_skill(klass)
       l.params.fetch(:energy_absorb_perc).set(energy_absorb_perc)
       l

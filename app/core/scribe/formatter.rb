@@ -49,17 +49,32 @@ module Scribe
       end
     end
 
-    # Extracts Lifeform-specific ID info to put at the start of the log msg
+    # Helper method that takes an object with an id and name and turns it into
+    # a short string useful for output.
+    def obj_name(obj)
+      "#{obj.id[0..5]} #{obj.name}"
+    end
+
+    # Extracts object-specific ID info to put at the start of the log msg
     def extract_id(ctx)
-      id = nil
-      ret = {}
-      ctx.each do |k, v|
-        if k == :lf && v.class == Lifeform
-          id = "#{v.id[0..5]} #{v.name}"
-        else
-          ret[k] = v
+      # keys and objects we are extracting      
+      objs = {
+        env: Environment,
+        lf: Lifeform
+      }
+
+      # Populate ids with the strings we have available in the order given by
+      # objs
+      ids = []
+      objs.each do |k, klass|
+        obj = ctx[k]
+        if !obj.nil? && obj.class == klass 
+          ids << obj_name(obj)
         end
       end
+
+      id = ids.empty? ? nil : ids.join(" > ")
+      ret = ctx.reject { |k, v| objs.key?(k) && objs[k] == v.class }
       return id, ret
     end
 

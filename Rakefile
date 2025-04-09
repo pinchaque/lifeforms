@@ -1,7 +1,7 @@
 require_relative './config/environment'
 
 # Write all the output to stderr
-Log.routers << Scribe::Router.new(Scribe::Level::TRACE, Scribe::Formatter.new, Scribe::Outputter::Stderr.new)
+Log.routers << Scribe::Router.new(Scribe::Level::INFO, Scribe::Formatter.new, Scribe::Outputter::Stderr.new)
 
 ######################################################################
 # Helper functions
@@ -55,10 +55,12 @@ namespace "sim" do
         abort("Unable to find environment '#{id}'") if env.nil?
         Log.info("Running #{num_gen} generations of simulation #{id}...")
     
+        env.log_self(Scribe::Level::INFO)
         (0...num_gen.to_i).each do
             env.run_step
-            Log.info(env.to_s)
+            env.log_stats(Scribe::Level::INFO)    
         end
+        env.log_self(Scribe::Level::INFO)
     end
 
     desc "Views details for a single simulation"
@@ -66,7 +68,9 @@ namespace "sim" do
         id = args[:id]
         env = Environment.where(id: id).first
         abort("Unable to find environment '#{id}'") if env.nil?
-        Log.info(env.to_s_detailed)
+        env.log_self(Scribe::Level::INFO)
+        env.log_lifeforms(Scribe::Level::INFO)
+        env.log_stats(Scribe::Level::INFO)
     end
 
     desc "Deletes a single simulation"
@@ -87,7 +91,7 @@ namespace "sim" do
     task :deleteall do
         DB.transaction do
             Log.info("Removing existing data...")
-            [Lifeform, Environment, Species].each do |klass|
+            [EnvStat, Lifeform, Environment, Species].each do |klass|
                 n = klass.where(true).delete
                 Log.info("Deleted #{n} rows from #{klass.to_s}")
             end
