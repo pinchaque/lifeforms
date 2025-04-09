@@ -334,7 +334,7 @@ class Lifeform < Sequel::Model
 
   # outputs trace log message with this lifeform and additional context
   def log(level, msg, **ctx)
-    Log.log(level, msg, lf: self, **ctx)
+    Log.log(level, msg, lf: self, env: self.env, **ctx)
   end
   
   # outputs trace log message with this lifeform and additional context

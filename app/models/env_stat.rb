@@ -23,7 +23,8 @@ class EnvStat  < Sequel::Model
 
   # Formats this EnvStat as a string for user display
   def to_s
-    sprintf("[%s] Alive: %d (+%d -%d) | Egy: %.1f | Age: %.1f | Dead: %d (%.1f%%)",
+    sprintf("[TS:%d] [%s] Alive: %d (+%d -%d) | Egy: %.1f | Age: %.1f | Dead: %d (%.1f%%)",
+      self.time_step,
       self.species.name,
       self.count_living,
       self.count_born,
