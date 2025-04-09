@@ -23,18 +23,10 @@ end
 # sim - managing simulation environments
 #######################################################################
 namespace "sim" do
-    desc "Creates a simulation with n lifeforms"
-    task :create, [:n] do |t, args|
-        num_lf = args[:n].to_i
+    desc "Creates a simulation"
+    task :create do |t, args|
         DB.transaction do
-            env = EnvironmentFactory.new.gen.save
-
-            [Zoo::Plant, Zoo::Grazer].each do |fact_class|
-                pf = fact_class.new(env)
-                (0...num_lf).each do
-                    pf.gen.save
-                end
-            end
+            env = EnvironmentFactory.new.gen
             Log.info("Created simulation: #{env.to_s}")
         end
     end
@@ -91,7 +83,7 @@ namespace "sim" do
     task :deleteall do
         DB.transaction do
             Log.info("Removing existing data...")
-            [EnvStat, Lifeform, Environment, Species].each do |klass|
+            [EnvStat, Lifeform, Environment].each do |klass|
                 n = klass.where(true).delete
                 Log.info("Deleted #{n} rows from #{klass.to_s}")
             end
