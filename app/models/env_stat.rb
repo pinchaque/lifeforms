@@ -13,7 +13,7 @@ class EnvStat  < Sequel::Model
 
   # Returns the ratio of Lifeforms that are alive
   def perc_alive
-    self.count_living.to_f / self.count_lifeforms
+    (self.count_lifeforms == 0) ? 0.0 : self.count_living.to_f / self.count_lifeforms
   end
 
   # Returns the ratio of Lifeforms that are dead
@@ -28,8 +28,8 @@ class EnvStat  < Sequel::Model
       self.count_living,
       self.count_born,
       self.count_died,
-      self.sum_energy,
-      self.avg_age_living,
+      self.sum_energy.nil? ? 0.0 : self.sum_energy,
+      self.avg_age_living.nil? ? 0.0 : self.avg_age_living,
       self.count_dead,
       self.perc_dead * 100.0
       )
