@@ -247,7 +247,7 @@ describe "EnvStat" do
       expect(ess.perc_alive).to be_within(tol).of(0.5)
       expect(ess.perc_dead).to be_within(tol).of(0.5)
 
-      str_exp = "[Plant] Alive: 2 (+1 -1) | Egy: 20.0 | Age: 0.5 | Dead: 2 (50.0%)"
+      str_exp = "[TS:3] [Plant] Alive: 2 (+1 -1) | Egy: 20.0 | Age: 0.5 | Dead: 2 (50.0%)"
       expect(ess.to_s).to eq(str_exp)
     end
   end
