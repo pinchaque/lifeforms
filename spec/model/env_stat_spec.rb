@@ -3,8 +3,8 @@ describe "EnvStat" do
   let(:tol) { 0.0001 }
   let(:time_step) { 3 }
   let(:env) { TestFactory.env(time_step: time_step) }
-  let(:plant) { TestFactory.species('Plant') }
-  let(:grazer) { TestFactory.species('Grazer') }
+  let(:plant) { TestFactory.species(name: 'Plant') }
+  let(:grazer) { TestFactory.species(name: 'Grazer') }
 
   def add_lf(species_id:, **attrs)
     TestFactory.lifeform(environment_id: env.id, species_id: species_id, **attrs)

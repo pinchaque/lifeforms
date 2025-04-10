@@ -1,7 +1,7 @@
 require_relative './config/environment'
 
 # Write all the output to stderr
-Log.routers << Scribe::Router.new(Scribe::Level::INFO, Scribe::Formatter.new, Scribe::Outputter::Stderr.new)
+Log.routers << Scribe::Router.new(Scribe::Level::DEBUG, Scribe::Formatter.new, Scribe::Outputter::Stderr.new)
 
 ######################################################################
 # Helper functions
@@ -23,18 +23,10 @@ end
 # sim - managing simulation environments
 #######################################################################
 namespace "sim" do
-    desc "Creates a simulation with n lifeforms"
-    task :create, [:n] do |t, args|
-        num_lf = args[:n].to_i
+    desc "Creates a simulation"
+    task :create do |t, args|
         DB.transaction do
-            env = EnvironmentFactory.new.gen.save
-
-            [Zoo::Plant, Zoo::Grazer].each do |fact_class|
-                pf = fact_class.new(env)
-                (0...num_lf).each do
-                    pf.gen.save
-                end
-            end
+            env = EnvironmentFactory.new.gen
             Log.info("Created simulation: #{env.to_s}")
         end
     end
@@ -47,10 +39,10 @@ namespace "sim" do
         end
     end
 
-    desc "Runs a simulation for the specified number of generations"
+    desc "Runs a simulation for the specified number of generations (default 1)"
     task :run, [:id, :n] do |t, args|
         id = args[:id]
-        num_gen = args[:n]
+        num_gen = args[:n] || 1
         env = Environment.where(id: id).first
         abort("Unable to find environment '#{id}'") if env.nil?
         Log.info("Running #{num_gen} generations of simulation #{id}...")
@@ -69,6 +61,7 @@ namespace "sim" do
         env = Environment.where(id: id).first
         abort("Unable to find environment '#{id}'") if env.nil?
         env.log_self(Scribe::Level::INFO)
+        env.log_spawners(Scribe::Level::INFO)
         env.log_lifeforms(Scribe::Level::INFO)
         env.log_stats(Scribe::Level::INFO)
     end
@@ -91,7 +84,7 @@ namespace "sim" do
     task :deleteall do
         DB.transaction do
             Log.info("Removing existing data...")
-            [EnvStat, Lifeform, Environment, Species].each do |klass|
+            [EnvStat, Spawner, Lifeform, Environment].each do |klass|
                 n = klass.where(true).delete
                 Log.info("Deleted #{n} rows from #{klass.to_s}")
             end

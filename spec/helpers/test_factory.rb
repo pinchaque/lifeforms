@@ -1,9 +1,15 @@
+
 # Contains several helper functions to generate saved objects in the db useful
 # for unit tests.
 class TestFactory
-  def self.species(name = "Test Lifeform")
-    s = Species.where(name: name).first    
-    s = Species.new(name: name).save if s.nil?
+  def self.species(**attrs)
+    defaults = {
+      name: "Test Lifeform",
+      class_name: "MockAnimal"
+    }
+    h = defaults.merge(attrs)
+    s = Species.where(name: h[:name]).first    
+    s = Species.new(**h).save if s.nil?
     s
   end
 

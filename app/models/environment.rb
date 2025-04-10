@@ -32,25 +32,41 @@ class Environment  < Sequel::Model
     EnvStat.where(environment_id: self.id, time_step: ts).all
   end
 
+  # Returns all Spawners for this Environment
+  def spawners
+    Spawner.where(environment_id: self.id).all
+  end
+
   #####################################################################
   # Simulation-related methods
   #####################################################################
 
+  # Runs n simulation steps
   def run_steps(n)
     (0...n).each { |i| run_step }
   end
 
+  # Runs a single simulation step
   def run_step
     DB.transaction do
+      # Advance to next time_step
       self.time_step += 1
       save
+
+      # Run our Lifeform Spawners
+      spawners.each { |s| s.run }
+
+      # Run a step for all lifeforms
       lifeforms_ds.all.shuffle.each do |l|
         l.run_step.save
       end
+
+      # Capture our stats for this time_step
       EnvStat.snapshot_from_env(self)
     end
   end
 
+  # Sets this Environment's name to be something interesting and random.
   def set_random_name
     self.name = (NameParts::ENV_ADJ.sample.capitalize + " " + NameParts::ENV_TYPE.sample.capitalize).strip
   end
@@ -59,6 +75,7 @@ class Environment  < Sequel::Model
   # Frontend interaction data
   #####################################################################
 
+  # Returns rendered data for the frontend
   def render_data
     lifeforms.map { |l| l.render_data }
   end
@@ -81,24 +98,38 @@ class Environment  < Sequel::Model
       egy_rate: self.energy_rate, width: self.width, height: self.height)
   end
 
+  # Logs the current EnvStats for this environment
   def log_stats(level = Scribe::Level::TRACE)
     stats.each do |s|
       log(level, s.to_s)
     end
   end
 
+  # Logs the Lifeforms for this environment
   def log_lifeforms(level = Scribe::Level::TRACE)
     lifeforms.each do |lf|
       log(level, "  * #{lf.to_s}")
     end
   end
 
-  # outputs trace log message with this lifeform and additional context
+  # Logs the Spawners for this environment
+  def log_spawners(level = Scribe::Level::TRACE)
+    spawners.each do |s|
+      log(level, "  * #{s.species.name}", p_spawn: s.p_spawn, min_lf: s.min_lifeforms, max_lf: s.max_lifeforms)
+    end
+  end
+
+  # outputs trace log message with this environment and additional context
   def log(level, msg, **ctx)
     Log.log(level, msg, env: self, **ctx)
   end
+
+  # outputs debug log message with this environment and additional context
+  def log_debug(msg, **ctx)
+    log(Scribe::Level::DEBUG, msg, **ctx)
+  end
   
-  # outputs trace log message with this lifeform and additional context
+  # outputs trace log message with this environment and additional context
   def log_trace(msg, **ctx)
     log(Scribe::Level::TRACE, msg, **ctx)
   end
