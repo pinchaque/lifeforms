@@ -6,9 +6,14 @@ class Species < Sequel::Model(:species)
     class_from_name(self.class_name)
   end
 
+  # Returns instance of the factory class used ot generate Lifeforms of this Species
+  def fact(env)
+    fact_class.new(env, self)
+  end
+
   # Returns a new and unsaved Lifeform instance of this Species for the
   # specified environment
   def gen_lifeform(env)
-    fact_class.new(env, self).gen
+    fact(env).gen
   end
 end

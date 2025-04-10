@@ -1,7 +1,6 @@
 describe "Species" do
   let(:species) { TestFactory.species }
   let(:env) { TestFactory.env }
-  let(:lf) { species.gen_lifeform(env) }
 
   {
     "Mock Animal" => MockAnimal,
@@ -17,7 +16,17 @@ describe "Species" do
         end
       end
 
+      context ".fact" do
+        let(:fact) { species.fact(env) }
+        let(:lf) { fact.gen }
+        it "generates lifeform of correct type" do
+          expect(lf.species.id).to eq(species.id)
+          expect(lf.species.name).to eq(species.name)
+        end
+      end
+
       context ".gen_lifeform" do
+        let(:lf) { species.gen_lifeform(env) }
         it "generates lifeform of correct type" do
           expect(lf.species.id).to eq(species.id)
           expect(lf.species.name).to eq(species.name)
