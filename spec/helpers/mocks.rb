@@ -21,3 +21,9 @@ class MockLifeform
     @skills[s.id] = s
   end
 end
+
+class MockAnimal < Zoo::Base
+  def set_attrs(ta)
+    ta.energy = 1.23
+  end
+end

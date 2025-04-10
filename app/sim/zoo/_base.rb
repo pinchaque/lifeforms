@@ -2,21 +2,9 @@ module Zoo
   class Base
     attr_accessor :env, :species
 
-    def initialize(env)
+    def initialize(env, species)
       @env = env
-      @species = get_species
-    end
-
-    def species_name
-      self.class.name.gsub(/^.*::/, '')
-    end
-
-    def get_species
-      s = Species.where(name: species_name).first
-      if s.nil?
-        s = Species.new(name: species_name).save
-      end
-      s
+      @species = species
     end
 
     def get_skills

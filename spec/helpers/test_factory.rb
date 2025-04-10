@@ -1,10 +1,33 @@
+
 # Contains several helper functions to generate saved objects in the db useful
 # for unit tests.
 class TestFactory
-  def self.species(name = "Test Lifeform")
-    s = Species.where(name: name).first    
-    s = Species.new(name: name).save if s.nil?
+  def self.species(**attrs)
+    defaults = {
+      name: "Test Lifeform",
+      class_name: "MockAnimal"
+    }
+    h = defaults.merge(attrs)
+    s = Species.where(name: h[:name]).first    
+    s = Species.new(**h).save if s.nil?
     s
+
+    ## TODO I updated this function signature so I need to update everywhere it is used.
+    #
+    # Chucks-MacBook-Pro-14:~/git/lifeforms] grep -rs 'TestFactory.species' .
+    # ./spec/model/lifeform_spec.rb:  let(:species) { TestFactory.species }
+    # ./spec/model/lifeform_spec.rb:      s0 = TestFactory.species("species 0")
+    # ./spec/model/lifeform_spec.rb:      s1 = TestFactory.species("species 1")
+    # ./spec/model/lifeform_spec.rb:      s0 = TestFactory.species("species 0")
+    # ./spec/model/lifeform_spec.rb:      s1 = TestFactory.species("species 1")
+    # ./spec/model/env_stat_spec.rb:  let(:plant) { TestFactory.species('Plant') }
+    # ./spec/model/env_stat_spec.rb:  let(:grazer) { TestFactory.species('Grazer') }
+    # ./spec/sim/skill/eat_spec.rb:  let(:species_plant) { TestFactory.species('Plant') }
+    # ./spec/sim/skill/eat_spec.rb:  let(:species_grazer) { TestFactory.species('Grazer') }
+    # ./spec/sim/skill/move_to_food_spec.rb:  let(:species_plant) { TestFactory.species('Plant') }
+    # ./spec/sim/skill/move_to_food_spec.rb:  let(:species_grazer) { TestFactory.species('Grazer') }
+    # ./spec/sim/zoo/_base_spec.rb:  let(:species) { TestFactory.species(sname, TestAnimal) }
+    # ./spec/helpers/test_factory.rb:    attrs[:species_id] = TestFactory.species.id unless attrs.key?(:species_id)
   end
 
   def self.env(**attrs)
