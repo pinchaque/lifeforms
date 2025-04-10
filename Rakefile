@@ -23,6 +23,19 @@ end
 # sim - managing simulation environments
 #######################################################################
 namespace "sim" do
+    def get_env(id)
+        env = nil
+        if id.nil?
+            env = Environment.reverse(:created_at).first
+            Log.fatal("Unable to find any simulation") if env.nil?
+            Log.info("Using latest simulation #{env}")
+        else
+            env = Environment.where(id: id).first
+            Log.fatal("Unable to find simulation '#{id}'") if env.nil?
+        end
+        return env
+    end
+
     desc "Creates a simulation"
     task :create do |t, args|
         DB.transaction do
@@ -43,9 +56,8 @@ namespace "sim" do
     task :run, [:id, :n] do |t, args|
         id = args[:id]
         num_gen = args[:n] || 1
-        env = Environment.where(id: id).first
-        abort("Unable to find environment '#{id}'") if env.nil?
-        Log.info("Running #{num_gen} generations of simulation #{id}...")
+        env = get_env(id)
+        Log.info("Running #{num_gen} generations of simulation #{env.name}...")
     
         env.log_self(Scribe::Level::INFO)
         (0...num_gen.to_i).each do
@@ -58,7 +70,7 @@ namespace "sim" do
     desc "Views details for a single simulation"
     task :view, [:id] do |t, args|
         id = args[:id]
-        env = Environment.where(id: id).first
+        env = get_env(id)
         abort("Unable to find environment '#{id}'") if env.nil?
         env.log_self(Scribe::Level::INFO)
         env.log_spawners(Scribe::Level::INFO)
@@ -69,9 +81,10 @@ namespace "sim" do
     desc "Deletes a single simulation"
     task :delete, [:id] do |t, args|
         id = args[:id]
+        Log.fatal("No id specified") if id.nil?
         DB.transaction do
             Log.info("Removing data associated with simulation #{id}...")
-            [Lifeform].each do |klass|
+            [EnvStat, Spawner, Lifeform].each do |klass|
                 n = klass.where(environment_id: id).delete
                 Log.info("Deleted #{n} rows from #{klass.to_s}")
             end

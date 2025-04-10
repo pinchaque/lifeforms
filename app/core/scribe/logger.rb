@@ -15,6 +15,12 @@ module Scribe
       log_message(Message.new(level, str, **context))
     end
 
+    # Logs and error and aborts the program
+    def fatal(str, **context)
+      error(str, **context)
+      exit 1
+    end
+
     # Outputs error log message with specified context
     def error(str, **context)
         log(Level::ERROR, str, **context)
