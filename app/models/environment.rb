@@ -112,12 +112,24 @@ class Environment  < Sequel::Model
     end
   end
 
-  # outputs trace log message with this lifeform and additional context
+  # Logs the Spawners for this environment
+  def log_spawners(level = Scribe::Level::TRACE)
+    spawners.each do |s|
+      log(level, "  * #{s.species.name}", p_spawn: s.p_spawn, min_lf: s.min_lifeforms, max_lf: s.max_lifeforms)
+    end
+  end
+
+  # outputs trace log message with this environment and additional context
   def log(level, msg, **ctx)
     Log.log(level, msg, env: self, **ctx)
   end
+
+  # outputs debug log message with this environment and additional context
+  def log_debug(msg, **ctx)
+    log(Scribe::Level::DEBUG, msg, **ctx)
+  end
   
-  # outputs trace log message with this lifeform and additional context
+  # outputs trace log message with this environment and additional context
   def log_trace(msg, **ctx)
     log(Scribe::Level::TRACE, msg, **ctx)
   end
