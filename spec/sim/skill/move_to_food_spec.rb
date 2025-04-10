@@ -4,8 +4,8 @@ describe "MoveToFood" do
   let(:klass) { Skill::MoveToFood }
   let(:skill_id) { klass.id }
   let(:energy) { 10.0 }
-  let(:species_plant) { TestFactory.species('Plant') }
-  let(:species_grazer) { TestFactory.species('Grazer') }
+  let(:species_plant) { TestFactory.species(name: 'Plant') }
+  let(:species_grazer) { TestFactory.species(name: 'Grazer') }
   let(:move_dist) { 5.0 }
   let(:move_energy) { 3.0 }
 

@@ -5,8 +5,8 @@ describe "Eat" do
   let(:skill_id) { klass.id }
   let(:energy) { 10.0 }
   let(:energy_other) { 10.0 }
-  let(:species_plant) { TestFactory.species('Plant') }
-  let(:species_grazer) { TestFactory.species('Grazer') }
+  let(:species_plant) { TestFactory.species(name: 'Plant') }
+  let(:species_grazer) { TestFactory.species(name: 'Grazer') }
   let(:eat_max_energy) { 3.0 }
 
   def add_lf(x, y, energy, species)

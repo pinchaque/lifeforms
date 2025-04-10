@@ -548,8 +548,8 @@ describe "Lifeform" do
     end
 
     it "filters" do
-      s0 = TestFactory.species("species 0")
-      s1 = TestFactory.species("species 1")
+      s0 = TestFactory.species(name: "species 0")
+      s1 = TestFactory.species(name: "species 1")
 
       lf = add_lf(x: 1.0, y: 1.0, species_id: species.id)
       lf0 = add_lf(x: 3.0, y: 3.0, species_id: s0.id)
@@ -607,8 +607,8 @@ describe "Lifeform" do
     end
 
     it "filters" do
-      s0 = TestFactory.species("species 0")
-      s1 = TestFactory.species("species 1")
+      s0 = TestFactory.species(name: "species 0")
+      s1 = TestFactory.species(name: "species 1")
 
       lf = add_lf(x: 1.0, y: 1.0)
 
