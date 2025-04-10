@@ -14,8 +14,9 @@ end
 DB = db_conn()
 
 Dir["#{APPDIR}/core/**/*.rb"].each {|file| require file }
+LogFmt = Scribe::Formatter.new
 Log = Scribe::Logger.new(
   Scribe::Router.new(
     Scribe::Level::TRACE, 
-    Scribe::Formatter.new, 
+    LogFmt,
     Scribe::Outputter::File.new(LOGDIR, "app")))

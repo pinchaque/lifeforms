@@ -64,6 +64,15 @@ describe "Scribe::Formatter" do
     let(:ctx) { {foo: "bar", quack: "duck 123", moo: ""} }
     let(:env) { TestFactory.env }
     let(:lf) { TestFactory.lifeform(environment_id: env.id) }
+    let(:objs) { {
+      env: Environment,
+      lf: Lifeform
+    }}
+    let(:fmt) { 
+      f = Scribe::Formatter.new(colorize) 
+      f.objs = objs
+      f
+    }
 
     it "nothing to extract" do
       id, ret = fmt.extract_id(ctx)

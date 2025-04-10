@@ -2,10 +2,11 @@ module Scribe
   # Class that takes the data from the Message (i.e. timestamp, level, string, 
   # context) and formats it into a string for outputting.
   class Formatter
-    attr_accessor :colorize
+    attr_accessor :colorize, :objs
 
     def initialize(colorize = true)
       @colorize = colorize
+      @objs = {}
     end
 
     # Helper function for formatting time in log message output
@@ -57,16 +58,10 @@ module Scribe
 
     # Extracts object-specific ID info to put at the start of the log msg
     def extract_id(ctx)
-      # keys and objects we are extracting      
-      objs = {
-        # env: Environment,
-        # lf: Lifeform
-      }
-
       # Populate ids with the strings we have available in the order given by
       # objs
       ids = []
-      objs.each do |k, klass|
+      @objs.each do |k, klass|
         obj = ctx[k]
         if !obj.nil? && obj.class == klass 
           ids << obj_name(obj)
@@ -74,7 +69,7 @@ module Scribe
       end
 
       id = ids.empty? ? nil : ids.join(" > ")
-      ret = ctx.reject { |k, v| objs.key?(k) && objs[k] == v.class }
+      ret = ctx.reject { |k, v| @objs.key?(k) && @objs[k] == v.class }
       return id, ret
     end
 

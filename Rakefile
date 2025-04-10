@@ -1,7 +1,7 @@
 require_relative './config/env_core'
 
 # Write all the output to stderr
-Log.routers << Scribe::Router.new(Scribe::Level::DEBUG, Scribe::Formatter.new, Scribe::Outputter::Stderr.new)
+Log.routers << Scribe::Router.new(Scribe::Level::DEBUG, LogFmt, Scribe::Outputter::Stderr.new)
 
 ######################################################################
 # Helper functions
