@@ -1,4 +1,4 @@
-require_relative './config/environment'
+require_relative './config/env_core'
 
 # Write all the output to stderr
 Log.routers << Scribe::Router.new(Scribe::Level::DEBUG, Scribe::Formatter.new, Scribe::Outputter::Stderr.new)
@@ -23,6 +23,10 @@ end
 # sim - managing simulation environments
 #######################################################################
 namespace "sim" do
+    def load_env_app
+        require_relative './config/env_app'
+    end
+
     def get_env(id)
         env = nil
         if id.nil?
@@ -38,6 +42,7 @@ namespace "sim" do
 
     desc "Creates a simulation"
     task :create do |t, args|
+        load_env_app
         DB.transaction do
             env = EnvironmentFactory.new.gen
             Log.info("Created simulation: #{env.to_s}")
@@ -46,6 +51,7 @@ namespace "sim" do
 
     desc "Lists all existing simulations"
     task :list do
+        load_env_app
         Log.info("Available simulation environments:")
         Environment.order(:created_at).reverse.each do |env|
             Log.info("  * #{env.to_s}")
@@ -54,6 +60,7 @@ namespace "sim" do
 
     desc "Runs a simulation for the specified number of generations (default 1)"
     task :run, [:id, :n] do |t, args|
+        load_env_app
         id = args[:id]
         num_gen = args[:n] || 1
         env = get_env(id)
@@ -69,6 +76,7 @@ namespace "sim" do
 
     desc "Views details for a single simulation"
     task :view, [:id] do |t, args|
+        load_env_app
         id = args[:id]
         env = get_env(id)
         abort("Unable to find environment '#{id}'") if env.nil?
@@ -80,6 +88,7 @@ namespace "sim" do
 
     desc "Deletes a single simulation"
     task :delete, [:id] do |t, args|
+        load_env_app
         id = args[:id]
         Log.fatal("No id specified") if id.nil?
         DB.transaction do
@@ -95,6 +104,7 @@ namespace "sim" do
 
     desc "Deletes all existing simulations from the database"
     task :deleteall do
+        load_env_app
         DB.transaction do
             Log.info("Removing existing data...")
             [EnvStat, Spawner, Lifeform, Environment].each do |klass|

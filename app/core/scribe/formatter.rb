@@ -59,8 +59,8 @@ module Scribe
     def extract_id(ctx)
       # keys and objects we are extracting      
       objs = {
-        env: Environment,
-        lf: Lifeform
+        # env: Environment,
+        # lf: Lifeform
       }
 
       # Populate ids with the strings we have available in the order given by
