@@ -17,6 +17,6 @@ Dir["#{APPDIR}/core/**/*.rb"].each {|file| require file }
 LogFmt = Scribe::Formatter.new
 Log = Scribe::Logger.new(
   Scribe::Router.new(
-    Scribe::Level::TRACE, 
+    Scribe::Level::INFO, 
     LogFmt,
     Scribe::Outputter::File.new(LOGDIR, "app")))

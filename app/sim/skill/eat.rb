@@ -13,7 +13,7 @@ module Skill
       ]
     end
 
-    # Eats from the closest Plant whose location is within our radius. 
+    # Eats from the highest energy Plant whose location is within our radius. 
     # Reduces that Plant's energy by the amount eaten and returns that amount.
     def self.eval(ctx)
       lf = ctx.lifeform
@@ -25,8 +25,10 @@ module Skill
         return 0.0
       end
 
-      # get closest prey within our eating distance (radius)
-      lf_prey = lf.find_within_dist_ds(lf.radius, species_id: species.id).first
+      # get most energy prey within our eating distance (radius)
+      lf_prey = lf.find_within_dist_ds(lf.radius, species_id: species.id).
+        reverse(:energy).
+        first
 
       if lf_prey.nil?
         Log.trace("[Eat] Couldn't find any prey within eating range", lf: lf, distance: lf.radius)

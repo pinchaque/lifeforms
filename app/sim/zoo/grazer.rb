@@ -16,9 +16,12 @@ module Zoo
         # THEN: Reproduce
         e_skill(Skill::Reproduce.id),
         # ELSE: Try to get food
-        e_seq(
-          e_skill(Skill::MoveToFood.id),
-          e_skill(Skill::Eat.id),
+        e_if(
+          # IF: We weren't able to eat our metabolic energy in food
+          e_lt(e_skill(Skill::Eat.id), e_lookup(:lf_metabolic_energy)),
+
+          # THEN: Move to the best food we can find
+          e_skill(Skill::MoveToFood.id)
         )
       )
     end
