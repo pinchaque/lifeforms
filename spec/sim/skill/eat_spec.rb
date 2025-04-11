@@ -128,6 +128,7 @@ describe "Eat" do
           add_lf(0.45, 0.0, 3.9, species_plant),
           add_lf(0.2, 0.0, 2.0, species_plant),
           add_lf(0.35, 0.0, 3.5, species_plant),
+          add_lf(0.51, 0.0, 10.0, species_plant), # more energy, out of range
           add_lf(0.25, 0.0, 2.5, species_plant)
         ] }
         let(:prey_lf) { add_lf(0.4, 0.0, 4.0, species_plant) }
