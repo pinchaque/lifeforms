@@ -41,7 +41,11 @@ class EnvController < AppController
   post '/env/:id' do |id|
     env = Environment.where(id: id).first
     steps = params['steps'].to_i
-    env.run_steps(steps) if steps > 0
+    (0...steps).each do
+      env.run_step
+      env.log_stats(Scribe::Level::INFO)    
+    end
+    env.log_self(Scribe::Level::INFO)
 
     erb :"env/viz", :locals => {
       env: env,
