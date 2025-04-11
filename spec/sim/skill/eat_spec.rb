@@ -35,24 +35,38 @@ describe "Eat" do
 
   RSpec.shared_examples "Eat.eval" do
     it ".eval" do
-      other_lfs.each do |l| # instantiate other lifeforms
-        l.energy = energy_other
-        l.save
+      # Make sure everything is instantiated
+      prey_lf
+      lf
+      other_lfs.each do |l|
+        l
       end
+
+      # verify all lifeforms exist
+      expect(env.lifeforms_ds.count).to eq(other_lfs.count + (prey_lf.nil? ? 1 : 2))
+
+      # remember starting energy
+      egy_start = {}
+      egy_start[prey_lf.id] = prey_lf.energy unless prey_lf.nil?
+      other_lfs.each do |l| # instantiate other lifeforms
+        egy_start[l.id] = l.energy
+      end
+
       egy_exp = lf.energy + egy_delta_exp
       ret_act = klass.eval(ctx) # run the action on lf
       expect(ret_act).to be_within(tol).of(egy_delta_exp)
       expect(lf.energy).to be_within(tol).of(egy_exp)
 
-      # verify energy state of all other lifeforms
-      (0...other_lfs.count).each do |idx|
-        l = other_lfs[idx]
-
-        if idx == prey_idx
-          expect(l.energy).to eq(energy_other - egy_delta_exp)
-        else
-          expect(l.energy).to eq(energy_other)
-        end
+      # verify prey had energy deducted
+      unless prey_lf.nil?
+        p = Lifeform[prey_lf.id] # reload to get new energy
+        expect(p.energy).to be_within(tol).of(egy_start[p.id] - egy_delta_exp)
+      end
+      
+      # verify unchanged energy state of all other lifeforms
+      other_lfs.each do |l|
+        l = Lifeform[l.id] # reload to get new energy
+        expect(l.energy).to eq(egy_start[l.id]) # unchanged
       end
     end
   end
@@ -62,7 +76,9 @@ describe "Eat" do
     let(:ctx) { lf.context }
     let(:energy) { 6.0 }
     let(:eat_max_energy) { 1.5 }
+    let(:energy_other) { 10.0 }
     let(:other_lfs) { [] }
+    let(:prey_lf) { nil }
     let(:prey_idx) { nil }
     let(:egy_delta_exp) { 0.0 }
 
@@ -84,29 +100,39 @@ describe "Eat" do
         let(:other_lfs) { [
           add_lf(6.0, 0.0, energy_other, species_plant)
         ] }
-      end            
+      end
     end
 
     context "prey in range, limited by my max" do
       it_behaves_like "Eat.eval" do
         let(:eat_max_energy) { 2.0 }
-        let(:energy_other) { 10.0 }
-        let(:other_lfs) { [
-          add_lf(0.49, 0.0, energy_other, species_plant)
-        ] }
+        let(:prey_lf) { add_lf(0.49, 0.0, energy_other, species_plant) }
         let(:egy_delta_exp) { 2.0 }
-      end                  
+      end
     end
 
     context "prey in range, limited by prey's energy" do
       it_behaves_like "Eat.eval" do
         let(:eat_max_energy) { 20.0 }
-        let(:energy_other) { 10.0 }
-        let(:other_lfs) { [
-          add_lf(0.49, 0.0, energy_other, species_plant)
-        ] }
+        let(:prey_lf) { add_lf(0.49, 0.0, energy_other, species_plant) }
         let(:egy_delta_exp) { 10.0 }
-      end                  
+      end
+    end
+
+    context "multiple prey in range, select the one with the most energy" do
+      it_behaves_like "Eat.eval" do
+        let(:eat_max_energy) { 20.0 }
+        let(:other_lfs) { [
+          add_lf(0.0, 0.3, 3.0, species_plant),
+          add_lf(0.0, 0.1, 1.0, species_plant),
+          add_lf(0.45, 0.0, 3.9, species_plant),
+          add_lf(0.2, 0.0, 2.0, species_plant),
+          add_lf(0.35, 0.0, 3.5, species_plant),
+          add_lf(0.25, 0.0, 2.5, species_plant)
+        ] }
+        let(:prey_lf) { add_lf(0.4, 0.0, 4.0, species_plant) }
+        let(:egy_delta_exp) { 4.0 }
+      end
     end
   end
 end
