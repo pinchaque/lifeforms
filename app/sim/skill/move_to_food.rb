@@ -37,8 +37,8 @@ module Skill
       [max_dist_energy_limited(ctx), ctx.value(:move_dist)].min
     end
 
-    # Moves the lifeform as far as it can towards the nearest prey. Returns the
-    # distance moved.
+    # Moves the lifeform as far as it can towards the prey who will provide the
+    # most energy minus the move cost. Returns the distance moved.
     def self.eval(ctx)
       lf = ctx.lifeform
 

@@ -13,7 +13,7 @@ module Skill
       ]
     end
 
-    # Eats from the closest Plant whose location is within our radius. 
+    # Eats from the highest energy Plant whose location is within our radius. 
     # Reduces that Plant's energy by the amount eaten and returns that amount.
     def self.eval(ctx)
       lf = ctx.lifeform
