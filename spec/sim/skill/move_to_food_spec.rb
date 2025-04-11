@@ -73,7 +73,6 @@ describe "MoveToFood" do
       ret_act = klass.eval(ctx) # run the action on lf
       expect(lf.coord.x).to be_within(tol).of(coord_exp.x)
       expect(lf.coord.y).to be_within(tol).of(coord_exp.y)
-      expect(lf.coord.to_s).to eq(coord_exp.to_s)
       expect(ret_act).to be_within(tol).of(ret_exp)
       expect(lf.energy).to be_within(tol).of(egy_exp)
     end
@@ -165,7 +164,7 @@ describe "MoveToFood" do
       end            
     end
 
-    context "multiple prey options, move to closest" do
+    context "multiple prey; move to further with more net energy" do
       it_behaves_like "MoveToFood.eval" do
         let(:other_lfs) { [
           add_lf(6.0, 6.0, energy, species_plant),
@@ -173,6 +172,58 @@ describe "MoveToFood" do
           add_lf(0.0, 6.5, energy, species_plant)
         ] }
         let(:coord_exp) { Coord.xy(2.0, 0.0) }
+        let(:ret_exp) { 2.0 }
+        let(:egy_exp) { 3.0 }
+      end                  
+      
+      it_behaves_like "MoveToFood.eval" do
+        let(:other_lfs) { [
+          # move cost: 2 * 1.5 = 3.0
+          # net energy: 6.0 - 3.0 = 3.0
+          add_lf(2.0, 0.0, 6.0, species_plant),
+
+          # move cost: 4 * 1.5 = 6.0
+          # net energy: 10.0 - 6.0 = 4.0
+          add_lf(0.0, 4.0, 10.0, species_plant)
+        ] }    
+
+        let(:coord_exp) { Coord.xy(0.0, 2.0) }
+        let(:ret_exp) { 2.0 }
+        let(:egy_exp) { 3.0 }
+      end                  
+
+      it_behaves_like "MoveToFood.eval" do
+        let(:other_lfs) { [
+          # move cost: 2 * 1.5 = 3.0
+          # net energy: 6.0 - 3.0 = 3.0
+          add_lf(2.0, 0.0, 6.0, species_plant),
+
+          # move cost: 4 * 1.5 = 6.0
+          # net energy: 8.9 - 6.0 = 2.9
+          add_lf(0.0, 4.0, 8.9, species_plant)
+        ] }    
+
+        let(:coord_exp) { Coord.xy(2.0, 0.0) }
+        let(:ret_exp) { 2.0 }
+        let(:egy_exp) { 3.0 }
+      end                  
+
+      it_behaves_like "MoveToFood.eval" do
+        let(:other_lfs) { [
+          # move cost: 2 * 1.5 = 3.0
+          # net energy: 6.0 - 3.0 = 3.0
+          add_lf(2.0, 0.0, 6.0, species_plant),
+
+          # move cost: 4 * 1.5 = 6.0
+          # net energy: 10.0 - 6.0 = 4.0
+          add_lf(0.0, 4.0, 10.0, species_plant),
+
+          # move cost: 14.14... * 1.5 = 21.213...
+          # net energy: 100.0 - 21.213... = 78.78...
+          add_lf(10.0, 10.0, 100.0, species_plant)
+        ] }    
+
+        let(:coord_exp) { Coord.xy(Math.sqrt(2.0), Math.sqrt(2.0)) }
         let(:ret_exp) { 2.0 }
         let(:egy_exp) { 3.0 }
       end                  

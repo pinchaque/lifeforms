@@ -110,5 +110,5 @@ Dir["#{HELPERSDIR}/*.rb"].each {|file| require file }
 Log.routers.clear # don't use standard app logs
 Log.routers << Scribe::Router.new(
     Scribe::Level::INFO, 
-    Scribe::Formatter.new, 
+    LogFmt, 
     Scribe::Outputter::Stderr.new)

@@ -49,17 +49,22 @@ module Skill
         return 0.0
       end
 
-      lf_prey = lf.find_closest(species_id: species.id)
-
+      # We select the prey that will give us the most energy after paying the
+      # cost to move there. 
+      # Net energy = other.energy - (dist_to_other * energy_per_dist)
+      lf_prey = lf.find_others_ds.
+        where(species_id: species.id).
+        reverse(Sequel.lit("lifeforms.energy - (sqrt(((? - lifeforms.x) ^ 2) + ((? - lifeforms.y) ^ 2)) * ?)", 
+          lf.x, lf.y, ctx.value(:move_energy))).
+        first
 
       if lf_prey.nil?
         Log.trace("[MoveToFood] Couldn't find any prey", lf: lf)
         return 0.0
       end
       
-      #Log.trace("[MoveToFood] My Location", lf: lf, x: lf.x, y: lf.y)
-      #Log.trace("[MoveToFood] Prey Found", lf: lf, name: lf_prey.name, x: lf_prey.x, y: lf_prey.y)
-
+      # Log.trace("[MoveToFood] My Location", lf: lf, x: lf.x, y: lf.y)
+      # Log.trace("[MoveToFood] Prey Found", lf: lf, name: lf_prey.name, x: lf_prey.x, y: lf_prey.y)
 
       coord_lf = lf.coord
       coord_prey = lf_prey.coord
