@@ -29,6 +29,19 @@ module Expr
         class_from_name(full_class_name(obj[KEY_CLASS])).unmarshal_value(obj[KEY_VALUE])
       end
     end
+
+    # Probabilistically mutates this Expr in the context of the given Lifeform.
+    # prob is the probability the mutation will happen at each expr that we 
+    # iterate over.
+    def mutate(lf, prob)
+      mutate_real(lf) if prob > Random.rand(0.0...1.0)
+    end
+
+    # Actually execute the mutation of this Expr in the context of the given
+    # Lifeform.
+    def mutate_real(lf)
+      # do nothing by default
+    end
   end
 
   def self.unmarshal(obj)
