@@ -50,7 +50,7 @@ module Skill
         child.energy = child_egy
         child.set_loc_dist(lf.x, lf.y, lf.radius)
         child.params.mutate
-        child.program.mutate(lf, ctx.value(:repro_prog_mutate_perc))
+        child.program.mutate(ctx, ctx.value(:repro_prog_mutate_perc))
         child.save
         Log.trace("[Reproduce]   - #{child.to_s}", lf: lf)
       end

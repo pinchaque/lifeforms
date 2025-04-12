@@ -49,4 +49,14 @@ describe "Context" do
       expect(ctx.value(obs_id)).to be_within(tol).of(obs_val)
     end
   end
+
+  context ".keys" do
+    it "returns all keys" do
+      TestSkillContext = TestFactory.skill(5.67)
+      lf.register_skill(TestSkillContext)
+      lf.save
+      keys_exp = [:param1, :param2, :lf_energy, :lf_age, :lf_metabolic_energy, :lf_size, :lf_generation, :lf_initial_size, :lf_x, :lf_y, :ctx_obs_id]
+      expect(ctx.keys).to eq(keys_exp)
+    end
+  end
 end

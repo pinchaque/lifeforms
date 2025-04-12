@@ -22,23 +22,20 @@ describe "Expr::Const" do
   end
 
   context ".mutate_real" do
-    let(:lf) { nil } # not used
     it "produces different positive value" do
       v1 = 5.12
       expr = e_const(v1)
-      expr.mutate_real(lf)
-      v2 = expr.eval(ctx)
-      expect(v2).not_to eq(v1)
-      expect(v2).to be >= 0.0
+      expr.mutate_real(ctx)
+      expect(expr.value).not_to eq(v1)
+      expect(expr.value).to be >= 0.0
     end
 
     it "produces different negative value" do
       v1 = -5.12
       expr = e_const(v1)
-      expr.mutate_real(lf)
-      v2 = expr.eval(ctx)
-      expect(v2).not_to eq(v1)
-      expect(v2).to be <= 0.0
+      expr.mutate_real(ctx)
+      expect(expr.value).not_to eq(v1)
+      expect(expr.value).to be <= 0.0
     end
   end
 end

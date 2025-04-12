@@ -33,13 +33,13 @@ module Expr
     # Probabilistically mutates this Expr in the context of the given Lifeform.
     # prob is the probability the mutation will happen at each expr that we 
     # iterate over.
-    def mutate(lf, prob)
-      mutate_real(lf) if prob > Random.rand(0.0...1.0)
+    def mutate(ctx, prob)
+      mutate_real(ctx) if prob > Random.rand(0.0...1.0)
     end
 
     # Actually execute the mutation of this Expr in the context of the given
     # Lifeform.
-    def mutate_real(lf)
+    def mutate_real(ctx)
       # do nothing by default
     end
   end
