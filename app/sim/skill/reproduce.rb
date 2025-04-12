@@ -14,6 +14,12 @@ module Skill
           mean: 0.8,
           stddev: 0.1
         ),
+        ParamDefNormalPerc(
+          id: :repro_prog_mutate_perc,
+          desc: "Percentage chance any given Expr will be mutated after reproduction",
+          mean: 0.08,
+          stddev: 0.01
+        ),
       ]
     end
 
@@ -43,7 +49,8 @@ module Skill
         child = lf.create_child
         child.energy = child_egy
         child.set_loc_dist(lf.x, lf.y, lf.radius)
-        child.mutate
+        child.params.mutate
+        child.program.mutate(lf, ctx.value(:repro_prog_mutate_perc))
         child.save
         Log.trace("[Reproduce]   - #{child.to_s}", lf: lf)
       end

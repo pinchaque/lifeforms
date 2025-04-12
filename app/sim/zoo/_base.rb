@@ -36,7 +36,9 @@ module Zoo
       get_skills.each do |s|
         lf.register_skill(s)
       end
-      lf.program = get_program
+      # we wrap all programs in a Seq for convenience so that mutation can
+      # change the steps within.
+      lf.program = e_seq(get_program)
       set_attrs(lf)
       lf
     end
