@@ -58,10 +58,11 @@ class TestFactory
   # called. This returns an unnamed class, so for things to work you
   # need to assign the return of this function to a CamelCase class name
   # because that's how Skill.id is computed.
-  def self.skill(ret, obs = {})
+  def self.skill(ret, obs = {}, params = [:param1, :param2])
     Class.new(Skill::Base) do
       @ret = ret
       @obs = obs
+      @params = params
 
       def self.eval(ctx)
         @ret
@@ -72,10 +73,7 @@ class TestFactory
       end
 
       def self.param_defs
-        [
-          ParamDefNormalPerc(id: :param1, mean: 0.5, stddev: 0.2, desc: "Test param 1"),
-          ParamDefNormalPerc(id: :param2, mean: 0.5, stddev: 0.2, desc: "Test param 2"),
-        ]
+        @params.map { |p| ParamDefNormalPerc(id: p, mean: 0.5, stddev: 0.2, desc: "Test param #{p}") }
       end
     end
   end

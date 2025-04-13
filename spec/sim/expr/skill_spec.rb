@@ -1,13 +1,15 @@
 require File.dirname(__FILE__) + '/test_helper.rb'
 
 describe "Expr::Skill" do
-  TestSkillFoo = TestFactory.skill(5.67)
-  TestSkillBar = TestFactory.skill(1.23)
+  TestSkillFoo = TestFactory.skill(5.67, {}, [:foo1, :foo2])
+  TestSkillBar = TestFactory.skill(1.23, {}, [:bar1, :bar2])
+  TestSkillQuux = TestFactory.skill(8.90, {}, [:quux1, :quux2])
 
+  let(:env) { TestFactory.env }
+  let(:skills) { [TestSkillFoo, TestSkillBar] }
   let(:lf) { 
-    l = MockLifeform.new 
-    l.register_skill(TestSkillFoo)
-    l.register_skill(TestSkillBar)
+    l = TestFactory.lifeform(environment_id: env.id)
+    skills.each { |s| l.register_skill(s) }
     l
   }
   let(:ctx) { Context.new(lf) }
@@ -27,6 +29,28 @@ describe "Expr::Skill" do
       let(:eval_exp) { 1.23 }
       let(:str_exp) { "SKILL(test_skill_bar)" }
       let(:marshal_exp) { {c: "Skill", v: :test_skill_bar} }
+    end
+  end
+
+  context ".mutate_real" do
+    context "several keys to choose from" do
+      let(:skills) { [TestSkillFoo, TestSkillBar, TestSkillQuux] }
+      it "uses different id" do
+        id1 = TestSkillFoo.id
+        expr = e_skill(TestSkillFoo.id)
+        expr.mutate_real(ctx)
+        expect(expr.id).not_to eq(id1)
+      end
+    end
+
+    context "only one key" do
+      let(:skills) { [TestSkillFoo] }
+      it "changes nothing" do
+        id1 = TestSkillFoo.id
+        expr = e_skill(TestSkillFoo.id)
+        expr.mutate_real(ctx)
+        expect(expr.id).to eq(id1)
+      end
     end
   end
 end
