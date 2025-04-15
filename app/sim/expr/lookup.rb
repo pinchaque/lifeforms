@@ -26,7 +26,7 @@ module Expr
 
     # Mutates the lookup by selecting a different available ID. If there are no
     # others then no change is made.
-    def mutate_real(ctx)
+    def mutate_self_real(ctx)
       other_keys = ctx.keys
       other_keys.delete(@id)
       @id = other_keys.sample if other_keys.count > 0

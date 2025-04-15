@@ -9,6 +9,20 @@ module Expr
     def op_s
       "/"
     end
+
+    def mutate_self_real(ctx)
+      case [:add, :mul, :sub].sample
+
+      when :add
+        Expr::Add.new(@expr1, @expr2)
+
+      when :sub
+        Expr::Sub.new(@expr1, @expr2)
+
+      when :mul
+        Expr::Mul.new(@expr1, @expr2)
+      end
+    end
   end
 end
 

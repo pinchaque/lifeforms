@@ -28,6 +28,31 @@ module Expr
       end
     end
 
+    def mutate_self_real(ctx)
+
+      case [:false, :swap, :seq].sample
+
+      when :false
+        if @expr_false.nil?
+          @expr_false = ExprFactory.new(ctx).statement 
+        else
+          @expr_false = Expr::True.new
+        end
+        self
+
+      when :swap
+        @expr_true, @expr_false = @expr_false, @expr_true
+        self
+
+      when :seq
+        if @expr_false.nil?
+          Expr::Sequence.new(@expr_true)
+        else
+          Expr::Sequence.new(@expr_true, @expr_false)
+        end
+      end
+    end
+
     def marshal
       h = {
         if: @expr_bool.marshal,

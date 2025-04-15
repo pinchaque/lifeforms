@@ -13,13 +13,42 @@ describe "ExprFactory" do
   let(:ef) { ExprFactory.new(ctx) }
   let(:trials) { 500 }
 
-  context ".numeric" do
+
+  context ".skill" do
+    
+  end
+
+  context ".statement" do
+    
+  end
+
+  context ".numcmp" do
+    
+  end
+
+  context ".bool" do
+    
+  end
+
+
+  context ".number" do
     it "generates random numeric expression" do
       (0...trials).each do |i|
-        expr = ef.numeric
+        expr = ef.number
         eval_act = expr.eval(ctx)
-        str = "#{expr} => #{eval_act}"
-        expect(str).to satisfy('be numeric') do |x| 
+        expect("#{expr} => #{eval_act}").to satisfy('be numeric') do |x| 
+          is_numeric?(eval_act)
+        end
+      end
+    end
+  end
+
+  context ".numop" do
+    it "generates random numeric expression" do
+      (0...trials).each do |i|
+        expr = ef.numop
+        eval_act = expr.eval(ctx)
+        expect("#{expr} => #{eval_act}").to satisfy('be numeric') do |x| 
           is_numeric?(eval_act)
         end
       end

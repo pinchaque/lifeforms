@@ -14,6 +14,11 @@ module Expr
       "(#{@expr1.to_s} #{op_s} #{@expr2.to_s})"
     end
 
+    def mutate_children(ctx, prob)
+      @expr1 = @expr1.mutate(ctx, prob)
+      @expr2 = @expr2.mutate(ctx, prob)
+    end
+
     def marshal
       marshal_value({KEY_LEFT => @expr1.marshal, KEY_RIGHT => @expr2.marshal})
     end

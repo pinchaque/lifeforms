@@ -11,7 +11,7 @@ module Expr
       @exprs.map { |st| st.eval(ctx) }.last
     end
 
-    def mutate_real(ctx)
+    def mutate_self_real(ctx)
       case [:add, :del, :shuffle, :if].sample
 
       when :add

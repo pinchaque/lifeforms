@@ -30,18 +30,30 @@ module Expr
       end
     end
 
-    # Probabilistically mutates this Expr in the context of the given Lifeform.
-    # prob is the probability the mutation will happen at each expr that we 
-    # iterate over.
-    def mutate(ctx, prob)
-      mutate_real(ctx) if prob > Random.rand(0.0...1.0)
+    def do_mutate?(prob)
+      prob > Random.rand(0.0...1.0)
     end
 
-    # Actually execute the mutation of this Expr in the context of the given
-    # Lifeform.
-    def mutate_real(ctx)
+    # Probabilistically mutates this Expr in the context of the given Lifeform.
+    # prob is the probability the mutation will happen at each expr that we 
+    # iterate over. Returns the new Expr to use in case we are swapping out.
+    def mutate(ctx, prob)
+      mutate_children(ctx, prob)
+      mutate_self(ctx, prob)
+    end
+
+    # Runs the actual mutation
+    def mutate_self(ctx)
+      do_mutate?(prob) ? mutate_self_real(ctx) : self
+    end
+
+    def mutate_self_real(ctx)
       # do nothing by default
       self
+    end
+
+    def mutate_children(ctx, prob)
+      # do nothing - no children by default
     end
   end
 

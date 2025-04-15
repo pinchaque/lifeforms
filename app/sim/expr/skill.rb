@@ -28,7 +28,7 @@ module Expr
 
     # Mutates by selecting a different available skill ID. If there are no
     # others then no change is made.
-    def mutate_real(ctx)
+    def mutate_self_real(ctx)
       ids = ctx.lifeform.skills.skills.keys
       ids.delete(@id)
       @id = ids.sample if ids.count > 0
