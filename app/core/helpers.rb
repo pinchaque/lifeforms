@@ -41,3 +41,8 @@ def is_numeric?(val)
     return false
   end
 end
+
+# Returns true if val is boolean - either true or false
+def is_boolean?(val)
+  [true, false].include?(val)
+end

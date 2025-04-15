@@ -12,12 +12,12 @@ class ExprFactory
   # Generates a statement - something that is executed for its side benefits
   # rather than return value.
   def statement
-    case [:if, :seq, :skill, :skill, :skill].sample
+    case [:if, :seq, :skill, :skill].sample
     when :if
-      Expr::If(bool, skill, skill)
+      Expr::If.new(bool, skill, skill)
 
     when :seq
-      Expr::Sequence(skill, skill)
+      Expr::Sequence.new(skill, skill)
 
     when :skill
       skill

@@ -36,3 +36,10 @@ def cmp_objects(act, exp)
   exp_ids = exp.map { |o| o.id }.sort
   expect(act_ids).to eq(exp_ids)
 end
+
+# Checks whether a value is in an array
+def expect_in_array(v, ary)
+  expect("#{ary} contains #{v}").to satisfy('be true') do |x| 
+    ary.include?(v)
+  end
+end
