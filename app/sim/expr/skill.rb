@@ -32,6 +32,7 @@ module Expr
       ids = ctx.lifeform.skills.skills.keys
       ids.delete(@id)
       @id = ids.sample if ids.count > 0
+      self
     end
   end
 end

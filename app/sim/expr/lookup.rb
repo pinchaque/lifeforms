@@ -30,6 +30,7 @@ module Expr
       other_keys = ctx.keys
       other_keys.delete(@id)
       @id = other_keys.sample if other_keys.count > 0
+      self
     end
   end 
 end

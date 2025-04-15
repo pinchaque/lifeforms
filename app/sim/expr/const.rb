@@ -32,6 +32,7 @@ module Expr
       v = Rubystats::NormalDistribution.new(@value, stddev).rng
       v = 0.0 if ((@value > 0.0 && v < 0.0) || (@value < 0.0 && v > 0.0))
       @value = v
+      self
     end
   end  
 end

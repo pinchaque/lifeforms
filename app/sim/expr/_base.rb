@@ -41,6 +41,7 @@ module Expr
     # Lifeform.
     def mutate_real(ctx)
       # do nothing by default
+      self
     end
   end
 

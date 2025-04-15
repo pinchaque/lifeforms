@@ -2,7 +2,8 @@ module Expr
   # Divs one value by another
   class Div < BaseDuo
     def eval(ctx)
-      @expr1.eval(ctx) / @expr2.eval(ctx)
+      e2 = @expr2.eval(ctx)
+      (e2 == 0.0) ? 0.0 : (@expr1.eval(ctx) / e2)
     end
 
     def op_s
