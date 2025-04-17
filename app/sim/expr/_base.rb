@@ -39,11 +39,6 @@ module Expr
     # iterate over. Returns the new Expr to use in case we are swapping out.
     def mutate(ctx, prob)
       mutate_children(ctx, prob)
-      mutate_self(ctx, prob)
-    end
-
-    # Runs the actual mutation
-    def mutate_self(ctx)
       do_mutate?(prob) ? mutate_self_real(ctx) : self
     end
 

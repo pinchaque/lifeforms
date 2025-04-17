@@ -32,13 +32,13 @@ describe "Expr::Skill" do
     end
   end
 
-  context ".mutate_real" do
+  context ".mutate_self_real" do
     context "several keys to choose from" do
       let(:skills) { [TestSkillFoo, TestSkillBar, TestSkillQuux] }
       it "uses different id" do
         id1 = TestSkillFoo.id
         expr = e_skill(TestSkillFoo.id)
-        expr.mutate_real(ctx)
+        expr.mutate_self_real(ctx)
         expect(expr.id).not_to eq(id1)
       end
     end
@@ -48,7 +48,7 @@ describe "Expr::Skill" do
       it "changes nothing" do
         id1 = TestSkillFoo.id
         expr = e_skill(TestSkillFoo.id)
-        expr.mutate_real(ctx)
+        expr.mutate_self_real(ctx)
         expect(expr.id).to eq(id1)
       end
     end

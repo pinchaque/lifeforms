@@ -28,7 +28,7 @@ module Expr
     # Mutates the value of this constant following a normal distribution
     # and maintaining the number's sign.
     def mutate_self_real(ctx)
-      stddev = (0.12 * @value).abs
+      stddev = (@value == 0.0) ? 0.2 : (0.12 * @value).abs
       v = Rubystats::NormalDistribution.new(@value, stddev).rng
       v = 0.0 if ((@value > 0.0 && v < 0.0) || (@value < 0.0 && v > 0.0))
       @value = v

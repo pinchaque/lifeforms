@@ -28,13 +28,13 @@ describe "Expr::Lookup" do
     end
   end
 
-  context ".mutate_real" do
+  context ".mutate_self_real" do
     context "several keys to choose from" do
       let(:ctx) { {foo: 2.34, bar: 5.67, quux: 8.90} }
       it "uses different id" do
         id1 = :bar
         expr = e_lookup(id1)
-        expr.mutate_real(ctx)
+        expr.mutate_self_real(ctx)
         expect(expr.id).not_to eq(id1)
       end
     end
@@ -44,7 +44,7 @@ describe "Expr::Lookup" do
       it "changes nothing" do
         id1 = :foo
         expr = e_lookup(id1)
-        expr.mutate_real(ctx)
+        expr.mutate_self_real(ctx)
         expect(expr.id).to eq(id1)
       end
     end
