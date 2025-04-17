@@ -39,15 +39,18 @@ The backend consists of a [Sinatra](https://sinatrarb.com/) Ruby app, [Sequel](h
 
  * Install a recent version of PostgreSQL (development was done using PostgreSQL 16.6)
  * Install all the required Ruby Gems by running `bundle install`
+ * Create a database user and add the credentials to `config/database.yml` (use `config/database.yml.example` as a template)
  * Set up the database schema by running `rake db:all`
 
-### Web App
-
-
-
-`rackup` will launch the Puma/Rack/Sinatra stack for the web app
-
-`guard` will launch the same but will auto-reload
-
-
 ### Command Line
+Creating and running simulations can be done from the command line using Rake tasks prefixed with `sim:`. For example:
+  * `rake sim:create` to create a new simulation
+  * `rake sim:run` to run a single step of that simulation
+  * `rake sim:view` to view details of that simulation
+
+### Web App
+To launch the web app you can use either of these commands:
+  * `rackup` will launch the Puma/Rack/Sinatra stack for the web app
+  * `bundle exec guard` will launch the same but will auto-reload
+You can then use the app at [localhost:9292](http://127.0.0.1:9292). From there you can create new simulations, visualize them, and run steps.
+
