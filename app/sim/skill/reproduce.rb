@@ -17,8 +17,8 @@ module Skill
         ParamDefNormalPerc(
           id: :repro_prog_mutate_perc,
           desc: "Percentage chance any given Expr will be mutated after reproduction",
-          mean: 0.08,
-          stddev: 0.01
+          mean: 0.1,
+          stddev: 0.02
         ),
       ]
     end
