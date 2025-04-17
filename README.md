@@ -5,7 +5,9 @@ Lifeforms is an artificial life simulation that explores the effect of self-modi
 The simulation consists of an environment and a population of any number of lifeforms. Currently two different lifeform types exist: plants and grazers. Plants absorb energy from the environment and grow in place. Grazers can move to and consume plants. Both plants and grazers have metabolic energy needs that they must fulfill or die. They also can both reproduce and create children. When reproduction happens, the parameters and programming of the lifeform are passed on to the child potentially with mutations.
 
 ## Demo
-This animation shows the plants and grazers spawning, growing, and finding food.
+This animation shows several dozen simulation steps in which the plants spawn and grow, and grazers move towards food.
+
+![Animation of several dozen steps of a simulation.](/assets/lifeforms_demo.gif)
 
 ## App Design
 
