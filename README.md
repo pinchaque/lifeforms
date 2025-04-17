@@ -7,13 +7,19 @@ The simulation consists of an environment and a population of any number of life
 ## Demo
 This animation shows the plants and grazers spawning, growing, and finding food.
 
-## System Design
-
-The frontend written in plain HTML5 and Javascript, leveraging [Konva.js](https://konvajs.org/) to render visually the lifeforms.
-
-The backend consists of a [Sinatra](https://sinatrarb.com/) Ruby app and PostgreSQL persistance layer.
-
 ## App Design
+
+### Simulation
+A Simulation consists of an Environment and any number of Lifeforms. The Simulation then is executed in discreet _steps_.
+
+When we run a _step_ of the Environment it will, in turn:
+  1. Spawn new Lifeforms if we are below minimum thresholds, or randomly
+  2. Run a _step_ for each of the contained Lifeforms
+
+After each simulation step we capture statistics about the Lifeforms, such as how many are alive/dead and what their total energy is. In this way we can monitor the simulation.
+
+### Environment
+The Environment is a container for any number of Lifeforms. It has dimensions (width x height) and an energy rate that the Plants use to absorb. 
 
 ### Lifeforms
 Each Lifeform is defined by:
@@ -21,17 +27,27 @@ Each Lifeform is defined by:
   * *Parameters* Numeric values associated with the Skills, such as how far the lifeform can move, how many offspring it produces, etc. These Parameters control the behavior of the Skills and also can change value as the Lifeform reproduces.
   * *Program* A set of instructions that the Lifeform will execute at each step of the simulation.
 
-### Environment
-The Environment is a container for any number of Lifeforms. It has dimensions (width x height) and an energy rate that the Plants use to absorb. 
+## System Design
 
-### Simulation Execution
-Simulations are executed in discreet _steps_. When we run a _step_ of the Environment it will, in turn, run a _step_ for each of the contained Lifeforms. A Lifeform's step consists of executing its Program
+The frontend written in plain HTML5 and Javascript, leveraging [Konva.js](https://konvajs.org/) to render visually the lifeforms.
 
+The backend consists of a [Sinatra](https://sinatrarb.com/) Ruby app, [Sequel](https://github.com/jeremyevans/sequel) ORM, and [PostgreSQL](https://www.postgresql.org/) persistance layer.
 
 ## Running
 
-`bundle install`
+### Installation
+
+ * Install a recent version of PostgreSQL (development was done using PostgreSQL 16.6)
+ * Install all the required Ruby Gems by running `bundle install`
+ * Set up the database schema by running `rake db:all`
+
+### Web App
+
+
 
 `rackup` will launch the Puma/Rack/Sinatra stack for the web app
 
 `guard` will launch the same but will auto-reload
+
+
+### Command Line
