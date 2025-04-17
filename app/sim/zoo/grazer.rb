@@ -13,8 +13,10 @@ module Zoo
       e_if( # REPRODUCTION
         # IF: We have good energy reserves
         e_gt(e_lookup(:lf_energy), e_mul(e_const(100.0), e_lookup(:lf_metabolic_energy))), 
+
         # THEN: Reproduce
         e_skill(Skill::Reproduce.id),
+
         # ELSE: Try to get food
         e_if(
           # IF: We weren't able to eat our metabolic energy in food

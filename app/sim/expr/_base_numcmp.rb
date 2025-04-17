@@ -16,6 +16,11 @@ module Expr
       end
     end
 
+    # Mutates the comparison by switching to a random operator.
+    def mutate_self_real(ctx)
+      [Equal, GT, GTE, LT, LTE].sample.new(@expr1, @expr2)
+    end
+
     def eval(ctx)
       cmp(get_val(ctx, @expr1), get_val(ctx, @expr2))
     end

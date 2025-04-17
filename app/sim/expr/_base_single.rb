@@ -5,6 +5,10 @@ module Expr
       @expr = expr
     end
 
+    def mutate_children(ctx, prob)
+      @expr = @expr.mutate(ctx, prob)
+    end
+
     # Marshal the value as is
     def marshal
       marshal_value(@expr.marshal)

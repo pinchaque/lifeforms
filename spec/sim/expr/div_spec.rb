@@ -11,4 +11,13 @@ describe "Expr::Div" do
       let(:marshal_exp) { {c: "Div", v: {l: {c: "Const", v: 20.0},  r: {c: "Const", v: 5.0}}}}
     end
   end
+
+  context "20 / 0" do
+    it_behaves_like "expr" do
+      let(:expr) { e_div(e_const(20.0), e_const(0.0)) }
+      let(:eval_exp) { 0.0 }
+      let(:str_exp) { "(20.0 / 0.0)" }
+      let(:marshal_exp) { {c: "Div", v: {l: {c: "Const", v: 20.0},  r: {c: "Const", v: 0.0}}}}
+    end
+  end
 end

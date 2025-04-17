@@ -20,4 +20,29 @@ describe "Expr::Const" do
       let(:marshal_exp) { {c: "Const", v: 567} }
     end
   end
+
+  context ".mutate_self_real" do
+    it "produces different positive value" do
+      v1 = 5.12
+      expr = e_const(v1)
+      expr.mutate_self_real(ctx)
+      expect(expr.value).not_to eq(v1)
+      expect(expr.value).to be >= 0.0
+    end
+
+    it "produces different negative value" do
+      v1 = -5.12
+      expr = e_const(v1)
+      expr.mutate_self_real(ctx)
+      expect(expr.value).not_to eq(v1)
+      expect(expr.value).to be <= 0.0
+    end
+
+    it "handles 0.0" do
+      v1 = 0.0
+      expr = e_const(v1)
+      expr.mutate_self_real(ctx)
+      expect(expr.value).not_to eq(v1)
+    end
+  end
 end

@@ -26,6 +26,11 @@ class Context
     end
   end
 
+  # Returns array of all keys available for lookup
+  def keys
+    @params.ids.union(@attrs.keys, @obs.keys)
+  end
+
   # Helps this object behave like a hash
   def fetch(id, default = nil)
     value(id, default)

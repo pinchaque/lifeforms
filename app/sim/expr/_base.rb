@@ -29,6 +29,27 @@ module Expr
         class_from_name(full_class_name(obj[KEY_CLASS])).unmarshal_value(obj[KEY_VALUE])
       end
     end
+
+    def do_mutate?(prob)
+      prob > Random.rand(0.0...1.0)
+    end
+
+    # Probabilistically mutates this Expr in the context of the given Lifeform.
+    # prob is the probability the mutation will happen at each expr that we 
+    # iterate over. Returns the new Expr to use in case we are swapping out.
+    def mutate(ctx, prob)
+      mutate_children(ctx, prob)
+      do_mutate?(prob) ? mutate_self_real(ctx) : self
+    end
+
+    def mutate_self_real(ctx)
+      # do nothing by default
+      self
+    end
+
+    def mutate_children(ctx, prob)
+      # do nothing - no children by default
+    end
   end
 
   def self.unmarshal(obj)

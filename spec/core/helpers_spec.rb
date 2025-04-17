@@ -86,9 +86,29 @@ describe "Helpers" do
       ["foobar", false],
       ["123.0badbad", false],
       ["123", true],
+      [5.808185577559548e+114-0.015059394552572046i, false],
     ].each do |ex|
       it "is_numeric?(#{ex[0]})" do
         expect(is_numeric?(ex[0])).to be ex[1]
+      end
+    end
+  end
+  
+  context "is_boolean?" do
+    [
+      [true, true],
+      [false, true],
+      [nil, false],
+      [0, false],
+      [1, false],
+      [-1, false],
+      ["", false],
+      ["true", false],
+      ["false", false],
+      ["foo", false],
+    ].each do |ex|
+      it "is_boolean?(#{ex[0]})" do
+        expect(is_boolean?(ex[0])).to be ex[1]
       end
     end
   end

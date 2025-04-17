@@ -10,6 +10,10 @@ module Expr
       (@exprs.count > 1) ? "(#{ret})" : ret
     end
 
+    def mutate_children(ctx, prob)
+      @exprs.map! { |e| e.mutate(ctx, prob) }
+    end
+
     # Marshal the expressions into an array
     def marshal
       marshal_value(@exprs.map { |expr| expr.marshal })

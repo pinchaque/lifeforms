@@ -30,6 +30,9 @@ def is_numeric?(val)
   begin
     Kernel.Float(val)
     return true
+  rescue RangeError
+    # can't convert 5.808185577559548e+114-0.015059394552572046i into Float
+    return false
   rescue ArgumentError
     # Float("123.0_badstring") #=> ArgumentError: invalid value for Float(): "123.0_badstring"
     return false
@@ -37,4 +40,9 @@ def is_numeric?(val)
     # Float(nil) => TypeError: can't convert nil into Float
     return false
   end
+end
+
+# Returns true if val is boolean - either true or false
+def is_boolean?(val)
+  [true, false].include?(val)
 end

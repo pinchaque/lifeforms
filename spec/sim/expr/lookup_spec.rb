@@ -27,4 +27,26 @@ describe "Expr::Lookup" do
       expect{e.eval(ctx)}.to raise_error("Missing value for id 'quux'")
     end
   end
+
+  context ".mutate_self_real" do
+    context "several keys to choose from" do
+      let(:ctx) { {foo: 2.34, bar: 5.67, quux: 8.90} }
+      it "uses different id" do
+        id1 = :bar
+        expr = e_lookup(id1)
+        expr.mutate_self_real(ctx)
+        expect(expr.id).not_to eq(id1)
+      end
+    end
+
+    context "only one key" do
+      let(:ctx) { {foo: 2.34} }
+      it "changes nothing" do
+        id1 = :foo
+        expr = e_lookup(id1)
+        expr.mutate_self_real(ctx)
+        expect(expr.id).to eq(id1)
+      end
+    end
+  end
 end
