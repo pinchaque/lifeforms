@@ -1,3 +1,4 @@
+
 # Lifeforms
 
 Lifeforms is an artificial life simulation that explores the effect of self-modifying code and evolving parameters on the behavior and survival of virtual lifeforms.
@@ -7,7 +8,7 @@ The simulation consists of an environment and a population of any number of life
 ## Demo
 This animation shows several dozen simulation steps in which the plants spawn and grow, and grazers move towards food.
 
-![Animation of several dozen steps of a simulation.](/assets/lifeforms_demo.gif)
+![Animation of several dozen steps of a simulation](https://github.com/user-attachments/assets/37c2bf8e-4d15-4e00-a0fd-59ba5f045de3)
 
 ## App Design
 
